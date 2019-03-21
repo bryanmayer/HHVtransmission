@@ -6,4 +6,9 @@ output:
     toc: false
 ---
 
-Welcome to my research website.
+Estimating weekly transmission risk for CMV and HHV-6 in Ugandan infants.
+
+Analysis Roadmap:
+
+1. [Processing exposure data](setup-exposure-data.html)
+2. [General statistics](general-statistics.html)
