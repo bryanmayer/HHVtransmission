@@ -1,0 +1,175 @@
+---
+title: "general-statistics"
+author: "Bryan Mayer"
+date: "2019-03-19"
+output: workflowr::wflow_html
+---
+
+Here, we calculate some of the initial (pre-model) results from the infant cohort and exposure characteristcs. 
+- Demographics
+- Initial survial curves
+- Exposure assessment
+
+```{r,  warning = F, message = F, echo = F}
+knitr::opts_chunk$set(
+  comment = NA,
+  fig.align = "center",
+  tidy = FALSE
+)
+
+```
+
+```{r, echo = F, message = F, warning = F}
+
+library(tidyverse)
+library(kableExtra)
+library(survival)
+library(survminer)
+load("data/exposure_data.RData")
+
+```
+
+# Demographics
+
+## Infant ages
+
+```{r}
+exposure_data %>%
+  select(FamilyID, enrollment_age) %>%
+  distinct() %>%
+  summarize(
+        N = n(),
+        enroll_median_age_days = median(enrollment_age),
+        IQR = paste(quantile(enrollment_age, c(0.25, 0.75)), collapse = ", "),
+        range_days = paste(range(enrollment_age), collapse = ", ")
+        ) %>%
+  kable() %>% kable_styling(full_width = F)
+
+```
+
+## Mom HIV
+
+```{r}
+exposure_data %>% select(FamilyID, momhiv) %>% 
+  distinct() %>%
+  group_by(momhiv) %>%
+  summarize(N = n()) %>% 
+  kable() %>% kable_styling(full_width = F)
+```
+
+
+# Survival analysis
+
+```{r}
+exposure_data %>% 
+  group_by(virus, FamilyID) %>% 
+  summarize(obs_infected = max(infectious_1wk),
+            is_infected = max(infected)) %>% group_by(virus) %>%
+  summarize(
+    total_infants = n_distinct(FamilyID),
+    total_infected = sum(is_infected),
+    total_outcome = sum(obs_infected)
+    ) %>%
+  kable() %>%
+  kable_styling(full_width = F)
+
+```
+
+
+```{r}
+surv_data = exposure_data %>% 
+  group_by(FamilyID, virus, momhiv, final_infant_wk) %>%
+  summarize(
+    infected = max(infected)
+  )
+
+surv_fit = surv_data %>%
+  group_by(virus) %>%
+  nest() %>%
+  mutate(
+    surv_mod = map(data, ~survfit(Surv(final_infant_wk, infected) ~ 1, data = .)),
+    surv_mod_hiv = map(data, ~survfit(Surv(final_infant_wk, infected) ~ momhiv, data = .)),
+    logrank = map_dbl(data, ~coin::pvalue(coin::logrank_test(Surv(final_infant_wk, infected) ~ factor(momhiv),
+                                                             data = ., distribution = "exact")))
+    ) %>%
+  select(-data)
+
+surv_fit %>%
+  select(virus, logrank) %>%
+  rename(`Mother HIV Log-rank` = logrank) %>%
+  kable() %>% kable_styling(full_width = F)
+
+
+surv_res = pmap_df(surv_fit, function(virus, surv_mod, surv_mod_hiv, logrank){
+   broom::tidy(surv_mod) %>%
+    mutate(strata = "Pooled") %>%
+    bind_rows(broom::tidy(surv_mod_hiv)) %>%
+    mutate(
+      virus = virus,
+      momhiv = str_remove_all(strata, "momhiv=")
+      ) %>%
+    bind_rows(crossing(virus = virus, time = -1e-12, estimate = 1, momhiv = c("Pooled", "neg", "pos")))
+})
+
+```
+
+
+```{r survival-plot, warning= F}
+
+surv_res %>%
+  arrange(virus, momhiv, time) %>%
+  ggplot(aes(time, estimate, colour = momhiv)) + 
+  geom_step() +
+  geom_point(aes(shape = n.censor > 0)) +
+  scale_shape_manual(guide = F, values = c(-1, 3)) +
+  scale_x_continuous("Weeks after infant birth", breaks = 0:10 * 10) +
+  scale_y_continuous("Proportion uninfected", expand = c(0.01, 0)) +
+  geom_vline(xintercept = 52, colour = "black", linetype = "dashed") +
+  scale_color_discrete("", breaks = c("neg", "pos", "Pooled"), 
+                     labels = c("Mother HIV-", "Mother HIV+", "Pooled")) +
+  geom_text(data= surv_fit, aes(label = str_c("p = ", round(logrank, 2))), 
+            x = Inf, y = Inf, colour = "black", vjust = 1.2, hjust = 1.2) +
+  facet_wrap(~virus) +
+  theme_bw() +
+  theme(legend.position = "top")
+
+```
+
+# Exposure Analysis
+
+```{r}
+
+exposure_data_long %>% 
+  group_by(virus, idpar) %>% 
+  summarize(total = n()) 
+
+```
+
+
+```{r}
+
+exposure_plots = map(c("CMV", "HHV-6"), function(v){
+  surv_cens = exposure_data %>% 
+    subset(virus == v) %>%
+    group_by(FamilyID, virus, final_infant_wk) %>%
+  summarize(
+    cens = all(obs_infected == 0),
+    final_time = if(!all(cens)) unique(final_infant_wk) else max(infant_wks)
+  )
+  
+  exposure_data_long %>%
+    subset(virus == v) %>%
+    group_by(FamilyID) %>%
+    ggplot(aes(x = infant_wks, y = count, colour = idpar)) + 
+    geom_point() + 
+    facet_wrap(~FamilyID) + 
+    geom_vline(data = surv_cens, aes(xintercept = final_time, linetype = factor(cens))) +
+    scale_linetype_discrete(guide = F) +
+    ggtitle(v)
+  
+})
+
+
+```
+
+

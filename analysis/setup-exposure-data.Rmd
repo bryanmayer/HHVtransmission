@@ -1,0 +1,267 @@
+---
+title: "setup-exposure-data"
+author: "Bryan Mayer"
+date: "2019-03-19"
+output: workflowr::wflow_html
+---
+
+This creates the exposure data for the dose-response analysis 
+
+
+```{r,  warning = F, message = F, echo = F}
+knitr::opts_chunk$set(
+  comment = NA,
+  fig.align = "center",
+  tidy = FALSE
+)
+
+```
+
+```{r load packages and data, warning = F, message = F, echo = F}
+library(zoo)
+library(tidyverse)
+library(stringr)
+
+load("data/PHICS_transmission_data.RData")
+
+save_data = F
+
+```
+
+# Subset exposure data 
+
+- no HHV-8, EBV, or HSV  (no, late, and limited infections)  
+- Exclude family AZ in HHV-6 because no infection and all 0 viral loads   
+
+```{r subset data, warning = F, message = F}
+exposure_data = subset(virusMeltedDataDemoAllInfant,
+              times >= infantdob & ((infantInfection == 0) | (infantInfection == 1 & times <= infantInfDate)) &
+                idpar != "P" & !Virus %in% c("ORL_HHV8", "ORL_HSV", "ORL_EBV") & 
+                !(FamilyID == "AZ" & Virus == "ORL_HHV6")) %>%
+  mutate(
+    virus = str_split_fixed(Virus, "_", n = 2)[,2],
+    virus = if_else(virus == "HHV6", "HHV-6", virus)
+    )
+
+#merge later
+age_data = subset(virusMeltedDataDemoAllInfant, idpar == "P") %>% 
+  group_by(FamilyID) %>%
+  summarize(enrollment_age = as.numeric(difftime(min(times), unique(infantdob)))) 
+
+```
+
+# Create time variables
+
+ - Set up the time variable (days), relative to infantdob, eventually turn into weeks
+
+```{r exposure times}
+
+infant_dates = subset(virusMeltedDataDemoAllInfant, idpar == "P" & 
+                        !Virus %in% c("ORL_HHV8", "ORL_HSV", "ORL_EBV")) %>%
+  group_by(FamilyID, Virus) %>%
+  summarize(final_infant_date = if(infantInfection[1]) infantInfDate[1] else max(times),
+            first_infant_date = infantdob[1])
+
+exposure_times = left_join(exposure_data, infant_dates, by = c("FamilyID", "Virus")) %>%
+  filter(times >= first_infant_date & times <= final_infant_date)
+
+exposure_times$infant_days =
+  with(exposure_times, as.numeric(difftime(times, first_infant_date, units = "days")))
+
+exposure_times$days_from_final_infant =
+  with(exposure_times, as.numeric(difftime(final_infant_date, times, units = "days")))
+
+exposure_times %>% group_by(FamilyID, idpar, virus) %>% 
+  arrange(infant_days) %>%
+  mutate(time_diff = c(NA, diff(infant_days))) %>%
+  ggplot(aes(x = days_from_final_infant, y = time_diff)) + 
+  facet_wrap(~idpar) +
+  geom_point() +
+  geom_hline(yintercept = 7, colour = "red")
+
+```
+
+# Create exposure variable by household member
+
+```{r idpar variable}
+
+# combines siblings into one exposure
+
+primary_exposures_idpar = exposure_times %>% 
+  group_by(FamilyID, idpar, virus, infant_days, momhiv, days_from_final_infant) %>%
+  summarize(
+    total_contributed_idpar = n(),
+    who_contributed_idpar = paste(str_split_fixed(PatientID, "-", n = 2)[,2], collapse = ", "),
+    exposure = log10(sum(10^count, na.rm = T)),
+    infected = infantInfection[1],
+    final_infant_day = as.numeric(difftime(final_infant_date[1], first_infant_date[1], units = "days"))
+    )  %>% 
+  group_by(FamilyID, virus, idpar) %>%
+  mutate(
+    unique_id = paste(FamilyID, virus, idpar, sep = "-"),
+    min_time_from_end = min(days_from_final_infant),
+    exposure = if_else(exposure <= 1, 0, exposure)
+  )
+
+with(primary_exposures_idpar, ftable(idpar, total_contributed_idpar))
+
+```
+
+# Combine exposure data and create outcome
+
+Here, we leave counts (exposures) at times relative to infant birth, and create the outcome variable describing infant infection status in the following week.
+
+The outcome is variable is defined so that the infectious exposure occured 4-14 days prior to infected detection. 
+
+
+```{r all exposure}
+
+# make a new dataset organized by time before swab, use new days, this is for household
+# create outcome variable
+
+all_exposures_raw = primary_exposures_idpar %>% 
+  rename(count = exposure) %>%
+  filter(days_from_final_infant > 0) %>%  # these are either censored cases or infections (negative = post-infection)
+  group_by(FamilyID, idpar, virus) %>% 
+  mutate(
+    final_exposure = days_from_final_infant == min(days_from_final_infant),
+    infectious_1wk = if_else(days_from_final_infant <= 14 & final_exposure & infected == 1, 1, 0)
+    )
+
+testthat::expect_equal(min(subset(all_exposures_raw, infected == 0)$days_from_final_infant),
+                       expected = 7, 
+                       info = "check if all uninfected measurements are at least a week from final measurement (ie, no infection one week later)")
+
+testthat::expect_equal(min(subset(all_exposures_raw, infected == 1)$days_from_final_infant),
+                       expected = 4, 
+                       info = "check if all infected measurements > 4")
+
+```
+
+# Combine exposures into weekly variable
+
+## Create weekly categories
+
+```{r setup_weeks}
+
+wk_cuts = 0:ceiling(max(primary_exposures_idpar$infant_days)/7) * 7
+wk_labels = head(wk_cuts, -1)/7
+all_exposures_raw$infant_wks = cut(all_exposures_raw$infant_days, include.lowest = T, ordered_result = T,
+                                 breaks = wk_cuts, labels = wk_labels)
+
+all_exposures_raw$final_infant_wk = as.numeric(as.character(cut(all_exposures_raw$final_infant_day, 
+                                                   include.lowest = T, ordered_result = T,
+                                 breaks = 0:100 * 7, labels = F))) - 1
+
+testthat::expect_equal(min(all_exposures_raw$final_infant_wk) ,
+                       expected = 0, 
+                       info = "check infant_wk rescale")
+
+all_exposures_raw$infant_wks = as.numeric(as.character(all_exposures_raw$infant_wks))
+
+ggplot(arrange(all_exposures_raw, infant_days), aes(y = infant_wks, x = infant_days)) +
+  geom_tile()
+
+```
+
+## Fill in missing weeks
+
+- All interpolation is done using the interpolation of the log viral load (`zoo:na.approx`). 
+- `map_df` was used so that the data is summarized by a refactored infant_wk so `complete` can be used to find missing weeks for a giving exposure set (which varies by infant and exposure source).
+
+```{r interpolate missing weeks}
+
+all_exposures = map_df(unique(all_exposures_raw$unique_id), function(uid){
+  temp_data = subset(ungroup(all_exposures_raw), unique_id == uid)
+  
+  # refactor levels for complete()
+  temp_data$infant_wks = factor(temp_data$infant_wks, 
+                                levels = min(temp_data$infant_wks):max(temp_data$infant_wks)) 
+
+  out = temp_data %>%
+  group_by(FamilyID, unique_id, momhiv, virus, idpar, infant_wks, final_infant_wk) %>%
+  summarize(
+    count = max(count),
+    infected = unique(infected),
+    infectious_1wk = max(infectious_1wk),
+    final_exposure = max(final_exposure)
+    ) %>% 
+    ungroup() %>%
+    complete(infant_wks, nesting(FamilyID, momhiv, virus, idpar, final_infant_wk, 
+                               infected, unique_id)) %>%
+    arrange(infant_wks) %>%
+    mutate(
+      interpolate_src = if_else(is.na(count), unique(temp_data$idpar), ""),
+      infant_wks = as.numeric(as.character(infant_wks)),
+      infectious_1wk = na.locf(infectious_1wk), # should only be zero, tested after
+      final_exposure = na.locf(final_exposure), # same as above
+      count = na.approx(count)
+      )
+  if(nrow(temp_data) == 1) return(out)
+
+  testthat::expect_equal(n_distinct(diff(out$infant_wks)), expected = 1, 
+                         info=paste("Check infant_wks interpolation worked (common interval)", unique(out$unique_id)))
+  testthat::expect_equal(unique(diff(out$infant_wks)), expected = 1, 
+                         info=paste("Check infant_wks interpolation worked (interval = one)", unique(out$unique_id)))
+  
+  out
+  
+})
+
+
+testthat::expect_equal(all_exposures %>% group_by(unique_id) %>% 
+  summarize(test = sum(infectious_1wk), test2 = sum(final_exposure)) %>%
+  filter(test > 1 | test2 > 1) %>% nrow(), expected = 0, 
+  info = "Verifying infectious_1wk and final_exposure after interpolation")
+  
+ggplot(arrange(all_exposures, unique_id), aes(y = infant_wks, x = unique_id)) +
+  geom_tile() +
+  coord_flip()
+
+```
+
+
+```{r make data wide}
+all_exposures_wide = all_exposures %>%
+  group_by(FamilyID, virus, infant_wks) %>%
+  mutate(
+    interpolate_src = str_trim(str_c(sort(unique(interpolate_src)), collapse = " "))
+  ) %>%
+  ungroup() %>%
+  reshape2::dcast(FamilyID + virus + infant_wks + infectious_1wk + final_infant_wk +
+                                   infected + momhiv + final_exposure + interpolate_src ~ idpar,
+                                     data = ., value.var = "count") %>%
+  mutate(
+    HH = log10(10^M + 10^S),
+    HH = if_else(HH <= 1, 0, HH)
+    ) %>% 
+  ungroup()
+
+exposure_data = all_exposures_wide %>%
+  filter(!is.na(S)  & !is.na(M)) %>%
+  group_by(FamilyID, virus) %>%
+  mutate(
+    obs_infected = infected * max(infectious_1wk), 
+    final_wk = max(infant_wks),
+    outcome_time = ifelse(obs_infected, final_infant_wk, final_wk + 1)
+  ) %>%
+  ungroup() %>%
+  left_join(age_data, by = "FamilyID")
+
+exposure_data_long = exposure_data %>%
+  gather(idpar, count, S, M, HH) 
+
+testthat::expect_equal(exposure_data %>% group_by(FamilyID, virus) %>% 
+  summarize(test = sum(infectious_1wk), test2 = sum(final_exposure)) %>%
+  filter(test > 1 | test2 > 1) %>% nrow(), expected = 0, 
+  info = "Verifying final exposure has at most one infectious dose per infant")
+
+testthat::expect_equal(exposure_data_long %>% group_by(FamilyID, idpar, virus) %>% 
+  summarize(test = sum(infectious_1wk), test2 = sum(final_exposure)) %>%
+  filter(test > 1 | test2 > 1) %>% nrow(), expected = 0, 
+  info = "Verifying final exposure has at most one infectious dose per infant")
+
+# save the data
+if(save_data) save(exposure_data, exposure_data_long, file = "data/exposure_data.RData")
+
+```
