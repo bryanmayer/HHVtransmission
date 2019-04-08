@@ -188,13 +188,25 @@ $(document).ready(function () {
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li>
-  <a href="index.html">Home</a>
-</li>
-<li>
   <a href="about.html">About</a>
 </li>
 <li>
-  <a href="setup-exposure-data.html">Data</a>
+  <a href="index.html">Analysis</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Data
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="setup-exposure-data.html">Data Processing</a>
+    </li>
+    <li>
+      <a href="https://github.com/bryanmayer/HHVtransmission/tree/master/data">Data and Dictionary</a>
+    </li>
+  </ul>
 </li>
 <li>
   <a href="license.html">License</a>
@@ -288,10 +300,10 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcombryanmayerHHVtransmissiontree03e5823974c0d5ec122e9f4dc4acf0316453f03ctargetblank03e5823a"> <span class="glyphicon glyphicon-ok text-success" data-aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/bryanmayer/HHVtransmission/tree/03e5823974c0d5ec122e9f4dc4acf0316453f03c" target="_blank">03e5823</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcombryanmayerHHVtransmissiontree72a282817d4308e8fb69ca4359063adaf160ba63targetblank72a2828a"> <span class="glyphicon glyphicon-ok text-success" data-aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/bryanmayer/HHVtransmission/tree/72a282817d4308e8fb69ca4359063adaf160ba63" target="_blank">72a2828</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcombryanmayerHHVtransmissiontree03e5823974c0d5ec122e9f4dc4acf0316453f03ctargetblank03e5823a" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcombryanmayerHHVtransmissiontree72a282817d4308e8fb69ca4359063adaf160ba63targetblank72a2828a" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility. The version displayed above was the version of the Git repository at the time these results were generated. <br><br> Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -313,6 +325,7 @@ Untracked files:
     Untracked:  data/exposure_data.RData
 
 Unstaged changes:
+    Modified:   analysis/general-statistics.Rmd
     Modified:   analysis/setup-exposure-data.Rmd
 
 </code></pre>
@@ -352,6 +365,23 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/bryanmayer/HHVtransmission/37f0c9494461c3f469b7d31ed9108346a7916514/docs/about.html" target="_blank">37f0c94</a>
+</td>
+<td>
+Bryan Mayer
+</td>
+<td>
+2019-04-08
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 html
