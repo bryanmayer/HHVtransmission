@@ -3,12 +3,16 @@ output_dir: ../docs
 navbar:
   title: HHVtransmission
   left:
-  - text: Home
-    href: index.html
   - text: About
     href: about.html
+  - text: Analysis
+    href: index.html
   - text: Data
-    href: setup-exposure-data.html
+    menu:
+    - text: Data Processing
+      href: setup-exposure-data.html
+    - text: Data and Dictionary
+      href: https://github.com/bryanmayer/HHVtransmission/tree/master/data
   - text: License
     href: license.html
   right:
