@@ -1,7 +1,7 @@
 ---
-title: "general-statistics"
+title: "Exposure and Statistics Overview"
 author: "Bryan Mayer"
-date: "2019-03-19"
+date: "2019-04-12"
 output: workflowr::wflow_html
 ---
 
@@ -20,13 +20,32 @@ knitr::opts_chunk$set(
 ```
 
 ```{r, echo = F, message = F, warning = F}
-
-library(tidyverse)
-library(kableExtra)
 library(survival)
-library(survminer)
-load("data/exposure_data.RData")
+library(tidyverse)
+library(conflicted)
+library(kableExtra)
+library(cowplot)
+conflict_prefer("filter", "dplyr")
 
+theme_set(
+  theme_bw() +
+    theme(panel.grid.minor = element_blank(),
+          legend.position = "top")
+)
+
+
+exposure_data = read_csv("data/exposure_data.csv")
+exposure_data_long = read_csv("data/exposure_data_long.csv")
+
+leg_plot = ggplot(data = exposure_data_long, aes(x = idpar, y = count, fill = factor(obs_infected))) +
+  geom_tile() +
+  scale_fill_manual("", values = c("#4393C3", "#D6604D"), breaks = c(0, 1),
+                      labels = c("No Transmission", "Transmission"))
+trans_legend = gtable::gtable_filter(ggplot_gtable(ggplot_build(leg_plot + theme(legend.position = "top"))), "guide-box")
+
+range_str = function(x, digits = 3) paste(round(range(x), digits), collapse = " - ")
+IQR_range_str = function(x, digits = 3) paste(round(quantile(x, c(0.25, 0.75)), digits), collapse = " - ")
+  
 ```
 
 # Demographics
@@ -61,6 +80,7 @@ exposure_data %>% select(FamilyID, momhiv) %>%
 # Survival analysis
 
 ```{r}
+
 exposure_data %>% 
   group_by(virus, FamilyID) %>% 
   summarize(obs_infected = max(infectious_1wk),
@@ -130,23 +150,147 @@ surv_res %>%
   geom_text(data= surv_fit, aes(label = str_c("p = ", round(logrank, 2))), 
             x = Inf, y = Inf, colour = "black", vjust = 1.2, hjust = 1.2) +
   facet_wrap(~virus) +
-  theme_bw() +
   theme(legend.position = "top")
 
 ```
 
 # Exposure Analysis
 
+## Overall
+
 ```{r}
 
 exposure_data_long %>% 
   group_by(virus, idpar) %>% 
-  summarize(total = n()) 
+  summarize(
+    total = n(),
+    total_interpolate = sum(interpolated),
+    pct_interpolate = mean(interpolated) 
+  ) %>%
+  kable() %>%
+  kable_styling(full_width = F)
 
 ```
 
 
-```{r}
+```{r exposure-profile, fig.height=8}
+
+exposure_data_summary = exposure_data_long %>%
+  mutate(
+    pos_count = count > 0
+    ) %>%
+  group_by(virus, FamilyID, obs_infected, idpar) %>%
+  mutate(pct_pos = 100 * mean(pos_count)) %>%
+  group_by(pct_pos, add = T) %>%
+  summarise_at(vars(count), funs(N = n(), mean = mean, median = median, maximum = max))
+
+plot_labels = exposure_data_summary %>%
+  gather(stat, estimate, mean, maximum, pct_pos) %>%
+  group_by(virus, stat) %>%
+  summarize(min_lim = min(estimate), max_lim = ceiling(max(estimate))) %>%
+  left_join(tibble(stat = c("pct_pos", "mean", "maximum"), out_lab = c("Perc. Pos.", "Mean VL", "Max. VL"))) %>%
+  mutate(stat = factor(stat, levels = c("pct_pos", "mean", "maximum"))) %>%
+  arrange(virus, stat) %>%
+  ungroup() %>%
+  mutate(lab = LETTERS[1:6])
+
+pl_stat = map(plot_labels$virus %>% unique(), function(v){
+  v_plots = map(plot_labels$stat %>% levels(), function(s){
+    
+    tmp_theme = theme(
+      legend.position = "none",
+      axis.title = element_text(size = 10),
+      axis.text = element_text(size = 9)
+    )
+    
+    pl_lab = subset(plot_labels, stat == s & virus == v)
+    out_label = pl_lab$out_lab[1]
+    lower_limit = pl_lab$min_lim
+    upper_limit = pl_lab$max_lim
+    
+    
+    pl1 = exposure_data_summary %>%
+      gather(stat, estimate, mean, maximum, pct_pos) %>%
+      select(-median) %>%
+      spread(idpar, estimate) %>%
+      filter(stat == s & virus == v) %>%
+      ggplot(aes(x = S, y = M, colour = factor(obs_infected))) +
+      geom_point() +
+      geom_abline() +
+      geom_point() +
+      scale_colour_manual(values = c("#4393C3", "#D6604D")) +
+      scale_y_continuous(paste("Mother", out_label), limits = c(lower_limit, upper_limit)) +
+      scale_x_continuous(paste("Sec. Child", out_label), limits = c(lower_limit, upper_limit))  +
+      tmp_theme
+    
+    pl2 = exposure_data_summary %>%
+      ungroup() %>%
+      mutate(
+        obs_infected = factor(obs_infected),
+        idpar = fct_recode(fct_rev(idpar), "Secondary\nChild" = "S", "Mother" = "M", "Household\nSum" = "HH")
+        ) %>%
+      filter(virus == v) %>%
+      ggplot(aes_string(x = "idpar", y = s, colour = "obs_infected")) +
+      geom_boxplot() +
+      scale_colour_manual(values = c("#4393C3", "#D6604D")) +
+      geom_point(position = position_dodge(width = 0.75)) +
+      scale_y_continuous(out_label, limits = c(lower_limit, upper_limit)) +
+      scale_x_discrete("") +
+      tmp_theme +theme(axis.text.x = element_text(size = 7))
+    
+    plot_grid(pl1, pl2, nrow = 1, labels = pl_lab$lab, label_size = 10, align = "h")
+  })
+  
+  title = ggdraw() + draw_label(v, fontface='bold')
+  plot_grid(title, plot_grid(plotlist = v_plots, nrow = 3), rel_heights = c(0.1, 1.5), nrow = 2)
+
+})
+
+plot_grid(plot_grid(plotlist = pl_stat, nrow = 1), trans_legend, nrow = 2, rel_heights = c(11, 1))
+
+```
+
+## Household composition
+
+Household sum composition was determined and reported by taking the mean proportion over measurements within a household. The summary across the households uses median and IQR to match the box plot statistics.
+
+```{r hh-composition}
+
+hh_summary = exposure_data %>%
+  filter(HH > 0) %>%
+  mutate(   
+    S_pctHH = if_else(HH == 0, 0, 100 * (10^S/10^HH)),
+    M_pctHH = if_else(HH == 0, 0, 100 * (10^M/10^HH))
+    ) %>%
+  group_by(virus, FamilyID, obs_infected) %>%
+  summarise_at(vars(S_pctHH, M_pctHH), funs(mean = mean, median = median))
+
+hh_summary %>%
+  ungroup() %>%
+  select(-obs_infected) %>%
+  gather(stat, est, -virus, -FamilyID) %>%
+  group_by(virus, stat) %>%
+  summarize_if(is.double, funs(mean, median, IQR = IQR_range_str, range = range_str)) %>%
+  mutate_if(is.double, round, digits = 2) %>%
+  filter(str_detect(stat, "mean")) %>%
+  mutate(
+    stat = substr(stat, 1, 1)
+  ) %>%
+  rename(`Household member` = stat) %>%
+  rename_at(vars(-IQR), funs(str_to_title)) %>%
+  kable(caption = "Percent household composition") %>% kable_styling(full_width = F)
+  
+hh_summary %>%
+  ggplot(aes(x = virus, y = S_pctHH_mean)) +
+  geom_boxplot() +
+  geom_point(aes(colour = factor(obs_infected))) +
+  xlab("") +
+  ylab("Percent of household shedding attributable to secondary children") +
+  scale_color_discrete("Infant infection")
+
+```
+
+```{r, eval = F}
 
 exposure_plots = map(c("CMV", "HHV-6"), function(v){
   surv_cens = exposure_data %>% 
