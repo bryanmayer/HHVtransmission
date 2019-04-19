@@ -33,14 +33,15 @@ theme_set(
           legend.position = "top")
 )
 
+source("analysis/plot_labels.R")
 
 exposure_data = read_csv("data/exposure_data.csv")
 exposure_data_long = read_csv("data/exposure_data_long.csv")
 
 leg_plot = ggplot(data = exposure_data_long, aes(x = idpar, y = count, fill = factor(obs_infected))) +
   geom_tile() +
-  scale_fill_manual("", values = c("#4393C3", "#D6604D"), breaks = c(0, 1),
-                      labels = c("No Transmission", "Transmission"))
+  scale_fill_manual("", values = infection_labels$colours, breaks = infection_labels$breaks,
+                      labels = infection_labels$labels)
 trans_legend = gtable::gtable_filter(ggplot_gtable(ggplot_build(leg_plot + theme(legend.position = "top"))), "guide-box")
 
 range_str = function(x, digits = 3) paste(round(range(x), digits), collapse = " - ")
@@ -180,22 +181,25 @@ exposure_data_summary = exposure_data_long %>%
     pos_count = count > 0
     ) %>%
   group_by(virus, FamilyID, obs_infected, idpar) %>%
-  mutate(pct_pos = 100 * mean(pos_count)) %>%
-  group_by(pct_pos, add = T) %>%
+  mutate(
+    interpolated_pct = 100*mean(interpolated),
+    total_pos = sum(pos_count),
+    pct_pos = 100 * mean(pos_count)
+    ) %>%
+  group_by(pct_pos, total_pos, interpolated_pct, add = T) %>%
   summarise_at(vars(count), funs(N = n(), mean = mean, median = median, maximum = max))
 
 plot_labels = exposure_data_summary %>%
   gather(stat, estimate, mean, maximum, pct_pos) %>%
-  group_by(virus, stat) %>%
+  group_by(stat) %>%
   summarize(min_lim = min(estimate), max_lim = ceiling(max(estimate))) %>%
-  left_join(tibble(stat = c("pct_pos", "mean", "maximum"), out_lab = c("Perc. Pos.", "Mean VL", "Max. VL"))) %>%
+  left_join(tibble(stat = c("pct_pos", "mean", "maximum"), out_lab = c("Percent Positive", "Mean VL", "Max. VL"))) %>%
   mutate(stat = factor(stat, levels = c("pct_pos", "mean", "maximum"))) %>%
-  arrange(virus, stat) %>%
+  arrange(stat) %>%
   ungroup() %>%
-  mutate(lab = LETTERS[1:6])
+  mutate(letter_code = 1:3)
 
-pl_stat = map(plot_labels$virus %>% unique(), function(v){
-  v_plots = map(plot_labels$stat %>% levels(), function(s){
+pl_exposure = map(plot_labels$stat %>% levels(), function(s){
     
     tmp_theme = theme(
       legend.position = "none",
@@ -203,7 +207,7 @@ pl_stat = map(plot_labels$virus %>% unique(), function(v){
       axis.text = element_text(size = 9)
     )
     
-    pl_lab = subset(plot_labels, stat == s & virus == v)
+    pl_lab = subset(plot_labels, stat == s)
     out_label = pl_lab$out_lab[1]
     lower_limit = pl_lab$min_lim
     upper_limit = pl_lab$max_lim
@@ -213,48 +217,77 @@ pl_stat = map(plot_labels$virus %>% unique(), function(v){
       gather(stat, estimate, mean, maximum, pct_pos) %>%
       select(-median) %>%
       spread(idpar, estimate) %>%
-      filter(stat == s & virus == v) %>%
+      filter(stat == s) %>%
       ggplot(aes(x = S, y = M, colour = factor(obs_infected))) +
       geom_point() +
       geom_abline() +
       geom_point() +
       scale_colour_manual(values = c("#4393C3", "#D6604D")) +
       scale_y_continuous(paste("Mother", out_label), limits = c(lower_limit, upper_limit)) +
-      scale_x_continuous(paste("Sec. Child", out_label), limits = c(lower_limit, upper_limit))  +
+      scale_x_continuous(paste("Secondary Children", out_label), limits = c(lower_limit, upper_limit)) +
+      facet_wrap(~virus) +
       tmp_theme
     
     pl2 = exposure_data_summary %>%
       ungroup() %>%
       mutate(
         obs_infected = factor(obs_infected),
-        idpar = fct_recode(fct_rev(idpar), "Secondary\nChild" = "S", "Mother" = "M", "Household\nSum" = "HH")
+        idpar = fct_recode(fct_rev(idpar), "Secondary\nChildren" = "S", "Mother" = "M", "Household\nSum" = "HH")
         ) %>%
-      filter(virus == v) %>%
       ggplot(aes_string(x = "idpar", y = s, colour = "obs_infected")) +
       geom_boxplot() +
       scale_colour_manual(values = c("#4393C3", "#D6604D")) +
       geom_point(position = position_dodge(width = 0.75)) +
       scale_y_continuous(out_label, limits = c(lower_limit, upper_limit)) +
       scale_x_discrete("") +
+      facet_wrap(~virus) +
       tmp_theme +theme(axis.text.x = element_text(size = 7))
     
-    plot_grid(pl1, pl2, nrow = 1, labels = pl_lab$lab, label_size = 10, align = "h")
-  })
-  
-  title = ggdraw() + draw_label(v, fontface='bold')
-  plot_grid(title, plot_grid(plotlist = v_plots, nrow = 3), rel_heights = c(0.1, 1.5), nrow = 2)
-
+    plot_grid(pl1, pl2, nrow = 1, labels = LETTERS[c(pl_lab$letter_code, pl_lab$letter_code + 3)])
+    
 })
 
-plot_grid(plot_grid(plotlist = pl_stat, nrow = 1), trans_legend, nrow = 2, rel_heights = c(11, 1))
+plot_grid(plot_grid(plotlist = pl_exposure, nrow = 3), trans_legend, nrow = 2, rel_heights = c(11, 1))
 
 ```
+
+
+```{r}
+
+exposure_data_tests = 
+  exposure_data_summary %>% 
+  gather(stat, estimate, mean, maximum, pct_pos) %>%
+  group_by(virus, stat, idpar) %>%
+  mutate(obs_infected = factor(obs_infected)) %>%
+  summarize(
+    wilcox_pvalue =  coin::pvalue(coin::wilcox_test(estimate ~ obs_infected, distribution = "exact"))
+  )
+
+
+overall_summary = exposure_data_summary %>% 
+  gather(stat, estimate, mean, maximum, pct_pos) %>%
+  group_by(virus, stat, idpar, obs_infected) %>%
+  summarize(
+    median = median(estimate)
+  ) %>%
+  mutate(obs_infected = recode_factor(obs_infected, `1` = "Transmission", `0` = "No transmission", .ordered = T)) %>%
+  spread(obs_infected, median) %>%
+  mutate(Difference = `Transmission`-`No transmission`) %>%
+  left_join(exposure_data_tests)
+
+overall_summary %>%
+  kable(digits = 3) %>%
+  kable_styling(full_width = F) %>%
+  collapse_rows(columns = 1:2)
+
+```
+
 
 ## Household composition
 
 Household sum composition was determined and reported by taking the mean proportion over measurements within a household. The summary across the households uses median and IQR to match the box plot statistics.
 
-```{r hh-composition}
+```{r hh-composition, fig.width = 4}
 
 hh_summary = exposure_data %>%
   filter(HH > 0) %>%
@@ -285,35 +318,80 @@ hh_summary %>%
   geom_boxplot() +
   geom_point(aes(colour = factor(obs_infected))) +
   xlab("") +
-  ylab("Percent of household shedding attributable to secondary children") +
-  scale_color_discrete("Infant infection")
-
-```
-
-```{r, eval = F}
-
-exposure_plots = map(c("CMV", "HHV-6"), function(v){
-  surv_cens = exposure_data %>% 
-    subset(virus == v) %>%
-    group_by(FamilyID, virus, final_infant_wk) %>%
-  summarize(
-    cens = all(obs_infected == 0),
-    final_time = if(!all(cens)) unique(final_infant_wk) else max(infant_wks)
-  )
-  
-  exposure_data_long %>%
-    subset(virus == v) %>%
-    group_by(FamilyID) %>%
-    ggplot(aes(x = infant_wks, y = count, colour = idpar)) + 
-    geom_point() + 
-    facet_wrap(~FamilyID) + 
-    geom_vline(data = surv_cens, aes(xintercept = final_time, linetype = factor(cens))) +
-    scale_linetype_discrete(guide = F) +
-    ggtitle(v)
-  
-})
-
+  scale_colour_manual("", values = infection_labels$colours, breaks = infection_labels$breaks,
+                      labels = infection_labels$labels) +
+  ylab("Percent of household shedding attributable to secondary children") 
 
 ```
 
 
+## Sensitivity analysis
+
+In the sensitivity analysis, we'd like to assess whether the interpolation of exposures affect the results.
+
+```{r interpolate-plot}
+
+exposure_data_summary %>%
+  ungroup() %>%
+  mutate(
+    idpar = fct_recode(fct_rev(idpar), 
+                       "Secondary\nChildren" = "S", "Mother" = "M", "Household\nSum" = "HH")
+    ) %>%
+  ggplot(aes(x = idpar, y = interpolated_pct)) +
+  geom_boxplot() +
+  geom_point() +
+  xlab("") +
+  ylab("Percent of weekly exposures interpolated") +
+  facet_wrap(~virus)
+
+```
+
+```{r interpolate-exposure}
+
+exposure_data_summary %>% 
+  ungroup() %>%
+  subset(idpar != "HH") %>%
+  gather(stat, estimate, mean, maximum, pct_pos) %>%
+  mutate(
+    idpar = fct_recode(fct_rev(idpar), 
+                       "Secondary\nChildren" = "S", "Mother" = "M")
+    ) %>%
+  ggplot(aes(x = interpolated_pct, y = estimate, colour = factor(obs_infected))) +
+  geom_point() +
+  ylab("") +
+  xlab("Percent of weekly exposures interpolated") +
+  facet_grid(stat ~ virus+idpar, scales = "free_y", switch = "y") +
+  theme(strip.placement = "outside")
+
+```
+
+```{r}
+interp_limit = c(25, 50) 
+
+map_df(interp_limit, function(i){
+  exposure_data_summary %>% 
+    ungroup() %>%
+    subset(idpar != "HH" & interpolated_pct <= i) %>% 
+    gather(stat, estimate, mean, maximum, pct_pos) %>%
+    group_by(virus, stat, idpar, obs_infected) %>%
+    summarize(
+      median = median(estimate)
+    ) %>%
+    mutate(obs_infected = recode_factor(obs_infected, `1` = "Transmission", `0` = "No transmission", .ordered = T)) %>%
+    spread(obs_infected, median) %>%
+    mutate(
+      max_interpolation = paste0(i, "%"),
+      Difference = `Transmission`-`No transmission`) %>%
+    select(virus, stat, idpar, max_interpolation, Difference)
+
+}) %>%
+  bind_rows(select(mutate(subset(overall_summary, idpar != "HH"), max_interpolation = "All"), 
+                   virus, stat, idpar, max_interpolation, Difference)) %>%
+  spread(max_interpolation, Difference) %>%
+  arrange(virus, stat) %>%
+  kable(digits = 2) %>%
+  kable_styling() %>%
+  collapse_rows(1:2)
+
+
+```

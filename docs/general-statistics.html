@@ -372,7 +372,7 @@ div.section {
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2019-04-12
+<strong>Last updated:</strong> 2019-04-17
 </p>
 <p>
 <strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" data-aria-hidden="true"></span> 5 <span class="glyphicon glyphicon-exclamation-sign text-danger" data-aria-hidden="true"></span> 1
@@ -451,10 +451,10 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcombryanmayerHHVtransmissiontree6021a9c3e0da6ca51b7fdfb3057b928e461c1f9etargetblank6021a9ca"> <span class="glyphicon glyphicon-ok text-success" data-aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/bryanmayer/HHVtransmission/tree/6021a9c3e0da6ca51b7fdfb3057b928e461c1f9e" target="_blank">6021a9c</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcombryanmayerHHVtransmissiontree998789072ea864cdc1c553eb797da834a748257dtargetblank9987890a"> <span class="glyphicon glyphicon-ok text-success" data-aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/bryanmayer/HHVtransmission/tree/998789072ea864cdc1c553eb797da834a748257d" target="_blank">9987890</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcombryanmayerHHVtransmissiontree6021a9c3e0da6ca51b7fdfb3057b928e461c1f9etargetblank6021a9ca" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcombryanmayerHHVtransmissiontree998789072ea864cdc1c553eb797da834a748257dtargetblank9987890a" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility. The version displayed above was the version of the Git repository at the time these results were generated. <br><br> Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -472,17 +472,10 @@ Ignored files:
     Ignored:    docs/figure/general-statistics.Rmd/.DS_Store
 
 Untracked files:
-    Untracked:  analysis/build_all.R
-    Untracked:  analysis/chunks.R
-    Untracked:  data/PHICS_transmission_data.RData
-    Untracked:  data/PHICS_transmission_data.csv
-    Untracked:  data/exposure_data.RData
-    Untracked:  data/exposure_data.csv
-    Untracked:  data/exposure_data_long.csv
+    Untracked:  analysis/plot_labels.R
 
 Unstaged changes:
     Modified:   analysis/general-statistics.Rmd
-    Modified:   analysis/setup-exposure-data.Rmd
 
 </code></pre>
 <p>
@@ -521,6 +514,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/bryanmayer/HHVtransmission/blob/998789072ea864cdc1c553eb797da834a748257d/analysis/general-statistics.Rmd" target="_blank">9987890</a>
+</td>
+<td>
+Bryan Mayer
+</td>
+<td>
+2019-04-12
+</td>
+<td>
+updated through exposure assessment
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/bryanmayer/HHVtransmission/998789072ea864cdc1c553eb797da834a748257d/docs/general-statistics.html" target="_blank">9987890</a>
+</td>
+<td>
+Bryan Mayer
+</td>
+<td>
+2019-04-12
+</td>
+<td>
+updated through exposure assessment
+</td>
+</tr>
 <tr>
 <td>
 html
@@ -847,6 +874,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/bryanmayer/HHVtransmission/blob/998789072ea864cdc1c553eb797da834a748257d/docs/figure/general-statistics.Rmd/survival-plot-1.png" target="_blank">9987890</a>
+</td>
+<td>
+Bryan Mayer
+</td>
+<td>
+2019-04-12
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/bryanmayer/HHVtransmission/blob/5af64944994080575777ea739089fa9c37fb1ef4/docs/figure/general-statistics.Rmd/survival-plot-1.png" target="_blank">5af6494</a>
 </td>
 <td>
@@ -1004,22 +1042,24 @@ S
     pos_count = count &gt; 0
     ) %&gt;%
   group_by(virus, FamilyID, obs_infected, idpar) %&gt;%
-  mutate(pct_pos = 100 * mean(pos_count)) %&gt;%
-  group_by(pct_pos, add = T) %&gt;%
+  mutate(
+    total_pos = sum(pos_count),
+    pct_pos = 100 * mean(pos_count)
+    ) %&gt;%
+  group_by(pct_pos, total_pos, add = T) %&gt;%
   summarise_at(vars(count), funs(N = n(), mean = mean, median = median, maximum = max))
 
 plot_labels = exposure_data_summary %&gt;%
   gather(stat, estimate, mean, maximum, pct_pos) %&gt;%
-  group_by(virus, stat) %&gt;%
+  group_by(stat) %&gt;%
   summarize(min_lim = min(estimate), max_lim = ceiling(max(estimate))) %&gt;%
-  left_join(tibble(stat = c(&quot;pct_pos&quot;, &quot;mean&quot;, &quot;maximum&quot;), out_lab = c(&quot;Perc. Pos.&quot;, &quot;Mean VL&quot;, &quot;Max. VL&quot;))) %&gt;%
+  left_join(tibble(stat = c(&quot;pct_pos&quot;, &quot;mean&quot;, &quot;maximum&quot;), out_lab = c(&quot;Percent Positive&quot;, &quot;Mean VL&quot;, &quot;Max. VL&quot;))) %&gt;%
   mutate(stat = factor(stat, levels = c(&quot;pct_pos&quot;, &quot;mean&quot;, &quot;maximum&quot;))) %&gt;%
-  arrange(virus, stat) %&gt;%
+  arrange(stat) %&gt;%
   ungroup() %&gt;%
-  mutate(lab = LETTERS[1:6])</code></pre>
+  mutate(letter_code = 1:3)</code></pre>
 <pre><code>Joining, by = &quot;stat&quot;</code></pre>
-<pre class="r"><code>pl_stat = map(plot_labels$virus %&gt;% unique(), function(v){
-  v_plots = map(plot_labels$stat %&gt;% levels(), function(s){
+<pre class="r"><code>pl_exposure = map(plot_labels$stat %&gt;% levels(), function(s){
     
     tmp_theme = theme(
       legend.position = &quot;none&quot;,
@@ -1027,7 +1067,7 @@ plot_labels = exposure_data_summary %&gt;%
       axis.text = element_text(size = 9)
     )
     
-    pl_lab = subset(plot_labels, stat == s &amp; virus == v)
+    pl_lab = subset(plot_labels, stat == s)
     out_label = pl_lab$out_lab[1]
     lower_limit = pl_lab$min_lim
     upper_limit = pl_lab$max_lim
@@ -1037,41 +1077,468 @@ plot_labels = exposure_data_summary %&gt;%
       gather(stat, estimate, mean, maximum, pct_pos) %&gt;%
       select(-median) %&gt;%
       spread(idpar, estimate) %&gt;%
-      filter(stat == s &amp; virus == v) %&gt;%
+      filter(stat == s) %&gt;%
       ggplot(aes(x = S, y = M, colour = factor(obs_infected))) +
       geom_point() +
       geom_abline() +
       geom_point() +
       scale_colour_manual(values = c(&quot;#4393C3&quot;, &quot;#D6604D&quot;)) +
       scale_y_continuous(paste(&quot;Mother&quot;, out_label), limits = c(lower_limit, upper_limit)) +
-      scale_x_continuous(paste(&quot;Sec. Child&quot;, out_label), limits = c(lower_limit, upper_limit))  +
+      scale_x_continuous(paste(&quot;Secondary Children&quot;, out_label), limits = c(lower_limit, upper_limit)) +
+      facet_wrap(~virus) +
       tmp_theme
     
     pl2 = exposure_data_summary %&gt;%
       ungroup() %&gt;%
       mutate(
         obs_infected = factor(obs_infected),
-        idpar = fct_recode(fct_rev(idpar), &quot;Secondary\nChild&quot; = &quot;S&quot;, &quot;Mother&quot; = &quot;M&quot;, &quot;Household\nSum&quot; = &quot;HH&quot;)
+        idpar = fct_recode(fct_rev(idpar), &quot;Secondary\nChildren&quot; = &quot;S&quot;, &quot;Mother&quot; = &quot;M&quot;, &quot;Household\nSum&quot; = &quot;HH&quot;)
         ) %&gt;%
-      filter(virus == v) %&gt;%
       ggplot(aes_string(x = &quot;idpar&quot;, y = s, colour = &quot;obs_infected&quot;)) +
       geom_boxplot() +
       scale_colour_manual(values = c(&quot;#4393C3&quot;, &quot;#D6604D&quot;)) +
       geom_point(position = position_dodge(width = 0.75)) +
       scale_y_continuous(out_label, limits = c(lower_limit, upper_limit)) +
       scale_x_discrete(&quot;&quot;) +
+      facet_wrap(~virus) +
       tmp_theme +theme(axis.text.x = element_text(size = 7))
     
-    plot_grid(pl1, pl2, nrow = 1, labels = pl_lab$lab, label_size = 10, align = &quot;h&quot;)
-  })
-  
-  title = ggdraw() + draw_label(v, fontface=&#39;bold&#39;)
-  plot_grid(title, plot_grid(plotlist = v_plots, nrow = 3), rel_heights = c(0.1, 1.5), nrow = 2)
+    plot_grid(pl1, pl2, nrow = 1, labels = LETTERS[c(pl_lab$letter_code, pl_lab$letter_code + 3)])
+    
+})</code></pre>
+<pre><code>Warning: Removed 116 rows containing missing values (geom_point).
 
-})
+Warning: Removed 116 rows containing missing values (geom_point).
 
-plot_grid(plot_grid(plotlist = pl_stat, nrow = 1), trans_legend, nrow = 2, rel_heights = c(11, 1))</code></pre>
+Warning: Removed 116 rows containing missing values (geom_point).
+
+Warning: Removed 116 rows containing missing values (geom_point).
+
+Warning: Removed 116 rows containing missing values (geom_point).
+
+Warning: Removed 116 rows containing missing values (geom_point).</code></pre>
+<pre class="r"><code>plot_grid(plot_grid(plotlist = pl_exposure, nrow = 3), trans_legend, nrow = 2, rel_heights = c(11, 1))</code></pre>
 <p><img src="figure/general-statistics.Rmd/exposure-profile-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-exposure-profile-1">
+Past versions of exposure-profile-1.png
+</button>
+</p>
+<div id="fig-exposure-profile-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/bryanmayer/HHVtransmission/blob/998789072ea864cdc1c553eb797da834a748257d/docs/figure/general-statistics.Rmd/exposure-profile-1.png" target="_blank">9987890</a>
+</td>
+<td>
+Bryan Mayer
+</td>
+<td>
+2019-04-12
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>exposure_data_tests = 
+  exposure_data_summary %&gt;% 
+  gather(stat, estimate, mean, maximum, pct_pos) %&gt;%
+  group_by(virus, stat, idpar) %&gt;%
+  mutate(obs_infected = factor(obs_infected)) %&gt;%
+  summarize(
+    wilcox_pvalue =  coin::pvalue(coin::wilcox_test(estimate ~ obs_infected, distribution = &quot;exact&quot;))
+  )
+
+
+exposure_data_summary %&gt;% 
+  gather(stat, estimate, mean, maximum, pct_pos) %&gt;%
+  group_by(virus, stat, idpar, obs_infected) %&gt;%
+  summarize(
+    median = median(estimate)
+  ) %&gt;%
+  mutate(obs_infected = recode_factor(obs_infected, `1` = &quot;Transmission&quot;, `0` = &quot;No transmission&quot;, .ordered = T)) %&gt;%
+  spread(obs_infected, median) %&gt;%
+  mutate(Difference = `Transmission`-`No transmission`) %&gt;%
+  left_join(exposure_data_tests) %&gt;%
+  kable(digits = 3) %&gt;%
+  kable_styling(full_width = F) %&gt;%
+  collapse_rows(columns = 1:2)</code></pre>
+<pre><code>Joining, by = c(&quot;virus&quot;, &quot;stat&quot;, &quot;idpar&quot;)</code></pre>
+<table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+virus
+</th>
+<th style="text-align:left;">
+stat
+</th>
+<th style="text-align:left;">
+idpar
+</th>
+<th style="text-align:right;">
+Transmission
+</th>
+<th style="text-align:right;">
+No transmission
+</th>
+<th style="text-align:right;">
+Difference
+</th>
+<th style="text-align:right;">
+wilcox_pvalue
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;vertical-align: middle !important;" rowspan="9">
+CMV
+</td>
+<td style="text-align:left;vertical-align: middle !important;" rowspan="3">
+maximum
+</td>
+<td style="text-align:left;">
+HH
+</td>
+<td style="text-align:right;">
+4.432
+</td>
+<td style="text-align:right;">
+4.344
+</td>
+<td style="text-align:right;">
+0.089
+</td>
+<td style="text-align:right;">
+0.400
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+M
+</td>
+<td style="text-align:right;">
+1.109
+</td>
+<td style="text-align:right;">
+2.486
+</td>
+<td style="text-align:right;">
+-1.377
+</td>
+<td style="text-align:right;">
+0.653
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+S
+</td>
+<td style="text-align:right;">
+4.422
+</td>
+<td style="text-align:right;">
+4.344
+</td>
+<td style="text-align:right;">
+0.079
+</td>
+<td style="text-align:right;">
+0.377
+</td>
+</tr>
+<tr>
+<td style="text-align:left;vertical-align: middle !important;" rowspan="3">
+mean
+</td>
+<td style="text-align:left;">
+HH
+</td>
+<td style="text-align:right;">
+3.471
+</td>
+<td style="text-align:right;">
+3.052
+</td>
+<td style="text-align:right;">
+0.419
+</td>
+<td style="text-align:right;">
+0.166
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+M
+</td>
+<td style="text-align:right;">
+0.131
+</td>
+<td style="text-align:right;">
+0.054
+</td>
+<td style="text-align:right;">
+0.077
+</td>
+<td style="text-align:right;">
+0.622
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+S
+</td>
+<td style="text-align:right;">
+3.460
+</td>
+<td style="text-align:right;">
+3.052
+</td>
+<td style="text-align:right;">
+0.408
+</td>
+<td style="text-align:right;">
+0.193
+</td>
+</tr>
+<tr>
+<td style="text-align:left;vertical-align: middle !important;" rowspan="3">
+pct_pos
+</td>
+<td style="text-align:left;">
+HH
+</td>
+<td style="text-align:right;">
+100.000
+</td>
+<td style="text-align:right;">
+94.744
+</td>
+<td style="text-align:right;">
+5.256
+</td>
+<td style="text-align:right;">
+0.213
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+M
+</td>
+<td style="text-align:right;">
+5.263
+</td>
+<td style="text-align:right;">
+2.117
+</td>
+<td style="text-align:right;">
+3.146
+</td>
+<td style="text-align:right;">
+0.622
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+S
+</td>
+<td style="text-align:right;">
+100.000
+</td>
+<td style="text-align:right;">
+94.744
+</td>
+<td style="text-align:right;">
+5.256
+</td>
+<td style="text-align:right;">
+0.249
+</td>
+</tr>
+<tr>
+<td style="text-align:left;vertical-align: middle !important;" rowspan="9">
+HHV-6
+</td>
+<td style="text-align:left;vertical-align: middle !important;" rowspan="3">
+maximum
+</td>
+<td style="text-align:left;">
+HH
+</td>
+<td style="text-align:right;">
+4.628
+</td>
+<td style="text-align:right;">
+3.903
+</td>
+<td style="text-align:right;">
+0.725
+</td>
+<td style="text-align:right;">
+0.016
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+M
+</td>
+<td style="text-align:right;">
+3.213
+</td>
+<td style="text-align:right;">
+2.997
+</td>
+<td style="text-align:right;">
+0.216
+</td>
+<td style="text-align:right;">
+0.206
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+S
+</td>
+<td style="text-align:right;">
+4.628
+</td>
+<td style="text-align:right;">
+3.683
+</td>
+<td style="text-align:right;">
+0.945
+</td>
+<td style="text-align:right;">
+0.020
+</td>
+</tr>
+<tr>
+<td style="text-align:left;vertical-align: middle !important;" rowspan="3">
+mean
+</td>
+<td style="text-align:left;">
+HH
+</td>
+<td style="text-align:right;">
+4.086
+</td>
+<td style="text-align:right;">
+3.420
+</td>
+<td style="text-align:right;">
+0.666
+</td>
+<td style="text-align:right;">
+0.012
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+M
+</td>
+<td style="text-align:right;">
+2.018
+</td>
+<td style="text-align:right;">
+1.087
+</td>
+<td style="text-align:right;">
+0.931
+</td>
+<td style="text-align:right;">
+0.123
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+S
+</td>
+<td style="text-align:right;">
+4.053
+</td>
+<td style="text-align:right;">
+3.143
+</td>
+<td style="text-align:right;">
+0.910
+</td>
+<td style="text-align:right;">
+0.010
+</td>
+</tr>
+<tr>
+<td style="text-align:left;vertical-align: middle !important;" rowspan="3">
+pct_pos
+</td>
+<td style="text-align:left;">
+HH
+</td>
+<td style="text-align:right;">
+100.000
+</td>
+<td style="text-align:right;">
+99.038
+</td>
+<td style="text-align:right;">
+0.962
+</td>
+<td style="text-align:right;">
+0.008
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+M
+</td>
+<td style="text-align:right;">
+75.000
+</td>
+<td style="text-align:right;">
+41.621
+</td>
+<td style="text-align:right;">
+33.379
+</td>
+<td style="text-align:right;">
+0.138
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+S
+</td>
+<td style="text-align:right;">
+100.000
+</td>
+<td style="text-align:right;">
+96.097
+</td>
+<td style="text-align:right;">
+3.903
+</td>
+<td style="text-align:right;">
+0.003
+</td>
+</tr>
+</tbody>
+</table>
 </section>
 <section id="household-composition" class="level2">
 <h2>Household composition</h2>
@@ -1213,29 +1680,47 @@ S
   geom_boxplot() +
   geom_point(aes(colour = factor(obs_infected))) +
   xlab(&quot;&quot;) +
-  ylab(&quot;Percent of household shedding attributable to secondary children&quot;) +
-  scale_color_discrete(&quot;Infant infection&quot;)</code></pre>
-<p><img src="figure/general-statistics.Rmd/hh-composition-1.png" width="672" style="display: block; margin: auto;" /></p>
-<pre class="r"><code>exposure_plots = map(c(&quot;CMV&quot;, &quot;HHV-6&quot;), function(v){
-  surv_cens = exposure_data %&gt;% 
-    subset(virus == v) %&gt;%
-    group_by(FamilyID, virus, final_infant_wk) %&gt;%
-  summarize(
-    cens = all(obs_infected == 0),
-    final_time = if(!all(cens)) unique(final_infant_wk) else max(infant_wks)
-  )
-  
-  exposure_data_long %&gt;%
-    subset(virus == v) %&gt;%
-    group_by(FamilyID) %&gt;%
-    ggplot(aes(x = infant_wks, y = count, colour = idpar)) + 
-    geom_point() + 
-    facet_wrap(~FamilyID) + 
-    geom_vline(data = surv_cens, aes(xintercept = final_time, linetype = factor(cens))) +
-    scale_linetype_discrete(guide = F) +
-    ggtitle(v)
-  
-})</code></pre>
+  scale_colour_manual(&quot;&quot;, values = infection_labels$colours, breaks = infection_labels$breaks,
+                      labels = infection_labels$labels) +
+  ylab(&quot;Percent of household shedding attributable to secondary children&quot;) </code></pre>
+<p><img src="figure/general-statistics.Rmd/hh-composition-1.png" width="384" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-hh-composition-1">
+Past versions of hh-composition-1.png
+</button>
+</p>
+<div id="fig-hh-composition-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/bryanmayer/HHVtransmission/blob/998789072ea864cdc1c553eb797da834a748257d/docs/figure/general-statistics.Rmd/hh-composition-1.png" target="_blank">9987890</a>
+</td>
+<td>
+Bryan Mayer
+</td>
+<td>
+2019-04-12
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <br> <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
@@ -1267,27 +1752,27 @@ other attached packages:
 loaded via a namespace (and not attached):
  [1] httr_1.4.0        jsonlite_1.6      viridisLite_0.3.0
  [4] splines_3.5.1     modelr_0.1.2      assertthat_0.2.0 
- [7] highr_0.7         stats4_3.5.1      coin_1.2-2       
-[10] cellranger_1.1.0  yaml_2.2.0        pillar_1.3.1     
-[13] backports_1.1.3   lattice_0.20-38   glue_1.3.0       
-[16] digest_0.6.18     rvest_0.3.2       colorspace_1.4-0 
-[19] sandwich_2.5-0    htmltools_0.3.6   Matrix_1.2-15    
-[22] plyr_1.8.4        pkgconfig_2.0.2   broom_0.5.1      
-[25] haven_2.0.0       mvtnorm_1.0-8     scales_1.0.0     
-[28] webshot_0.5.1     whisker_0.3-2     git2r_0.24.0     
-[31] generics_0.0.2    TH.data_1.0-10    withr_2.1.2      
-[34] lazyeval_0.2.1    cli_1.0.1         magrittr_1.5     
-[37] crayon_1.3.4      readxl_1.2.0      memoise_1.1.0    
-[40] evaluate_0.12     fs_1.2.6          nlme_3.1-137     
-[43] MASS_7.3-51.1     xml2_1.2.0        tools_3.5.1      
-[46] hms_0.4.2         multcomp_1.4-8    munsell_0.5.0    
-[49] compiler_3.5.1    rlang_0.3.1       grid_3.5.1       
-[52] rstudioapi_0.9.0  labeling_0.3      rmarkdown_1.8    
-[55] codetools_0.2-16  gtable_0.2.0      R6_2.3.0         
-[58] zoo_1.8-4         lubridate_1.7.4   knitr_1.21       
-[61] bindr_0.1.1       workflowr_1.2.0   rprojroot_1.3-2  
-[64] modeltools_0.2-22 stringi_1.2.4     Rcpp_1.0.0       
-[67] tidyselect_0.2.5  xfun_0.4         </code></pre>
+ [7] highr_0.7         stats4_3.5.1      selectr_0.4-1    
+[10] coin_1.2-2        cellranger_1.1.0  yaml_2.2.0       
+[13] pillar_1.3.1      backports_1.1.3   lattice_0.20-38  
+[16] glue_1.3.0        digest_0.6.18     rvest_0.3.2      
+[19] colorspace_1.4-0  sandwich_2.5-0    htmltools_0.3.6  
+[22] Matrix_1.2-15     plyr_1.8.4        pkgconfig_2.0.2  
+[25] broom_0.5.1       haven_2.0.0       mvtnorm_1.0-8    
+[28] scales_1.0.0      webshot_0.5.1     whisker_0.3-2    
+[31] git2r_0.24.0      generics_0.0.2    TH.data_1.0-10   
+[34] withr_2.1.2       lazyeval_0.2.1    cli_1.0.1        
+[37] magrittr_1.5      crayon_1.3.4      readxl_1.2.0     
+[40] memoise_1.1.0     evaluate_0.12     fs_1.2.6         
+[43] nlme_3.1-137      MASS_7.3-51.1     xml2_1.2.0       
+[46] tools_3.5.1       hms_0.4.2         multcomp_1.4-8   
+[49] munsell_0.5.0     compiler_3.5.1    rlang_0.3.1      
+[52] grid_3.5.1        rstudioapi_0.9.0  labeling_0.3     
+[55] rmarkdown_1.8     codetools_0.2-16  gtable_0.2.0     
+[58] R6_2.3.0          zoo_1.8-4         lubridate_1.7.4  
+[61] knitr_1.21        bindr_0.1.1       workflowr_1.2.0  
+[64] rprojroot_1.3-2   modeltools_0.2-22 stringi_1.2.4    
+[67] Rcpp_1.0.0        tidyselect_0.2.5  xfun_0.4         </code></pre>
 </div>
 </section>
 </section>
