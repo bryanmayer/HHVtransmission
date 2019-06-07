@@ -1,0 +1,246 @@
+---
+title: "Transmission risk estimation"
+author: "Bryan Mayer"
+date: "2019-05-07"
+output: workflowr::wflow_html
+---
+
+## Setup
+
+```{r,  warning = F, message = F, echo = F}
+knitr::opts_chunk$set(
+  comment = NA,
+  fig.align = "center",
+  tidy = FALSE
+)
+```
+
+```{r, message = F, warning = F}
+library(tidyverse)
+library(conflicted)
+library(kableExtra)
+library(cowplot)
+conflict_prefer("filter", "dplyr")
+```
+
+
+```{r setup}
+theme_set(
+  theme_bw() +
+    theme(panel.grid.minor = element_blank(),
+          legend.position = "top")
+)
+exposure_data = read_csv("data/exposure_data.csv")
+exposure_data_long = read_csv("data/exposure_data_long.csv") %>%
+  mutate(exposure = if_else(count == 1, 0, 10^(count)))
+
+# duplicating the data to do sensitivity analysis for infected vs uninfected
+model_data = exposure_data %>%
+  subset(obs_infected == 1) %>%
+  mutate(cohort = "Infected only") %>%
+  bind_rows(mutate(exposure_data, cohort = "All"))
+
+model_data_long = exposure_data_long %>%
+  subset(obs_infected == 1) %>%
+  mutate(cohort = "Infected only") %>%
+  bind_rows(mutate(exposure_data_long, cohort = "All"))
+
+model_formulas = paste("infectious_rev", 
+                       c("M_raw", "S_raw", "HH_raw"),
+                       sep = " ~ ")
+
+```
+
+## Model setup
+
+The probability of being uninfected after a single, weekly exposure can written as following:
+
+$$ s(i) = exp(-\beta_0  - \beta_{E}E_i) $$
+or
+$$ s(i) = exp(-\lambda(i)) $$
+
+Instead of continuous time, we consider discretized time denoted by $i \in \{1, ..., n+1\}$ for n+1 weeks of exposures (with n survived exposures). The likelihood follows for a single, infected participant (note that in discrete time we don't apply an instantaneous hazard but use 1 - S(n) for the infectious week):
+
+$$ L_j(n_j+1) = \prod_{i = 1}^{n_j} s_j(i) * (1-s_j(n_j+1))$$
+
+for the j$^{th}$ participant with a unique set of total exposures. We next setup the log-likelihood for the population (m participants) and use $\Delta$ to denote an observed infection.
+
+$$ \sum_{j = 1}^{m} log L_j(n_j) = \sum_{j = 1}^{m}\sum_{i = 1}^{n_j} log(s_j(i)) +  \sum_{j = 1}^{m} \Delta_j * log(1-s_j(n_j+1))$$
+
+
+The following assumptions are used: at-risk individuals are independent and the risk associated with a weekly exposures is unique from other exposures (i.e., non-infectious exposure weeks are exchangeable). From this formulation, we can find the maximum likelihood estimators for the parameters by minimizing the negative log likelihood. Both parameters are solved numerically.
+
+The null model has the following form for weekly risk:
+
+$$ s_0(i) = exp(-\beta_0) $$
+
+I.e., risk is constant and not affected by household exposure.  The null model has a simplified log-likelihood 
+
+$$ \sum_{j = 1}^{m} log L_j(n_j) = -\beta_0 \sum_{j = 1}^{m}n_j + log(1-exp(-\beta_0)) \sum_{j = 1}^{m} \Delta_j $$
+
+with closed-form solution for the null risk 
+
+$$\hat{\beta_0} = log(1 + \frac{\sum_{j = 1}^{m} \Delta_j}{\sum_{j = 1}^{m}n_j})$$
+
+## Run models
+
+```{r null-model}
+
+# note negative loglik is calculated
+null_risk_mod = model_data %>% 
+  group_by(virus, FamilyID, cohort) %>%
+  summarize(
+    infected = max(infectious_1wk),
+    surv_weeks = max(c(0, infant_wks[which(infectious_1wk == 0)]))
+  ) %>%
+  group_by(virus, cohort) %>%
+  summarize(
+    null_beta = log(1+sum(infected)/sum(surv_weeks)),
+    null_loglik = null_beta * sum(surv_weeks) - log(1-exp(-null_beta)) * sum(infected)
+  )
+
+```
+
+```{r fitted-models}
+surv_logLikE = function(x0, dat) surv_logLik(c(-Inf, x0), dat)
+
+risk_mod = model_data_long %>%
+  group_by(virus, idpar, cohort) %>%
+  nest() %>%
+  mutate(
+    total = map_dbl(data, ~n_distinct(.x$FamilyID)), 
+    total_infected = map_dbl(data, ~sum(.x$infectious_1wk)),
+    fit_mod = map(data,  ~optim(c(-12, -12), surv_logLik, dat = .x,  
+                                method = "L-BFGS-B")),
+    fit_modE = map(data, ~optimize(surv_logLikE, c(-20, 0), dat = .x)),
+    fit_res = map(fit_mod, tidy_fits)
+  ) %>%
+  left_join(null_risk_mod, by = c("virus", "cohort")) %>%
+  unnest(fit_res) %>%
+  mutate(
+    null_betaE = map_dbl(fit_modE, ~exp(`$`(.x, "minimum"))),
+    betaE_loglik = map_dbl(fit_modE, ~`$`(.x, "objective")),
+    LLR_stat = 2 * (null_loglik - loglik),
+    LLR_statE = 2 * (betaE_loglik - loglik),
+    pvalue = pchisq(LLR_stat, 1, lower.tail = F),
+    pvalue_beta0 = pchisq(LLR_statE, 1, lower.tail = F)
+  )
+
+```
+
+## Model results
+
+Outline:
+
+- Household and secondary children estimates were very similar: household risk coefficients were within 3% of secondard children (usually < 1%). So results will focus just on mother and children estimates. 
+
+```{r S-vs-HH}
+
+risk_mod %>% 
+  subset(idpar %in% c("HH", "S")) %>%
+  select(cohort, virus, idpar, beta0, betaE) %>%
+  gather(parameter, value, beta0, betaE) %>%
+  unite(temp, idpar, parameter) %>%
+  group_by(cohort, virus) %>%
+  spread(temp, value) %>%
+  select(cohort, virus, S_beta0, HH_beta0,S_betaE, HH_betaE) %>%
+  mutate(pct_S0 = 100 * (1- HH_beta0/S_beta0),
+         pct_SE = 100*(1-HH_betaE/S_betaE)) %>%
+  kable(caption = "HH estimates were within 1.5% of S estimates for full cohort.", digits = 2)
+
+```
+
+
+```{r diagnostic}
+
+family_risk = model_data_long %>%
+  subset(idpar != "HH") %>%
+  group_by(virus, FamilyID, idpar, cohort, obs_infected) %>%
+  summarize(
+    total_weeks = max(infant_wks),
+    total_exposure = sum(exposure)
+  ) %>%
+  left_join(subset(risk_mod), by = c("virus", "idpar", "cohort")) %>%
+  mutate(
+    pr_survival = exp(-beta0 * total_weeks - betaE * total_exposure)
+  ) %>%
+  select(-contains("lik"), -data, -fit_mod, -contains("null"), -pvalue, -LLR_stat)
+
+family_risk %>%
+ggplot(aes(x = factor(obs_infected), y = pr_survival, colour = idpar)) +
+  geom_boxplot() +
+  geom_point(position = position_dodge(width = 0.75)) +
+  facet_grid(virus ~ cohort, scales = "free_x")
+
+family_risk %>%
+  subset(cohort == "All") %>%
+  ggplot(aes(x = factor(obs_infected), y = total_exposure, colour = idpar)) +
+  geom_boxplot() +
+  geom_point(position = position_dodge(width = 0.75)) +
+  scale_y_log10() +
+  facet_grid(virus ~ cohort, scales = "free_x")
+
+```
+
+```{r plot-coef}
+risk_mod %>%
+ ggplot(aes(x = idpar, y = betaE, colour = cohort, shape = pvalue < 0.05)) +
+  geom_point(size = 2, position = position_dodge(width = 0.5)) +
+  scale_y_log10("Estimated weekly exposure risk coefficient") +
+  scale_x_discrete("Exposure source", drop = F) +
+  facet_wrap(~ virus) +
+  scale_shape_manual("Sig.", values = c(1,16)) +
+  theme(legend.position = "top")
+```
+
+
+```{r prediction}
+
+risk_data = exposure_data_long %>%
+  mutate(
+    exposure_cat = floor(count) + 0.5
+  ) %>%
+  group_by(idpar, virus, exposure_cat) %>%
+  summarize(
+    total_infected = sum(infectious_1wk),
+    risk = mean(infectious_1wk)
+  )
+
+test_doses = 0:14/2
+
+pred_fun = function(mod, pred){
+  exposure_max = log10(max(mod$data[, pred]))
+
+  pred_dat = tibble(exposure = 10^(seq(0, exposure_max, length = 100)))
+  pred_dat[, pred] = pred_dat$exposure
+  pred_dat %>%
+    mutate(
+      risk = 1 - predict(mod, pred_dat, type = "response"),
+    ) %>%
+    select(exposure, risk)
+}
+
+risk_prediction = risk_mod %>%
+  #subset(cohort == "All") %>%
+  group_by(cohort, virus, idpar) %>%
+  nest() %>%
+  mutate(
+    pred_res = map(data, ~with(.x, tibble(
+      exposure = seq(0, 6.75, length = 100),
+      risk_full = 1 - exp(-beta0 - betaE * 10^exposure),
+      riskE = 1 - exp(-null_betaE * 10^exposure)
+    )))
+  ) %>%
+  unnest(pred_res) %>%
+  gather(risk_est, risk, risk_full, riskE)
+
+risk_data  %>%
+  ggplot(aes(x = exposure_cat, y = risk)) +
+  geom_bar(stat = "identity") +
+  geom_line(data = risk_prediction, aes(x = exposure, colour = cohort, linetype = risk_est)) +
+  scale_y_continuous("Estimated average risk", breaks = 0:4/4) +
+  scale_x_continuous("Log10 Exposure viral load") +
+  facet_grid(virus~idpar) +
+  theme(legend.position = "top")
+
+```
