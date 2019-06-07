@@ -1,7 +1,7 @@
 ---
 title: "Exposure and Statistics Overview"
 author: "Bryan Mayer"
-date: "2019-04-12"
+date: "2019-05-07"
 output: workflowr::wflow_html
 ---
 
@@ -16,16 +16,19 @@ knitr::opts_chunk$set(
   fig.align = "center",
   tidy = FALSE
 )
-
 ```
 
-```{r, echo = F, message = F, warning = F}
+```{r, message = F, warning = F}
 library(survival)
 library(tidyverse)
 library(conflicted)
 library(kableExtra)
 library(cowplot)
 conflict_prefer("filter", "dplyr")
+```
+
+
+```{r setup}
 
 theme_set(
   theme_bw() +
@@ -166,6 +169,7 @@ exposure_data_long %>%
   summarize(
     total = n(),
     total_interpolate = sum(interpolated),
+    total_observed = total - total_interpolate,
     pct_interpolate = mean(interpolated) 
   ) %>%
   kable() %>%
@@ -180,27 +184,27 @@ exposure_data_summary = exposure_data_long %>%
   mutate(
     pos_count = count > 0
     ) %>%
+  subset(!interpolated) %>%
   group_by(virus, FamilyID, obs_infected, idpar) %>%
   mutate(
-    interpolated_pct = 100*mean(interpolated),
     total_pos = sum(pos_count),
     pct_pos = 100 * mean(pos_count)
     ) %>%
-  group_by(pct_pos, total_pos, interpolated_pct, add = T) %>%
+  group_by(pct_pos, total_pos, add = T) %>%
   summarise_at(vars(count), funs(N = n(), mean = mean, median = median, maximum = max))
 
 plot_labels = exposure_data_summary %>%
   gather(stat, estimate, mean, maximum, pct_pos) %>%
   group_by(stat) %>%
   summarize(min_lim = min(estimate), max_lim = ceiling(max(estimate))) %>%
-  left_join(tibble(stat = c("pct_pos", "mean", "maximum"), out_lab = c("Percent Positive", "Mean VL", "Max. VL"))) %>%
+  left_join(tibble(stat = c("pct_pos", "mean", "maximum"), out_lab = c("Percent~Positive", "Mean~Log[10]~VL", "Max.~Log[10]~VL"))) %>%
   mutate(stat = factor(stat, levels = c("pct_pos", "mean", "maximum"))) %>%
   arrange(stat) %>%
   ungroup() %>%
   mutate(letter_code = 1:3)
 
 pl_exposure = map(plot_labels$stat %>% levels(), function(s){
-    
+
     tmp_theme = theme(
       legend.position = "none",
       axis.title = element_text(size = 10),
@@ -212,10 +216,9 @@ pl_exposure = map(plot_labels$stat %>% levels(), function(s){
     lower_limit = pl_lab$min_lim
     upper_limit = pl_lab$max_lim
     
-    
     pl1 = exposure_data_summary %>%
       gather(stat, estimate, mean, maximum, pct_pos) %>%
-      select(-median) %>%
+      select(-median, -total_pos, -N) %>%
       spread(idpar, estimate) %>%
       filter(stat == s) %>%
       ggplot(aes(x = S, y = M, colour = factor(obs_infected))) +
@@ -223,8 +226,10 @@ pl_exposure = map(plot_labels$stat %>% levels(), function(s){
       geom_abline() +
       geom_point() +
       scale_colour_manual(values = c("#4393C3", "#D6604D")) +
-      scale_y_continuous(paste("Mother", out_label), limits = c(lower_limit, upper_limit)) +
-      scale_x_continuous(paste("Secondary Children", out_label), limits = c(lower_limit, upper_limit)) +
+      scale_y_continuous(parse(text = paste0("Mother~", out_label)), 
+                         limits = c(lower_limit, upper_limit)) +
+      scale_x_continuous(parse(text = paste0("Secondary~Children~", out_label)), 
+                         limits = c(lower_limit, upper_limit)) +
       facet_wrap(~virus) +
       tmp_theme
     
@@ -238,8 +243,8 @@ pl_exposure = map(plot_labels$stat %>% levels(), function(s){
       geom_boxplot() +
       scale_colour_manual(values = c("#4393C3", "#D6604D")) +
       geom_point(position = position_dodge(width = 0.75)) +
-      scale_y_continuous(out_label, limits = c(lower_limit, upper_limit)) +
-      scale_x_discrete("") +
+      scale_y_continuous(parse(text = out_label), limits = c(lower_limit, upper_limit)) +
+      xlab(parse(text = c(""))) +
       facet_wrap(~virus) +
       tmp_theme +theme(axis.text.x = element_text(size = 7))
     
@@ -325,13 +330,26 @@ hh_summary %>%
 ```
 
 
-## Sensitivity analysis
+## Interpolated exposure
 
-In the sensitivity analysis, we'd like to assess whether the interpolation of exposures affect the results.
+In the sensitivity analysis, we'd like to assess the interpolation. All of the summary statistical analysis is limited to the observed exposures. Assuming the interpolation was unbiased, the precision in tests could still be artificially inflated without some correction. Because linear interpolation is used, the mean and maximum exposure estimates should be largely unaffected. However, the percent positive estimate may not be precise without a larger sample size.
 
 ```{r interpolate-plot}
 
-exposure_data_summary %>%
+exposure_interpolated_summary = exposure_data_long %>%
+  mutate(
+    pos_count = count > 0
+    ) %>%
+  group_by(virus, FamilyID, obs_infected, idpar) %>%
+  mutate(
+    interpolated_pct = 100*mean(interpolated),
+    total_pos = sum(pos_count),
+    pct_pos = 100 * mean(pos_count)
+    ) %>%
+  group_by(pct_pos, total_pos, interpolated_pct, add = T) %>%
+  summarise_at(vars(count), funs(N = n(), mean = mean, median = median, maximum = max))
+
+exposure_interpolated_summary %>%
   ungroup() %>%
   mutate(
     idpar = fct_recode(fct_rev(idpar), 
@@ -348,50 +366,23 @@ exposure_data_summary %>%
 
 ```{r interpolate-exposure}
 
-exposure_data_summary %>% 
+exposure_interpolated_summary %>% 
   ungroup() %>%
   subset(idpar != "HH") %>%
   gather(stat, estimate, mean, maximum, pct_pos) %>%
   mutate(
     idpar = fct_recode(fct_rev(idpar), 
-                       "Secondary\nChildren" = "S", "Mother" = "M")
+                       "Secondary\nChildren" = "S", "Mother" = "M"),
+    stat = fct_recode(fct_rev(stat), 
+                       "% positive (weekly)" = "pct_pos", "Mean VL" = "mean", "Maximum VL" = "maximum"),
     ) %>%
   ggplot(aes(x = interpolated_pct, y = estimate, colour = factor(obs_infected))) +
   geom_point() +
   ylab("") +
   xlab("Percent of weekly exposures interpolated") +
   facet_grid(stat ~ virus+idpar, scales = "free_y", switch = "y") +
+  scale_colour_manual("", values = infection_labels$colours, breaks = infection_labels$breaks,
+                      labels = infection_labels$labels) +
   theme(strip.placement = "outside")
-
-```
-
-```{r}
-interp_limit = c(25, 50) 
-
-map_df(interp_limit, function(i){
-  exposure_data_summary %>% 
-    ungroup() %>%
-    subset(idpar != "HH" & interpolated_pct <= i) %>% 
-    gather(stat, estimate, mean, maximum, pct_pos) %>%
-    group_by(virus, stat, idpar, obs_infected) %>%
-    summarize(
-      median = median(estimate)
-    ) %>%
-    mutate(obs_infected = recode_factor(obs_infected, `1` = "Transmission", `0` = "No transmission", .ordered = T)) %>%
-    spread(obs_infected, median) %>%
-    mutate(
-      max_interpolation = paste0(i, "%"),
-      Difference = `Transmission`-`No transmission`) %>%
-    select(virus, stat, idpar, max_interpolation, Difference)
-
-}) %>%
-  bind_rows(select(mutate(subset(overall_summary, idpar != "HH"), max_interpolation = "All"), 
-                   virus, stat, idpar, max_interpolation, Difference)) %>%
-  spread(max_interpolation, Difference) %>%
-  arrange(virus, stat) %>%
-  kable(digits = 2) %>%
-  kable_styling() %>%
-  collapse_rows(1:2)
-
 
 ```

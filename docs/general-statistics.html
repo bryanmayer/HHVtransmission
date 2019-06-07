@@ -11,7 +11,7 @@
 
 <meta name="author" content="Bryan Mayer" />
 
-<meta name="date" content="2019-04-12" />
+<meta name="date" content="2019-05-07" />
 
 <title>Exposure and Statistics Overview</title>
 
@@ -347,7 +347,7 @@ div.section {
 
 <h1 class="title toc-ignore">Exposure and Statistics Overview</h1>
 <h4 class="author"><em>Bryan Mayer</em></h4>
-<h4 class="date"><em>2019-04-12</em></h4>
+<h4 class="date"><em>2019-05-07</em></h4>
 
 </div>
 
@@ -372,7 +372,7 @@ div.section {
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2019-04-17
+<strong>Last updated:</strong> 2019-05-07
 </p>
 <p>
 <strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" data-aria-hidden="true"></span> 5 <span class="glyphicon glyphicon-exclamation-sign text-danger" data-aria-hidden="true"></span> 1
@@ -451,10 +451,10 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcombryanmayerHHVtransmissiontree998789072ea864cdc1c553eb797da834a748257dtargetblank9987890a"> <span class="glyphicon glyphicon-ok text-success" data-aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/bryanmayer/HHVtransmission/tree/998789072ea864cdc1c553eb797da834a748257d" target="_blank">9987890</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcombryanmayerHHVtransmissiontree2eef6010a967f893ac75ca94b4541ce279494a2etargetblank2eef601a"> <span class="glyphicon glyphicon-ok text-success" data-aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/bryanmayer/HHVtransmission/tree/2eef6010a967f893ac75ca94b4541ce279494a2e" target="_blank">2eef601</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcombryanmayerHHVtransmissiontree998789072ea864cdc1c553eb797da834a748257dtargetblank9987890a" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcombryanmayerHHVtransmissiontree2eef6010a967f893ac75ca94b4541ce279494a2etargetblank2eef601a" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility. The version displayed above was the version of the Git repository at the time these results were generated. <br><br> Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -472,10 +472,11 @@ Ignored files:
     Ignored:    docs/figure/general-statistics.Rmd/.DS_Store
 
 Untracked files:
-    Untracked:  analysis/plot_labels.R
+    Untracked:  analysis/transmission-risk.Rmd
 
 Unstaged changes:
     Modified:   analysis/general-statistics.Rmd
+    Modified:   analysis/index.Rmd
 
 </code></pre>
 <p>
@@ -514,6 +515,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/bryanmayer/HHVtransmission/blob/2eef6010a967f893ac75ca94b4541ce279494a2e/analysis/general-statistics.Rmd" target="_blank">2eef601</a>
+</td>
+<td>
+Bryan Mayer
+</td>
+<td>
+2019-04-19
+</td>
+<td>
+pre- removal of interpolation in exposure analysis
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/bryanmayer/HHVtransmission/2eef6010a967f893ac75ca94b4541ce279494a2e/docs/general-statistics.html" target="_blank">2eef601</a>
+</td>
+<td>
+Bryan Mayer
+</td>
+<td>
+2019-04-19
+</td>
+<td>
+pre- removal of interpolation in exposure analysis
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -908,6 +943,7 @@ Bryan Mayer
   summarize(
     total = n(),
     total_interpolate = sum(interpolated),
+    total_observed = total - total_interpolate,
     pct_interpolate = mean(interpolated) 
   ) %&gt;%
   kable() %&gt;%
@@ -926,6 +962,9 @@ total
 </th>
 <th style="text-align:right;">
 total_interpolate
+</th>
+<th style="text-align:right;">
+total_observed
 </th>
 <th style="text-align:right;">
 pct_interpolate
@@ -947,6 +986,9 @@ HH
 160
 </td>
 <td style="text-align:right;">
+647
+</td>
+<td style="text-align:right;">
 0.1982652
 </td>
 </tr>
@@ -962,6 +1004,9 @@ M
 </td>
 <td style="text-align:right;">
 51
+</td>
+<td style="text-align:right;">
+756
 </td>
 <td style="text-align:right;">
 0.0631970
@@ -981,6 +1026,9 @@ S
 160
 </td>
 <td style="text-align:right;">
+647
+</td>
+<td style="text-align:right;">
 0.1982652
 </td>
 </tr>
@@ -996,6 +1044,9 @@ HH
 </td>
 <td style="text-align:right;">
 129
+</td>
+<td style="text-align:right;">
+544
 </td>
 <td style="text-align:right;">
 0.1916790
@@ -1015,6 +1066,9 @@ M
 37
 </td>
 <td style="text-align:right;">
+636
+</td>
+<td style="text-align:right;">
 0.0549777
 </td>
 </tr>
@@ -1032,6 +1086,9 @@ S
 129
 </td>
 <td style="text-align:right;">
+544
+</td>
+<td style="text-align:right;">
 0.1916790
 </td>
 </tr>
@@ -1041,6 +1098,7 @@ S
   mutate(
     pos_count = count &gt; 0
     ) %&gt;%
+  subset(!interpolated) %&gt;%
   group_by(virus, FamilyID, obs_infected, idpar) %&gt;%
   mutate(
     total_pos = sum(pos_count),
@@ -1053,14 +1111,14 @@ plot_labels = exposure_data_summary %&gt;%
   gather(stat, estimate, mean, maximum, pct_pos) %&gt;%
   group_by(stat) %&gt;%
   summarize(min_lim = min(estimate), max_lim = ceiling(max(estimate))) %&gt;%
-  left_join(tibble(stat = c(&quot;pct_pos&quot;, &quot;mean&quot;, &quot;maximum&quot;), out_lab = c(&quot;Percent Positive&quot;, &quot;Mean VL&quot;, &quot;Max. VL&quot;))) %&gt;%
+  left_join(tibble(stat = c(&quot;pct_pos&quot;, &quot;mean&quot;, &quot;maximum&quot;), out_lab = c(&quot;Percent~Positive&quot;, &quot;Mean~Log[10]~VL&quot;, &quot;Max.~Log[10]~VL&quot;))) %&gt;%
   mutate(stat = factor(stat, levels = c(&quot;pct_pos&quot;, &quot;mean&quot;, &quot;maximum&quot;))) %&gt;%
   arrange(stat) %&gt;%
   ungroup() %&gt;%
   mutate(letter_code = 1:3)</code></pre>
 <pre><code>Joining, by = &quot;stat&quot;</code></pre>
 <pre class="r"><code>pl_exposure = map(plot_labels$stat %&gt;% levels(), function(s){
-    
+
     tmp_theme = theme(
       legend.position = &quot;none&quot;,
       axis.title = element_text(size = 10),
@@ -1072,10 +1130,9 @@ plot_labels = exposure_data_summary %&gt;%
     lower_limit = pl_lab$min_lim
     upper_limit = pl_lab$max_lim
     
-    
     pl1 = exposure_data_summary %&gt;%
       gather(stat, estimate, mean, maximum, pct_pos) %&gt;%
-      select(-median) %&gt;%
+      select(-median, -total_pos, -N) %&gt;%
       spread(idpar, estimate) %&gt;%
       filter(stat == s) %&gt;%
       ggplot(aes(x = S, y = M, colour = factor(obs_infected))) +
@@ -1083,8 +1140,10 @@ plot_labels = exposure_data_summary %&gt;%
       geom_abline() +
       geom_point() +
       scale_colour_manual(values = c(&quot;#4393C3&quot;, &quot;#D6604D&quot;)) +
-      scale_y_continuous(paste(&quot;Mother&quot;, out_label), limits = c(lower_limit, upper_limit)) +
-      scale_x_continuous(paste(&quot;Secondary Children&quot;, out_label), limits = c(lower_limit, upper_limit)) +
+      scale_y_continuous(parse(text = paste0(&quot;Mother~&quot;, out_label)), 
+                         limits = c(lower_limit, upper_limit)) +
+      scale_x_continuous(parse(text = paste0(&quot;Secondary~Children~&quot;, out_label)), 
+                         limits = c(lower_limit, upper_limit)) +
       facet_wrap(~virus) +
       tmp_theme
     
@@ -1098,26 +1157,16 @@ plot_labels = exposure_data_summary %&gt;%
       geom_boxplot() +
       scale_colour_manual(values = c(&quot;#4393C3&quot;, &quot;#D6604D&quot;)) +
       geom_point(position = position_dodge(width = 0.75)) +
-      scale_y_continuous(out_label, limits = c(lower_limit, upper_limit)) +
-      scale_x_discrete(&quot;&quot;) +
+      scale_y_continuous(parse(text = out_label), limits = c(lower_limit, upper_limit)) +
+      xlab(parse(text = c(&quot;&quot;))) +
       facet_wrap(~virus) +
       tmp_theme +theme(axis.text.x = element_text(size = 7))
     
     plot_grid(pl1, pl2, nrow = 1, labels = LETTERS[c(pl_lab$letter_code, pl_lab$letter_code + 3)])
     
-})</code></pre>
-<pre><code>Warning: Removed 116 rows containing missing values (geom_point).
+})
 
-Warning: Removed 116 rows containing missing values (geom_point).
-
-Warning: Removed 116 rows containing missing values (geom_point).
-
-Warning: Removed 116 rows containing missing values (geom_point).
-
-Warning: Removed 116 rows containing missing values (geom_point).
-
-Warning: Removed 116 rows containing missing values (geom_point).</code></pre>
-<pre class="r"><code>plot_grid(plot_grid(plotlist = pl_exposure, nrow = 3), trans_legend, nrow = 2, rel_heights = c(11, 1))</code></pre>
+plot_grid(plot_grid(plotlist = pl_exposure, nrow = 3), trans_legend, nrow = 2, rel_heights = c(11, 1))</code></pre>
 <p><img src="figure/general-statistics.Rmd/exposure-profile-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-exposure-profile-1">
@@ -1143,6 +1192,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/bryanmayer/HHVtransmission/blob/2eef6010a967f893ac75ca94b4541ce279494a2e/docs/figure/general-statistics.Rmd/exposure-profile-1.png" target="_blank">2eef601</a>
+</td>
+<td>
+Bryan Mayer
+</td>
+<td>
+2019-04-19
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/bryanmayer/HHVtransmission/blob/998789072ea864cdc1c553eb797da834a748257d/docs/figure/general-statistics.Rmd/exposure-profile-1.png" target="_blank">9987890</a>
 </td>
 <td>
@@ -1166,7 +1226,7 @@ Bryan Mayer
   )
 
 
-exposure_data_summary %&gt;% 
+overall_summary = exposure_data_summary %&gt;% 
   gather(stat, estimate, mean, maximum, pct_pos) %&gt;%
   group_by(virus, stat, idpar, obs_infected) %&gt;%
   summarize(
@@ -1175,11 +1235,12 @@ exposure_data_summary %&gt;%
   mutate(obs_infected = recode_factor(obs_infected, `1` = &quot;Transmission&quot;, `0` = &quot;No transmission&quot;, .ordered = T)) %&gt;%
   spread(obs_infected, median) %&gt;%
   mutate(Difference = `Transmission`-`No transmission`) %&gt;%
-  left_join(exposure_data_tests) %&gt;%
+  left_join(exposure_data_tests)</code></pre>
+<pre><code>Joining, by = c(&quot;virus&quot;, &quot;stat&quot;, &quot;idpar&quot;)</code></pre>
+<pre class="r"><code>overall_summary %&gt;%
   kable(digits = 3) %&gt;%
   kable_styling(full_width = F) %&gt;%
   collapse_rows(columns = 1:2)</code></pre>
-<pre><code>Joining, by = c(&quot;virus&quot;, &quot;stat&quot;, &quot;idpar&quot;)</code></pre>
 <table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;">
 <thead>
 <tr>
@@ -1281,7 +1342,7 @@ HH
 0.419
 </td>
 <td style="text-align:right;">
-0.166
+0.179
 </td>
 </tr>
 <tr>
@@ -1289,13 +1350,13 @@ HH
 M
 </td>
 <td style="text-align:right;">
-0.131
+0.135
 </td>
 <td style="text-align:right;">
-0.054
+0.055
 </td>
 <td style="text-align:right;">
-0.077
+0.080
 </td>
 <td style="text-align:right;">
 0.622
@@ -1309,13 +1370,13 @@ S
 3.460
 </td>
 <td style="text-align:right;">
-3.052
+3.051
 </td>
 <td style="text-align:right;">
 0.408
 </td>
 <td style="text-align:right;">
-0.193
+0.179
 </td>
 </tr>
 <tr>
@@ -1329,13 +1390,13 @@ HH
 100.000
 </td>
 <td style="text-align:right;">
-94.744
+95.302
 </td>
 <td style="text-align:right;">
-5.256
+4.698
 </td>
 <td style="text-align:right;">
-0.213
+0.249
 </td>
 </tr>
 <tr>
@@ -1343,13 +1404,13 @@ HH
 M
 </td>
 <td style="text-align:right;">
-5.263
+5.405
 </td>
 <td style="text-align:right;">
-2.117
+2.183
 </td>
 <td style="text-align:right;">
-3.146
+3.222
 </td>
 <td style="text-align:right;">
 0.622
@@ -1363,13 +1424,13 @@ S
 100.000
 </td>
 <td style="text-align:right;">
-94.744
+94.052
 </td>
 <td style="text-align:right;">
-5.256
+5.948
 </td>
 <td style="text-align:right;">
-0.249
+0.230
 </td>
 </tr>
 <tr>
@@ -1437,16 +1498,16 @@ mean
 HH
 </td>
 <td style="text-align:right;">
-4.086
+4.116
 </td>
 <td style="text-align:right;">
-3.420
+3.406
 </td>
 <td style="text-align:right;">
-0.666
+0.710
 </td>
 <td style="text-align:right;">
-0.012
+0.006
 </td>
 </tr>
 <tr>
@@ -1457,10 +1518,10 @@ M
 2.018
 </td>
 <td style="text-align:right;">
-1.087
+1.049
 </td>
 <td style="text-align:right;">
-0.931
+0.968
 </td>
 <td style="text-align:right;">
 0.123
@@ -1471,16 +1532,16 @@ M
 S
 </td>
 <td style="text-align:right;">
-4.053
+4.076
 </td>
 <td style="text-align:right;">
-3.143
+3.072
 </td>
 <td style="text-align:right;">
-0.910
+1.004
 </td>
 <td style="text-align:right;">
-0.010
+0.007
 </td>
 </tr>
 <tr>
@@ -1494,10 +1555,10 @@ HH
 100.000
 </td>
 <td style="text-align:right;">
-99.038
+98.913
 </td>
 <td style="text-align:right;">
-0.962
+1.087
 </td>
 <td style="text-align:right;">
 0.008
@@ -1511,10 +1572,10 @@ M
 75.000
 </td>
 <td style="text-align:right;">
-41.621
+40.064
 </td>
 <td style="text-align:right;">
-33.379
+34.936
 </td>
 <td style="text-align:right;">
 0.138
@@ -1528,10 +1589,10 @@ S
 100.000
 </td>
 <td style="text-align:right;">
-96.097
+94.501
 </td>
 <td style="text-align:right;">
-3.903
+5.499
 </td>
 <td style="text-align:right;">
 0.003
@@ -1708,6 +1769,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/bryanmayer/HHVtransmission/blob/2eef6010a967f893ac75ca94b4541ce279494a2e/docs/figure/general-statistics.Rmd/hh-composition-1.png" target="_blank">2eef601</a>
+</td>
+<td>
+Bryan Mayer
+</td>
+<td>
+2019-04-19
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/bryanmayer/HHVtransmission/blob/998789072ea864cdc1c553eb797da834a748257d/docs/figure/general-statistics.Rmd/hh-composition-1.png" target="_blank">9987890</a>
 </td>
 <td>
@@ -1721,7 +1793,55 @@ Bryan Mayer
 </table>
 </div>
 </div>
-<br> <br>
+</section>
+<section id="interpolated-exposure" class="level2">
+<h2>Interpolated exposure</h2>
+<p>In the sensitivity analysis, we’d like to assess the interpolation. All of the summary statistical analysis is limited to the observed exposures. Assuming the interpolation was unbiased, the precision in tests could still be artificially inflated without some correction. Because linear interpolation is used, the mean and maximum exposure estimates should be largely unaffected. However, the percent positive estimate may not be precise without a larger sample size.</p>
+<pre class="r"><code>exposure_interpolated_summary = exposure_data_long %&gt;%
+  mutate(
+    pos_count = count &gt; 0
+    ) %&gt;%
+  group_by(virus, FamilyID, obs_infected, idpar) %&gt;%
+  mutate(
+    interpolated_pct = 100*mean(interpolated),
+    total_pos = sum(pos_count),
+    pct_pos = 100 * mean(pos_count)
+    ) %&gt;%
+  group_by(pct_pos, total_pos, interpolated_pct, add = T) %&gt;%
+  summarise_at(vars(count), funs(N = n(), mean = mean, median = median, maximum = max))
+
+exposure_interpolated_summary %&gt;%
+  ungroup() %&gt;%
+  mutate(
+    idpar = fct_recode(fct_rev(idpar), 
+                       &quot;Secondary\nChildren&quot; = &quot;S&quot;, &quot;Mother&quot; = &quot;M&quot;, &quot;Household\nSum&quot; = &quot;HH&quot;)
+    ) %&gt;%
+  ggplot(aes(x = idpar, y = interpolated_pct)) +
+  geom_boxplot() +
+  geom_point() +
+  xlab(&quot;&quot;) +
+  ylab(&quot;Percent of weekly exposures interpolated&quot;) +
+  facet_wrap(~virus)</code></pre>
+<p><img src="figure/general-statistics.Rmd/interpolate-plot-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>exposure_interpolated_summary %&gt;% 
+  ungroup() %&gt;%
+  subset(idpar != &quot;HH&quot;) %&gt;%
+  gather(stat, estimate, mean, maximum, pct_pos) %&gt;%
+  mutate(
+    idpar = fct_recode(fct_rev(idpar), 
+                       &quot;Secondary\nChildren&quot; = &quot;S&quot;, &quot;Mother&quot; = &quot;M&quot;),
+    stat = fct_recode(fct_rev(stat), 
+                       &quot;% positive (weekly)&quot; = &quot;pct_pos&quot;, &quot;Mean VL&quot; = &quot;mean&quot;, &quot;Maximum VL&quot; = &quot;maximum&quot;),
+    ) %&gt;%
+  ggplot(aes(x = interpolated_pct, y = estimate, colour = factor(obs_infected))) +
+  geom_point() +
+  ylab(&quot;&quot;) +
+  xlab(&quot;Percent of weekly exposures interpolated&quot;) +
+  facet_grid(stat ~ virus+idpar, scales = &quot;free_y&quot;, switch = &quot;y&quot;) +
+  scale_colour_manual(&quot;&quot;, values = infection_labels$colours, breaks = infection_labels$breaks,
+                      labels = infection_labels$labels) +
+  theme(strip.placement = &quot;outside&quot;)</code></pre>
+<img src="figure/general-statistics.Rmd/interpolate-exposure-1.png" width="672" style="display: block; margin: auto;" /> <br> <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
 <span class="glyphicon glyphicon-wrench" data-aria-hidden="true"></span> Session information
@@ -1769,10 +1889,11 @@ loaded via a namespace (and not attached):
 [49] munsell_0.5.0     compiler_3.5.1    rlang_0.3.1      
 [52] grid_3.5.1        rstudioapi_0.9.0  labeling_0.3     
 [55] rmarkdown_1.8     codetools_0.2-16  gtable_0.2.0     
-[58] R6_2.3.0          zoo_1.8-4         lubridate_1.7.4  
-[61] knitr_1.21        bindr_0.1.1       workflowr_1.2.0  
-[64] rprojroot_1.3-2   modeltools_0.2-22 stringi_1.2.4    
-[67] Rcpp_1.0.0        tidyselect_0.2.5  xfun_0.4         </code></pre>
+[58] reshape2_1.4.3    R6_2.3.0          zoo_1.8-4        
+[61] lubridate_1.7.4   knitr_1.21        bindr_0.1.1      
+[64] workflowr_1.2.0   rprojroot_1.3-2   modeltools_0.2-22
+[67] stringi_1.2.4     Rcpp_1.0.0        tidyselect_0.2.5 
+[70] xfun_0.4         </code></pre>
 </div>
 </section>
 </section>

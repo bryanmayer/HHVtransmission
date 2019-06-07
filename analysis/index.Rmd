@@ -10,5 +10,5 @@ Estimating weekly transmission risk for CMV and HHV-6 in Ugandan infants.
 
 Analysis Roadmap:
 
-1. [Processing exposure data](setup-exposure-data.html)
-2. [General statistics](general-statistics.html)
+1. [General statistics](general-statistics.html): Overview of the data, survival analysis, and marginal modeling.
+2. [Transmission modeling](transmission-risk.html): Results of weekly risk estimation for transmission using the survival likelihood optimization.
