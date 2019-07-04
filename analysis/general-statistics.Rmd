@@ -1,7 +1,7 @@
 ---
 title: "Exposure and Statistics Overview"
 author: "Bryan Mayer"
-date: "2019-05-07"
+date: "2019-07-04"
 output: workflowr::wflow_html
 ---
 
@@ -36,7 +36,8 @@ theme_set(
           legend.position = "top")
 )
 
-source("analysis/plot_labels.R")
+source("code/plot_labels.R")
+source("code/processing_functions.R")
 
 exposure_data = read_csv("data/exposure_data.csv")
 exposure_data_long = read_csv("data/exposure_data_long.csv")
@@ -168,9 +169,8 @@ exposure_data_long %>%
   group_by(virus, idpar) %>% 
   summarize(
     total = n(),
-    total_interpolate = sum(interpolated),
-    total_observed = total - total_interpolate,
-    pct_interpolate = mean(interpolated) 
+    total_observed = total - sum(interpolated),
+    total_interpolate = stat_paste(sum(interpolated),  100*mean(interpolated), digits = 1)
   ) %>%
   kable() %>%
   kable_styling(full_width = F)
@@ -191,13 +191,15 @@ exposure_data_summary = exposure_data_long %>%
     pct_pos = 100 * mean(pos_count)
     ) %>%
   group_by(pct_pos, total_pos, add = T) %>%
-  summarise_at(vars(count), funs(N = n(), mean = mean, median = median, maximum = max))
+  summarise_at(vars(count), list(~n(), mean = mean, median = median, maximum = max)) %>%
+  rename(N = n)
 
 plot_labels = exposure_data_summary %>%
   gather(stat, estimate, mean, maximum, pct_pos) %>%
   group_by(stat) %>%
   summarize(min_lim = min(estimate), max_lim = ceiling(max(estimate))) %>%
-  left_join(tibble(stat = c("pct_pos", "mean", "maximum"), out_lab = c("Percent~Positive", "Mean~Log[10]~VL", "Max.~Log[10]~VL"))) %>%
+  left_join(tibble(stat = c("pct_pos", "mean", "maximum"), 
+                   out_lab = c("Percent~Positive", "Mean~Log[10]~VL", "Max.~Log[10]~VL"))) %>%
   mutate(stat = factor(stat, levels = c("pct_pos", "mean", "maximum"))) %>%
   arrange(stat) %>%
   ungroup() %>%
@@ -256,6 +258,37 @@ plot_grid(plot_grid(plotlist = pl_exposure, nrow = 3), trans_legend, nrow = 2, r
 
 ```
 
+```{r exp-corr}
+
+exposure_data_summary %>%
+  subset(idpar != "HH") %>%
+  group_by(virus, FamilyID, idpar) %>%
+  gather(outcome, value, pct_pos, mean, maximum) %>%
+  select(virus, FamilyID, idpar, outcome, value) %>%
+  spread(idpar, value) %>%
+  ungroup() %>%
+  dplyr::mutate(
+    fid = factor(FamilyID)
+  ) %>%
+  group_by(virus, outcome) %>%
+  nest() %>%
+  mutate(
+    cor_test = map(data, ~cor.test(.x$M, .x$S), method = "Spearmen"),
+    cor_res = map(cor_test, broom::tidy)
+  ) %>%
+  unnest(cor_res) %>%
+  mutate(
+    Endpoint = factor(outcome, levels = c("pct_pos", "mean", "maximum"),
+                      labels = c("Pct. Positive", "Mean VL", "Maximum VL")),
+    Estimate = stat_paste(estimate, conf.low, conf.high, digits = 2)
+  ) %>%
+  select(virus, Endpoint, Estimate, p.value) %>%
+  arrange(virus, Endpoint) %>%
+  kable(digits = 3) %>%
+  kable_styling(full_width = F) %>%
+  collapse_rows(1)
+
+```
 
 ```{r}
 

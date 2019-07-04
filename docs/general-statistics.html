@@ -11,7 +11,7 @@
 
 <meta name="author" content="Bryan Mayer" />
 
-<meta name="date" content="2019-05-07" />
+<meta name="date" content="2019-07-04" />
 
 <title>Exposure and Statistics Overview</title>
 
@@ -29,7 +29,8 @@
 <link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
 <script src="site_libs/kePrint-0.0.1/kePrint.js"></script>
-<link href="site_libs/font-awesome-4.5.0/css/font-awesome.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
 
 <style type="text/css">code{white-space: pre;}</style>
 <style type="text/css">
@@ -77,9 +78,7 @@ h6 {
 </style>
 
 
-</head>
 
-<body>
 
 <style type = "text/css">
 .main-container {
@@ -98,8 +97,14 @@ img {
 .tabbed-pane {
   padding-top: 12px;
 }
+.html-widget {
+  margin-bottom: 20px;
+}
 button.code-folding-btn:focus {
   outline: none;
+}
+summary {
+  display: list-item;
 }
 </style>
 
@@ -115,7 +120,6 @@ body {
   padding-top: 56px;
   margin-top: -56px;
 }
-
 .section h2 {
   padding-top: 56px;
   margin-top: -56px;
@@ -135,6 +139,43 @@ body {
 .section h6 {
   padding-top: 56px;
   margin-top: -56px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
 }
 </style>
 
@@ -156,13 +197,71 @@ $(document).ready(function () {
 });
 </script>
 
-
-<div class="container-fluid main-container">
-
 <!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
 <script>
 $(document).ready(function () {
   window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
 });
 </script>
 
@@ -175,7 +274,6 @@ $(document).ready(function () {
   window.initializeCodeFolding("hide" === "show");
 });
 </script>
-
 
 
 
@@ -253,8 +351,6 @@ div.tocify {
 
 .tocify-subheader .tocify-item {
   font-size: 0.90em;
-  padding-left: 25px;
-  text-indent: 0;
 }
 
 .tocify .list-group-item {
@@ -263,6 +359,16 @@ div.tocify {
 
 
 </style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
 
 <!-- setup 3col/9col grid for toc_float and main content  -->
 <div class="row-fluid">
@@ -346,15 +452,15 @@ div.section {
 
 
 <h1 class="title toc-ignore">Exposure and Statistics Overview</h1>
-<h4 class="author"><em>Bryan Mayer</em></h4>
-<h4 class="date"><em>2019-05-07</em></h4>
+<h4 class="author">Bryan Mayer</h4>
+<h4 class="date">2019-07-04</h4>
 
 </div>
 
 
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
-<span class="glyphicon glyphicon-list" data-aria-hidden="true"></span> workflowr <span class="glyphicon glyphicon-exclamation-sign text-danger" data-aria-hidden="true"></span>
+<span class="glyphicon glyphicon-list" aria-hidden="true"></span> workflowr <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span>
 </button>
 </p>
 <div id="workflowr-report" class="collapse">
@@ -363,7 +469,7 @@ div.section {
 <a data-toggle="tab" href="#summary">Summary</a>
 </li>
 <li>
-<a data-toggle="tab" href="#report"> Report <span class="glyphicon glyphicon-exclamation-sign text-danger" data-aria-hidden="true"></span> </a>
+<a data-toggle="tab" href="#checks"> Checks <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> </a>
 </li>
 <li>
 <a data-toggle="tab" href="#versions">Past versions</a>
@@ -372,26 +478,26 @@ div.section {
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2019-05-07
+<strong>Last updated:</strong> 2019-07-04
 </p>
 <p>
-<strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" data-aria-hidden="true"></span> 5 <span class="glyphicon glyphicon-exclamation-sign text-danger" data-aria-hidden="true"></span> 1
+<strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 5 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 1
 </p>
 <p>
-<strong>Knit directory:</strong> <code>HHVtransmission/</code> <span class="glyphicon glyphicon-question-sign" data-aria-hidden="true" title="This is the local directory in which the code in this file was executed."> </span>
+<strong>Knit directory:</strong> <code>HHVtransmission/</code> <span class="glyphicon glyphicon-question-sign" aria-hidden="true" title="This is the local directory in which the code in this file was executed."> </span>
 </p>
 <p>
 This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis was created with <a
-  href="https://github.com/jdblischak/workflowr">workflowr</a> (version 1.2.0). The <em>Report</em> tab describes the reproducibility checks that were applied when the results were created. The <em>Past versions</em> tab lists the development history.
+  href="https://github.com/jdblischak/workflowr">workflowr</a> (version 1.3.0). The <em>Checks</em> tab describes the reproducibility checks that were applied when the results were created. The <em>Past versions</em> tab lists the development history.
 </p>
 <hr>
 </div>
-<div id="report" class="tab-pane fade">
+<div id="checks" class="tab-pane fade">
 <div id="workflowr-checks" class="panel-group">
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguncommittedchanges"> <span class="glyphicon glyphicon-exclamation-sign text-danger" data-aria-hidden="true"></span> <strong>R Markdown file:</strong> uncommitted changes </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguncommittedchanges"> <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> <strong>R Markdown file:</strong> uncommitted changes </a>
 </p>
 </div>
 <div id="strongRMarkdownfilestronguncommittedchanges" class="panel-collapse collapse">
@@ -403,7 +509,7 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongEnvironmentstrongempty"> <span class="glyphicon glyphicon-ok text-success" data-aria-hidden="true"></span> <strong>Environment:</strong> empty </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongEnvironmentstrongempty"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Environment:</strong> empty </a>
 </p>
 </div>
 <div id="strongEnvironmentstrongempty" class="panel-collapse collapse">
@@ -415,7 +521,7 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSeedstrongcodesetseed20190318code"> <span class="glyphicon glyphicon-ok text-success" data-aria-hidden="true"></span> <strong>Seed:</strong> <code>set.seed(20190318)</code> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSeedstrongcodesetseed20190318code"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Seed:</strong> <code>set.seed(20190318)</code> </a>
 </p>
 </div>
 <div id="strongSeedstrongcodesetseed20190318code" class="panel-collapse collapse">
@@ -427,7 +533,7 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSessioninformationstrongrecorded"> <span class="glyphicon glyphicon-ok text-success" data-aria-hidden="true"></span> <strong>Session information:</strong> recorded </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSessioninformationstrongrecorded"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Session information:</strong> recorded </a>
 </p>
 </div>
 <div id="strongSessioninformationstrongrecorded" class="panel-collapse collapse">
@@ -439,7 +545,7 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongCachestrongnone"> <span class="glyphicon glyphicon-ok text-success" data-aria-hidden="true"></span> <strong>Cache:</strong> none </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongCachestrongnone"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Cache:</strong> none </a>
 </p>
 </div>
 <div id="strongCachestrongnone" class="panel-collapse collapse">
@@ -451,10 +557,10 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcombryanmayerHHVtransmissiontree2eef6010a967f893ac75ca94b4541ce279494a2etargetblank2eef601a"> <span class="glyphicon glyphicon-ok text-success" data-aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/bryanmayer/HHVtransmission/tree/2eef6010a967f893ac75ca94b4541ce279494a2e" target="_blank">2eef601</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcombryanmayerHHVtransmissiontreeaac4ccb80871daafde1fee3c6d28f0b0be9eb0a1targetblankaac4ccba"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/bryanmayer/HHVtransmission/tree/aac4ccb80871daafde1fee3c6d28f0b0be9eb0a1" target="_blank">aac4ccb</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcombryanmayerHHVtransmissiontree2eef6010a967f893ac75ca94b4541ce279494a2etargetblank2eef601a" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcombryanmayerHHVtransmissiontreeaac4ccb80871daafde1fee3c6d28f0b0be9eb0a1targetblankaac4ccba" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility. The version displayed above was the version of the Git repository at the time these results were generated. <br><br> Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -472,11 +578,17 @@ Ignored files:
     Ignored:    docs/figure/general-statistics.Rmd/.DS_Store
 
 Untracked files:
-    Untracked:  analysis/transmission-risk.Rmd
+    Untracked:  analysis/test-fitting.Rmd
+    Untracked:  code/documentation.R
+    Untracked:  code/processing_functions.R
 
 Unstaged changes:
     Modified:   analysis/general-statistics.Rmd
-    Modified:   analysis/index.Rmd
+    Modified:   analysis/setup-exposure-data.Rmd
+    Modified:   analysis/transmission-risk.Rmd
+    Modified:   code/risk_fit_functions.R
+    Modified:   data/exposure_data.csv
+    Modified:   data/exposure_data_long.csv
 
 </code></pre>
 <p>
@@ -515,6 +627,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/bryanmayer/HHVtransmission/blob/94e6618fb9978a0c64f2adb420ea31a91045dfc3/analysis/general-statistics.Rmd" target="_blank">94e6618</a>
+</td>
+<td>
+Bryan Mayer
+</td>
+<td>
+2019-06-06
+</td>
+<td>
+update through transmission risk
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/bryanmayer/HHVtransmission/94e6618fb9978a0c64f2adb420ea31a91045dfc3/docs/general-statistics.html" target="_blank">94e6618</a>
+</td>
+<td>
+Bryan Mayer
+</td>
+<td>
+2019-06-06
+</td>
+<td>
+update through transmission risk
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -659,9 +805,72 @@ wflow_publish(c(“analysis/about.Rmd”, “analysis/index.Rmd”,
 </div>
 </div>
 <p>Here, we calculate some of the initial (pre-model) results from the infant cohort and exposure characteristcs. - Demographics - Initial survial curves - Exposure assessment</p>
-<section id="demographics" class="level1">
+<pre class="r"><code>library(survival)
+library(tidyverse)
+library(conflicted)
+library(kableExtra)
+library(cowplot)
+conflict_prefer(&quot;filter&quot;, &quot;dplyr&quot;)</code></pre>
+<pre class="r"><code>theme_set(
+  theme_bw() +
+    theme(panel.grid.minor = element_blank(),
+          legend.position = &quot;top&quot;)
+)
+
+source(&quot;code/plot_labels.R&quot;)
+source(&quot;code/processing_functions.R&quot;)
+
+exposure_data = read_csv(&quot;data/exposure_data.csv&quot;)</code></pre>
+<pre><code>Parsed with column specification:
+cols(
+  FamilyID = col_character(),
+  virus = col_character(),
+  infant_wks = col_double(),
+  infectious_1wk = col_double(),
+  final_infant_wk = col_double(),
+  infected = col_double(),
+  momhiv = col_character(),
+  final_exposure = col_double(),
+  interpolate_idpar = col_character(),
+  M = col_double(),
+  S = col_double(),
+  HH = col_double(),
+  obs_infected = col_double(),
+  final_wk = col_double(),
+  outcome_time = col_double(),
+  enrollment_age = col_double()
+)</code></pre>
+<pre class="r"><code>exposure_data_long = read_csv(&quot;data/exposure_data_long.csv&quot;)</code></pre>
+<pre><code>Parsed with column specification:
+cols(
+  FamilyID = col_character(),
+  virus = col_character(),
+  infant_wks = col_double(),
+  infectious_1wk = col_double(),
+  final_infant_wk = col_double(),
+  infected = col_double(),
+  momhiv = col_character(),
+  final_exposure = col_double(),
+  interpolate_idpar = col_character(),
+  obs_infected = col_double(),
+  final_wk = col_double(),
+  outcome_time = col_double(),
+  enrollment_age = col_double(),
+  idpar = col_character(),
+  count = col_double(),
+  interpolated = col_logical()
+)</code></pre>
+<pre class="r"><code>leg_plot = ggplot(data = exposure_data_long, aes(x = idpar, y = count, fill = factor(obs_infected))) +
+  geom_tile() +
+  scale_fill_manual(&quot;&quot;, values = infection_labels$colours, breaks = infection_labels$breaks,
+                      labels = infection_labels$labels)
+trans_legend = gtable::gtable_filter(ggplot_gtable(ggplot_build(leg_plot + theme(legend.position = &quot;top&quot;))), &quot;guide-box&quot;)
+
+range_str = function(x, digits = 3) paste(round(range(x), digits), collapse = &quot; - &quot;)
+IQR_range_str = function(x, digits = 3) paste(round(quantile(x, c(0.25, 0.75)), digits), collapse = &quot; - &quot;)</code></pre>
+<div id="demographics" class="section level1">
 <h1>Demographics</h1>
-<section id="infant-ages" class="level2">
+<div id="infant-ages" class="section level2">
 <h2>Infant ages</h2>
 <pre class="r"><code>exposure_data %&gt;%
   select(FamilyID, enrollment_age) %&gt;%
@@ -707,8 +916,8 @@ range_days
 </tr>
 </tbody>
 </table>
-</section>
-<section id="mom-hiv" class="level2">
+</div>
+<div id="mom-hiv" class="section level2">
 <h2>Mom HIV</h2>
 <pre class="r"><code>exposure_data %&gt;% select(FamilyID, momhiv) %&gt;% 
   distinct() %&gt;%
@@ -745,9 +954,9 @@ pos
 </tr>
 </tbody>
 </table>
-</section>
-</section>
-<section id="survival-analysis" class="level1">
+</div>
+</div>
+<div id="survival-analysis" class="section level1">
 <h1>Survival analysis</h1>
 <pre class="r"><code>exposure_data %&gt;% 
   group_by(virus, FamilyID) %&gt;% 
@@ -933,18 +1142,17 @@ Bryan Mayer
 </table>
 </div>
 </div>
-</section>
-<section id="exposure-analysis" class="level1">
+</div>
+<div id="exposure-analysis" class="section level1">
 <h1>Exposure Analysis</h1>
-<section id="overall" class="level2">
+<div id="overall" class="section level2">
 <h2>Overall</h2>
 <pre class="r"><code>exposure_data_long %&gt;% 
   group_by(virus, idpar) %&gt;% 
   summarize(
     total = n(),
-    total_interpolate = sum(interpolated),
-    total_observed = total - total_interpolate,
-    pct_interpolate = mean(interpolated) 
+    total_observed = total - sum(interpolated),
+    total_interpolate = stat_paste(sum(interpolated),  100*mean(interpolated), digits = 1)
   ) %&gt;%
   kable() %&gt;%
   kable_styling(full_width = F)</code></pre>
@@ -961,13 +1169,10 @@ idpar
 total
 </th>
 <th style="text-align:right;">
-total_interpolate
-</th>
-<th style="text-align:right;">
 total_observed
 </th>
-<th style="text-align:right;">
-pct_interpolate
+<th style="text-align:left;">
+total_interpolate
 </th>
 </tr>
 </thead>
@@ -980,16 +1185,13 @@ CMV
 HH
 </td>
 <td style="text-align:right;">
-807
-</td>
-<td style="text-align:right;">
-160
+819
 </td>
 <td style="text-align:right;">
 647
 </td>
-<td style="text-align:right;">
-0.1982652
+<td style="text-align:left;">
+172.0 (21.0)
 </td>
 </tr>
 <tr>
@@ -1000,16 +1202,13 @@ CMV
 M
 </td>
 <td style="text-align:right;">
-807
+819
 </td>
 <td style="text-align:right;">
-51
+767
 </td>
-<td style="text-align:right;">
-756
-</td>
-<td style="text-align:right;">
-0.0631970
+<td style="text-align:left;">
+52.0 (6.3)
 </td>
 </tr>
 <tr>
@@ -1020,16 +1219,13 @@ CMV
 S
 </td>
 <td style="text-align:right;">
-807
-</td>
-<td style="text-align:right;">
-160
+819
 </td>
 <td style="text-align:right;">
 647
 </td>
-<td style="text-align:right;">
-0.1982652
+<td style="text-align:left;">
+172.0 (21.0)
 </td>
 </tr>
 <tr>
@@ -1040,16 +1236,13 @@ HHV-6
 HH
 </td>
 <td style="text-align:right;">
-673
-</td>
-<td style="text-align:right;">
-129
+684
 </td>
 <td style="text-align:right;">
 544
 </td>
-<td style="text-align:right;">
-0.1916790
+<td style="text-align:left;">
+140.0 (20.5)
 </td>
 </tr>
 <tr>
@@ -1060,16 +1253,13 @@ HHV-6
 M
 </td>
 <td style="text-align:right;">
-673
+684
 </td>
 <td style="text-align:right;">
-37
+646
 </td>
-<td style="text-align:right;">
-636
-</td>
-<td style="text-align:right;">
-0.0549777
+<td style="text-align:left;">
+38.0 (5.6)
 </td>
 </tr>
 <tr>
@@ -1080,16 +1270,13 @@ HHV-6
 S
 </td>
 <td style="text-align:right;">
-673
-</td>
-<td style="text-align:right;">
-129
+684
 </td>
 <td style="text-align:right;">
 544
 </td>
-<td style="text-align:right;">
-0.1916790
+<td style="text-align:left;">
+140.0 (20.5)
 </td>
 </tr>
 </tbody>
@@ -1105,13 +1292,15 @@ S
     pct_pos = 100 * mean(pos_count)
     ) %&gt;%
   group_by(pct_pos, total_pos, add = T) %&gt;%
-  summarise_at(vars(count), funs(N = n(), mean = mean, median = median, maximum = max))
+  summarise_at(vars(count), list(~n(), mean = mean, median = median, maximum = max)) %&gt;%
+  rename(N = n)
 
 plot_labels = exposure_data_summary %&gt;%
   gather(stat, estimate, mean, maximum, pct_pos) %&gt;%
   group_by(stat) %&gt;%
   summarize(min_lim = min(estimate), max_lim = ceiling(max(estimate))) %&gt;%
-  left_join(tibble(stat = c(&quot;pct_pos&quot;, &quot;mean&quot;, &quot;maximum&quot;), out_lab = c(&quot;Percent~Positive&quot;, &quot;Mean~Log[10]~VL&quot;, &quot;Max.~Log[10]~VL&quot;))) %&gt;%
+  left_join(tibble(stat = c(&quot;pct_pos&quot;, &quot;mean&quot;, &quot;maximum&quot;), 
+                   out_lab = c(&quot;Percent~Positive&quot;, &quot;Mean~Log[10]~VL&quot;, &quot;Max.~Log[10]~VL&quot;))) %&gt;%
   mutate(stat = factor(stat, levels = c(&quot;pct_pos&quot;, &quot;mean&quot;, &quot;maximum&quot;))) %&gt;%
   arrange(stat) %&gt;%
   ungroup() %&gt;%
@@ -1192,6 +1381,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/bryanmayer/HHVtransmission/blob/94e6618fb9978a0c64f2adb420ea31a91045dfc3/docs/figure/general-statistics.Rmd/exposure-profile-1.png" target="_blank">94e6618</a>
+</td>
+<td>
+Bryan Mayer
+</td>
+<td>
+2019-06-06
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/bryanmayer/HHVtransmission/blob/2eef6010a967f893ac75ca94b4541ce279494a2e/docs/figure/general-statistics.Rmd/exposure-profile-1.png" target="_blank">2eef601</a>
 </td>
 <td>
@@ -1216,6 +1416,125 @@ Bryan Mayer
 </table>
 </div>
 </div>
+<pre class="r"><code>exposure_data_summary %&gt;%
+  subset(idpar != &quot;HH&quot;) %&gt;%
+  group_by(virus, FamilyID, idpar) %&gt;%
+  gather(outcome, value, pct_pos, mean, maximum) %&gt;%
+  select(virus, FamilyID, idpar, outcome, value) %&gt;%
+  spread(idpar, value) %&gt;%
+  ungroup() %&gt;%
+  dplyr::mutate(
+    fid = factor(FamilyID)
+  ) %&gt;%
+  group_by(virus, outcome) %&gt;%
+  nest() %&gt;%
+  mutate(
+    cor_test = map(data, ~cor.test(.x$M, .x$S), method = &quot;Spearmen&quot;),
+    cor_res = map(cor_test, broom::tidy)
+  ) %&gt;%
+  unnest(cor_res) %&gt;%
+  mutate(
+    Endpoint = factor(outcome, levels = c(&quot;pct_pos&quot;, &quot;mean&quot;, &quot;maximum&quot;),
+                      labels = c(&quot;Pct. Positive&quot;, &quot;Mean VL&quot;, &quot;Maximum VL&quot;)),
+    Estimate = stat_paste(estimate, conf.low, conf.high, digits = 2)
+  ) %&gt;%
+  select(virus, Endpoint, Estimate, p.value) %&gt;%
+  arrange(virus, Endpoint) %&gt;%
+  kable(digits = 3) %&gt;%
+  kable_styling(full_width = F) %&gt;%
+  collapse_rows(1)</code></pre>
+<table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+virus
+</th>
+<th style="text-align:left;">
+Endpoint
+</th>
+<th style="text-align:left;">
+Estimate
+</th>
+<th style="text-align:right;">
+p.value
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;vertical-align: middle !important;" rowspan="3">
+CMV
+</td>
+<td style="text-align:left;">
+Pct. Positive
+</td>
+<td style="text-align:left;">
+-0.04 (-0.40, 0.32)
+</td>
+<td style="text-align:right;">
+0.818
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Mean VL
+</td>
+<td style="text-align:left;">
+0.06 (-0.31, 0.41)
+</td>
+<td style="text-align:right;">
+0.752
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Maximum VL
+</td>
+<td style="text-align:left;">
+0.06 (-0.31, 0.41)
+</td>
+<td style="text-align:right;">
+0.768
+</td>
+</tr>
+<tr>
+<td style="text-align:left;vertical-align: middle !important;" rowspan="3">
+HHV-6
+</td>
+<td style="text-align:left;">
+Pct. Positive
+</td>
+<td style="text-align:left;">
+0.30 (-0.06, 0.59)
+</td>
+<td style="text-align:right;">
+0.095
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Mean VL
+</td>
+<td style="text-align:left;">
+0.33 (-0.03, 0.61)
+</td>
+<td style="text-align:right;">
+0.074
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Maximum VL
+</td>
+<td style="text-align:left;">
+0.29 (-0.07, 0.59)
+</td>
+<td style="text-align:right;">
+0.111
+</td>
+</tr>
+</tbody>
+</table>
 <pre class="r"><code>exposure_data_tests = 
   exposure_data_summary %&gt;% 
   gather(stat, estimate, mean, maximum, pct_pos) %&gt;%
@@ -1350,16 +1669,16 @@ HH
 M
 </td>
 <td style="text-align:right;">
-0.135
+0.131
 </td>
 <td style="text-align:right;">
 0.055
 </td>
 <td style="text-align:right;">
-0.080
+0.076
 </td>
 <td style="text-align:right;">
-0.622
+0.684
 </td>
 </tr>
 <tr>
@@ -1461,16 +1780,16 @@ HH
 M
 </td>
 <td style="text-align:right;">
-3.213
+3.336
 </td>
 <td style="text-align:right;">
 2.997
 </td>
 <td style="text-align:right;">
-0.216
+0.339
 </td>
 <td style="text-align:right;">
-0.206
+0.147
 </td>
 </tr>
 <tr>
@@ -1524,7 +1843,7 @@ M
 0.968
 </td>
 <td style="text-align:right;">
-0.123
+0.102
 </td>
 </tr>
 <tr>
@@ -1569,16 +1888,16 @@ HH
 M
 </td>
 <td style="text-align:right;">
-75.000
+76.000
 </td>
 <td style="text-align:right;">
 40.064
 </td>
 <td style="text-align:right;">
-34.936
+35.936
 </td>
 <td style="text-align:right;">
-0.138
+0.105
 </td>
 </tr>
 <tr>
@@ -1600,8 +1919,8 @@ S
 </tr>
 </tbody>
 </table>
-</section>
-<section id="household-composition" class="level2">
+</div>
+<div id="household-composition" class="section level2">
 <h2>Household composition</h2>
 <p>Household sum composition was determined and reported by taking the mean proportion over measurements within a household. The summary across the households uses median and IQR to match the box plot statistics.</p>
 <pre class="r"><code>hh_summary = exposure_data %&gt;%
@@ -1611,9 +1930,17 @@ S
     M_pctHH = if_else(HH == 0, 0, 100 * (10^M/10^HH))
     ) %&gt;%
   group_by(virus, FamilyID, obs_infected) %&gt;%
-  summarise_at(vars(S_pctHH, M_pctHH), funs(mean = mean, median = median))
+  summarise_at(vars(S_pctHH, M_pctHH), funs(mean = mean, median = median))</code></pre>
+<pre><code>Warning: funs() is soft deprecated as of dplyr 0.8.0
+please use list() instead
 
-hh_summary %&gt;%
+  # Before:
+  funs(name = f(.))
+
+  # After: 
+  list(name = ~ f(.))
+This warning is displayed once per session.</code></pre>
+<pre class="r"><code>hh_summary %&gt;%
   ungroup() %&gt;%
   select(-obs_infected) %&gt;%
   gather(stat, est, -virus, -FamilyID) %&gt;%
@@ -1627,6 +1954,8 @@ hh_summary %&gt;%
   rename(`Household member` = stat) %&gt;%
   rename_at(vars(-IQR), funs(str_to_title)) %&gt;%
   kable(caption = &quot;Percent household composition&quot;) %&gt;% kable_styling(full_width = F)</code></pre>
+<pre><code>`mutate_if()` ignored the following grouping variables:
+Column `virus`</code></pre>
 <table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;">
 <caption>
 Percent household composition
@@ -1662,13 +1991,13 @@ CMV
 M
 </td>
 <td style="text-align:right;">
-7.10
+7.27
 </td>
 <td style="text-align:right;">
 0.32
 </td>
 <td style="text-align:left;">
-0.095 - 5.426
+0.094 - 5.426
 </td>
 <td style="text-align:left;">
 0.004 - 66.421
@@ -1682,13 +2011,13 @@ CMV
 S
 </td>
 <td style="text-align:right;">
-92.90
+92.73
 </td>
 <td style="text-align:right;">
 99.68
 </td>
 <td style="text-align:left;">
-94.574 - 99.905
+94.574 - 99.906
 </td>
 <td style="text-align:left;">
 33.579 - 99.996
@@ -1702,13 +2031,13 @@ HHV-6
 M
 </td>
 <td style="text-align:right;">
-15.33
+15.42
 </td>
 <td style="text-align:right;">
-8.45
+8.76
 </td>
 <td style="text-align:left;">
-0.829 - 19.477
+1.16 - 19.477
 </td>
 <td style="text-align:left;">
 0.01 - 99.782
@@ -1722,13 +2051,13 @@ HHV-6
 S
 </td>
 <td style="text-align:right;">
-84.67
+84.58
 </td>
 <td style="text-align:right;">
-91.55
+91.24
 </td>
 <td style="text-align:left;">
-80.523 - 99.171
+80.523 - 98.84
 </td>
 <td style="text-align:left;">
 0.218 - 99.99
@@ -1793,8 +2122,8 @@ Bryan Mayer
 </table>
 </div>
 </div>
-</section>
-<section id="interpolated-exposure" class="level2">
+</div>
+<div id="interpolated-exposure" class="section level2">
 <h2>Interpolated exposure</h2>
 <p>In the sensitivity analysis, we’d like to assess the interpolation. All of the summary statistical analysis is limited to the observed exposures. Assuming the interpolation was unbiased, the precision in tests could still be artificially inflated without some correction. Because linear interpolation is used, the mean and maximum exposure estimates should be largely unaffected. However, the percent positive estimate may not be precise without a larger sample size.</p>
 <pre class="r"><code>exposure_interpolated_summary = exposure_data_long %&gt;%
@@ -1823,6 +2152,43 @@ exposure_interpolated_summary %&gt;%
   ylab(&quot;Percent of weekly exposures interpolated&quot;) +
   facet_wrap(~virus)</code></pre>
 <p><img src="figure/general-statistics.Rmd/interpolate-plot-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-interpolate-plot-1">
+Past versions of interpolate-plot-1.png
+</button>
+</p>
+<div id="fig-interpolate-plot-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/bryanmayer/HHVtransmission/blob/aac4ccb80871daafde1fee3c6d28f0b0be9eb0a1/docs/figure/general-statistics.Rmd/interpolate-plot-1.png" target="_blank">aac4ccb</a>
+</td>
+<td>
+Bryan Mayer
+</td>
+<td>
+2019-06-06
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>exposure_interpolated_summary %&gt;% 
   ungroup() %&gt;%
   subset(idpar != &quot;HH&quot;) %&gt;%
@@ -1841,21 +2207,59 @@ exposure_interpolated_summary %&gt;%
   scale_colour_manual(&quot;&quot;, values = infection_labels$colours, breaks = infection_labels$breaks,
                       labels = infection_labels$labels) +
   theme(strip.placement = &quot;outside&quot;)</code></pre>
-<img src="figure/general-statistics.Rmd/interpolate-exposure-1.png" width="672" style="display: block; margin: auto;" /> <br> <br>
+<p><img src="figure/general-statistics.Rmd/interpolate-exposure-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-interpolate-exposure-1">
+Past versions of interpolate-exposure-1.png
+</button>
+</p>
+<div id="fig-interpolate-exposure-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/bryanmayer/HHVtransmission/blob/aac4ccb80871daafde1fee3c6d28f0b0be9eb0a1/docs/figure/general-statistics.Rmd/interpolate-exposure-1.png" target="_blank">aac4ccb</a>
+</td>
+<td>
+Bryan Mayer
+</td>
+<td>
+2019-06-06
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
-<span class="glyphicon glyphicon-wrench" data-aria-hidden="true"></span> Session information
+<span class="glyphicon glyphicon-wrench" aria-hidden="true"></span> Session information
 </button>
 </p>
 <div id="workflowr-sessioninfo" class="collapse">
 <pre class="r"><code>sessionInfo()</code></pre>
-<pre><code>R version 3.5.1 (2018-07-02)
+<pre><code>R version 3.6.0 (2019-04-26)
 Platform: x86_64-apple-darwin15.6.0 (64-bit)
-Running under: macOS  10.14.4
+Running under: macOS Mojave 10.14.5
 
 Matrix products: default
-BLAS: /Library/Frameworks/R.framework/Versions/3.5/Resources/lib/libRblas.0.dylib
-LAPACK: /Library/Frameworks/R.framework/Versions/3.5/Resources/lib/libRlapack.dylib
+BLAS:   /Library/Frameworks/R.framework/Versions/3.6/Resources/lib/libRblas.0.dylib
+LAPACK: /Library/Frameworks/R.framework/Versions/3.6/Resources/lib/libRlapack.dylib
 
 locale:
 [1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
@@ -1864,39 +2268,40 @@ attached base packages:
 [1] stats     graphics  grDevices utils     datasets  methods   base     
 
 other attached packages:
- [1] bindrcpp_0.2.2   cowplot_0.9.4    kableExtra_1.1.0 conflicted_1.0.1
- [5] forcats_0.3.0    stringr_1.4.0    dplyr_0.7.8      purrr_0.3.0     
- [9] readr_1.3.1      tidyr_0.8.2      tibble_2.0.1     ggplot2_3.1.0   
-[13] tidyverse_1.2.1  survival_2.43-3 
+ [1] cowplot_0.9.4     kableExtra_1.1.0  conflicted_1.0.3 
+ [4] forcats_0.4.0     stringr_1.4.0     dplyr_0.8.1      
+ [7] purrr_0.3.2       readr_1.3.1       tidyr_0.8.3      
+[10] tibble_2.1.3      ggplot2_3.1.1     tidyverse_1.2.1  
+[13] survival_2.44-1.1
 
 loaded via a namespace (and not attached):
- [1] httr_1.4.0        jsonlite_1.6      viridisLite_0.3.0
- [4] splines_3.5.1     modelr_0.1.2      assertthat_0.2.0 
- [7] highr_0.7         stats4_3.5.1      selectr_0.4-1    
-[10] coin_1.2-2        cellranger_1.1.0  yaml_2.2.0       
-[13] pillar_1.3.1      backports_1.1.3   lattice_0.20-38  
-[16] glue_1.3.0        digest_0.6.18     rvest_0.3.2      
-[19] colorspace_1.4-0  sandwich_2.5-0    htmltools_0.3.6  
-[22] Matrix_1.2-15     plyr_1.8.4        pkgconfig_2.0.2  
-[25] broom_0.5.1       haven_2.0.0       mvtnorm_1.0-8    
-[28] scales_1.0.0      webshot_0.5.1     whisker_0.3-2    
-[31] git2r_0.24.0      generics_0.0.2    TH.data_1.0-10   
-[34] withr_2.1.2       lazyeval_0.2.1    cli_1.0.1        
-[37] magrittr_1.5      crayon_1.3.4      readxl_1.2.0     
-[40] memoise_1.1.0     evaluate_0.12     fs_1.2.6         
-[43] nlme_3.1-137      MASS_7.3-51.1     xml2_1.2.0       
-[46] tools_3.5.1       hms_0.4.2         multcomp_1.4-8   
-[49] munsell_0.5.0     compiler_3.5.1    rlang_0.3.1      
-[52] grid_3.5.1        rstudioapi_0.9.0  labeling_0.3     
-[55] rmarkdown_1.8     codetools_0.2-16  gtable_0.2.0     
-[58] reshape2_1.4.3    R6_2.3.0          zoo_1.8-4        
-[61] lubridate_1.7.4   knitr_1.21        bindr_0.1.1      
-[64] workflowr_1.2.0   rprojroot_1.3-2   modeltools_0.2-22
-[67] stringi_1.2.4     Rcpp_1.0.0        tidyselect_0.2.5 
-[70] xfun_0.4         </code></pre>
+ [1] httr_1.4.0         jsonlite_1.6       viridisLite_0.3.0 
+ [4] splines_3.6.0      modelr_0.1.4       assertthat_0.2.1  
+ [7] highr_0.8          stats4_3.6.0       selectr_0.4-1     
+[10] coin_1.3-0         cellranger_1.1.0   yaml_2.2.0        
+[13] pillar_1.4.1       backports_1.1.4    lattice_0.20-38   
+[16] glue_1.3.1         digest_0.6.19      rvest_0.3.4       
+[19] colorspace_1.4-1   sandwich_2.5-1     htmltools_0.3.6   
+[22] Matrix_1.2-17      plyr_1.8.4         pkgconfig_2.0.2   
+[25] broom_0.5.2        haven_2.1.0        mvtnorm_1.0-11    
+[28] scales_1.0.0       webshot_0.5.1      whisker_0.3-2     
+[31] git2r_0.25.2       generics_0.0.2     TH.data_1.0-10    
+[34] withr_2.1.2        lazyeval_0.2.2     cli_1.1.0         
+[37] magrittr_1.5       crayon_1.3.4       readxl_1.3.1      
+[40] memoise_1.1.0      evaluate_0.14      fs_1.3.1          
+[43] nlme_3.1-140       MASS_7.3-51.4      xml2_1.2.0        
+[46] tools_3.6.0        hms_0.4.2          matrixStats_0.54.0
+[49] multcomp_1.4-10    munsell_0.5.0      compiler_3.6.0    
+[52] rlang_0.4.0        grid_3.6.0         rstudioapi_0.10   
+[55] labeling_0.3       rmarkdown_1.13     codetools_0.2-16  
+[58] gtable_0.3.0       reshape2_1.4.3     R6_2.4.0          
+[61] zoo_1.8-6          lubridate_1.7.4    knitr_1.23        
+[64] workflowr_1.3.0    libcoin_1.0-4      rprojroot_1.3-2   
+[67] modeltools_0.2-22  stringi_1.4.3      parallel_3.6.0    
+[70] Rcpp_1.0.1         tidyselect_0.2.5   xfun_0.7          </code></pre>
 </div>
-</section>
-</section>
+</div>
+</div>
 
 
 <!-- Adjust MathJax settings so that all math formulae are shown using
