@@ -53,3 +53,24 @@ stat_paste = function (stat1, stat2 = NULL, stat3 = NULL, digits = 0, trailing_z
     }
     pasted_output
 }
+
+clean_pvalues = function (pvalues, digits = 3, bold = FALSE, italic = FALSE,
+    background = NULL, sig_alpha = 0.05, missing_char = "---", trailing_zeros = TRUE)
+{
+    lower_cutoff = 10^(-digits)
+    missing_p = which(is.na(pvalues))
+    below_cutoff_p = which(pvalues < lower_cutoff)
+    sig_p = which(pvalues < sig_alpha)
+    if (trailing_zeros)
+        pvalues_new = round_away_0(pvalues, trailing_zeros = TRUE,
+            digits = digits) else pvalues_new =
+        as.character(round_away_0(pvalues, trailing_zeros = FALSE, digits))
+    pvalues_new[missing_p] = missing_char
+    pvalues_new[below_cutoff_p] = paste0("<", lower_cutoff)
+
+    pvalues_new[sig_p] = kableExtra::cell_spec(pvalues_new[sig_p],
+                                               bold = bold, italic = italic,
+                                               background = background, escape = FALSE)
+
+    pvalues_new
+}

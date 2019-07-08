@@ -21,8 +21,13 @@ library(conflicted)
 library(kableExtra)
 library(cowplot)
 conflict_prefer("filter", "dplyr")
+source("code/risk_fit_functions.R")
+source("code/processing_functions.R")
+
 ```
 
+
+Set up model data. Only pre-processing is removing left censored family starting at week 8.
 
 ```{r setup}
 theme_set(
@@ -30,24 +35,25 @@ theme_set(
     theme(panel.grid.minor = element_blank(),
           legend.position = "top")
 )
-exposure_data = read_csv("data/exposure_data.csv")
+
+exposure_data = read_csv("data/exposure_data.csv") %>%
+  subset()
 exposure_data_long = read_csv("data/exposure_data_long.csv") %>%
-  mutate(exposure = if_else(count == 1, 0, 10^(count)))
+  mutate(exposure = if_else(count == 1, 0, 10^(count))) %>%
+  subset()
 
-# duplicating the data to do sensitivity analysis for infected vs uninfected
-model_data = exposure_data %>%
-  subset(obs_infected == 1) %>%
-  mutate(cohort = "Infected only") %>%
-  bind_rows(mutate(exposure_data, cohort = "All"))
+exposure_data_long %>%
+  subset(idpar != "HH") %>%
+  group_by(virus, FamilyID, idpar) %>%
+  mutate(any_interp = any(interpolated)) %>%
+  subset(any_interp) %>%
+  summarize(
+    first_obs = min(which(is.na(interpolate_idpar)))
+  ) %>%
+  subset(first_obs > 2)
 
-model_data_long = exposure_data_long %>%
-  subset(obs_infected == 1) %>%
-  mutate(cohort = "Infected only") %>%
-  bind_rows(mutate(exposure_data_long, cohort = "All"))
-
-model_formulas = paste("infectious_rev", 
-                       c("M_raw", "S_raw", "HH_raw"),
-                       sep = " ~ ")
+model_data = exposure_data %>% mutate(cohort = "All") %>% subset(FamilyID != "AD")
+model_data_long = exposure_data_long %>% mutate(cohort = "All")  %>% subset(FamilyID != "AD")
 
 ```
 
@@ -80,167 +86,388 @@ $$ \sum_{j = 1}^{m} log L_j(n_j) = -\beta_0 \sum_{j = 1}^{m}n_j + log(1-exp(-\be
 
 with closed-form solution for the null risk 
 
-$$\hat{\beta_0} = log(1 + \frac{\sum_{j = 1}^{m} \Delta_j}{\sum_{j = 1}^{m}n_j})$$
+$$\hat{\beta_0} = -log(1 - \frac{\sum_{j = 1}^{m} \Delta_j}{\sum_{j = 1}^{m}n_j})$$
 
 ## Run models
+
+- Null model is just constant risk model.
+- First set of fitted models are the marginal models
+- Second set is the combined M + S mode
 
 ```{r null-model}
 
 # note negative loglik is calculated
 null_risk_mod = model_data %>% 
-  group_by(virus, FamilyID, cohort) %>%
+  group_by(virus, FamilyID) %>%
   summarize(
     infected = max(infectious_1wk),
     surv_weeks = max(c(0, infant_wks[which(infectious_1wk == 0)]))
   ) %>%
-  group_by(virus, cohort) %>%
+  group_by(virus) %>%
   summarize(
-    null_beta = log(1+sum(infected)/sum(surv_weeks)),
+    null_beta = -log(1-sum(infected)/sum(surv_weeks)),
     null_loglik = null_beta * sum(surv_weeks) - log(1-exp(-null_beta)) * sum(infected)
   )
 
 ```
 
 ```{r fitted-models}
-surv_logLikE = function(x0, dat) surv_logLik(c(-Inf, x0), dat)
 
 risk_mod = model_data_long %>%
   group_by(virus, idpar, cohort) %>%
   nest() %>%
   mutate(
+    likdat = map(data, create_likdat),
     total = map_dbl(data, ~n_distinct(.x$FamilyID)), 
     total_infected = map_dbl(data, ~sum(.x$infectious_1wk)),
-    fit_mod = map(data,  ~optim(c(-12, -12), surv_logLik, dat = .x,  
-                                method = "L-BFGS-B")),
-    fit_modE = map(data, ~optimize(surv_logLikE, c(-20, 0), dat = .x)),
-    fit_res = map(fit_mod, tidy_fits)
-  ) %>%
-  left_join(null_risk_mod, by = c("virus", "cohort")) %>%
-  unnest(fit_res) %>%
+    fit_modNM = map(likdat,  ~optim(c(-12, -30), surv_logLik, likdat = .x)),
+    fit_modBFGS = map(likdat,  ~optim(c(-12, -12), surv_logLik, likdat = .x,  method = "BFGS")),
+    #fit_modE = map(likdat, ~optimize(surv_logLikE, c(-20, 0), likdat = .x)),
+    fit_resNM = map(fit_modNM, tidy_fits),
+    fit_resBFGS = map(fit_modBFGS, tidy_fits)
+  ) 
+
+# using both exposures
+risk_mod_both = model_data %>%
+  group_by(virus, cohort) %>%
+  nest() %>%
   mutate(
-    null_betaE = map_dbl(fit_modE, ~exp(`$`(.x, "minimum"))),
-    betaE_loglik = map_dbl(fit_modE, ~`$`(.x, "objective")),
-    LLR_stat = 2 * (null_loglik - loglik),
-    LLR_statE = 2 * (betaE_loglik - loglik),
-    pvalue = pchisq(LLR_stat, 1, lower.tail = F),
-    pvalue_beta0 = pchisq(LLR_statE, 1, lower.tail = F)
-  )
+    likdat = map(data, create_likdat2),
+    total = map_dbl(data, ~n_distinct(.x$FamilyID)), 
+    total_infected = map_dbl(data, ~sum(.x$infectious_1wk)),
+    fit_modNM = map(likdat,  ~optim(c(-1, -3, -3), surv_logLik_2E, likdat = .x)),
+    fit_modBFGS = map(likdat,  ~optim(c(-1, -3, -3), surv_logLik_2E, likdat = .x,  
+                                      method = "BFGS")),
+    fit_resNM = map(fit_modNM, tidy_fits2),
+    fit_resBFGS = map(fit_modBFGS, tidy_fits2)
+  ) 
+
+```
+
+
+For marginal models, BFGS finds equivalent or better loglik compared to NM. For combined model, the NM algorithm finds the equivalent or better.
+
+```{r check-solver}
+risk_mod %>% 
+  rename(NM = fit_resNM, BFGS = fit_resBFGS) %>%
+  unnest(BFGS, .sep = "_") %>%
+  unnest(NM, .sep = "_") %>% 
+  select(virus, idpar, contains("beta"), contains("loglik")) %>%
+  group_by(virus, idpar) %>%
+  select(virus, idpar, BFGS_beta0, NM_beta0, BFGS_betaE, NM_betaE, BFGS_loglik, NM_loglik) %>%
+  mutate_if(is.numeric, format, digits = 3) %>%
+  kable(caption = "Comparing optimization results from marginal models (BFGS vs. Nelder-Mead (NM))", 
+        digits = 3) %>%
+  kable_styling(full_width = F)
+
+risk_mod_both %>% 
+  rename(NM = fit_resNM, BFGS = fit_resBFGS) %>%
+  unnest(BFGS, .sep = "_") %>%
+  unnest(NM, .sep = "_") %>% 
+  select(virus, contains("beta"), contains("loglik"), -contains("betaE")) %>%
+  group_by(virus) %>%
+  select(virus, BFGS_beta0, NM_beta0, 
+         BFGS_betaM, NM_betaM, 
+         BFGS_betaS, NM_betaS, 
+         BFGS_loglik, NM_loglik) %>%
+  mutate_if(is.numeric, format, digits = 3) %>%
+  kable(caption = "Comparing optimization results from full model (BFGS vs. Nelder-Mead (NM))",
+        digits = 3) %>%
+  kable_styling(full_width = F)
 
 ```
 
 ## Model results
 
-Outline:
+```{r process-results}
 
-- Household and secondary children estimates were very similar: household risk coefficients were within 3% of secondard children (usually < 1%). So results will focus just on mother and children estimates. 
-
-```{r S-vs-HH}
-
-risk_mod %>% 
-  subset(idpar %in% c("HH", "S")) %>%
-  select(cohort, virus, idpar, beta0, betaE) %>%
-  gather(parameter, value, beta0, betaE) %>%
-  unite(temp, idpar, parameter) %>%
-  group_by(cohort, virus) %>%
-  spread(temp, value) %>%
-  select(cohort, virus, S_beta0, HH_beta0,S_betaE, HH_betaE) %>%
-  mutate(pct_S0 = 100 * (1- HH_beta0/S_beta0),
-         pct_SE = 100*(1-HH_betaE/S_betaE)) %>%
-  kable(caption = "HH estimates were within 1.5% of S estimates for full cohort.", digits = 2)
-
-```
-
-
-```{r diagnostic}
-
-family_risk = model_data_long %>%
-  subset(idpar != "HH") %>%
-  group_by(virus, FamilyID, idpar, cohort, obs_infected) %>%
-  summarize(
-    total_weeks = max(infant_wks),
-    total_exposure = sum(exposure)
-  ) %>%
-  left_join(subset(risk_mod), by = c("virus", "idpar", "cohort")) %>%
+marginal_results = risk_mod %>%
+  left_join(null_risk_mod, by = c("virus")) %>%
+  unnest(fit_resBFGS) %>%
   mutate(
-    pr_survival = exp(-beta0 * total_weeks - betaE * total_exposure)
+    #null_betaE = map_dbl(fit_modE, ~exp(`$`(.x, "minimum"))),
+    #betaE_loglik = map_dbl(fit_modE, ~`$`(.x, "objective")),
+    LLR_stat = 2 * (null_loglik - loglik),
+    pvalue = pchisq(LLR_stat, 1, lower.tail = F)
   ) %>%
-  select(-contains("lik"), -data, -fit_mod, -contains("null"), -pvalue, -LLR_stat)
+  select(-contains("dat"), -contains("fit")) %>%
+  arrange(virus)
 
-family_risk %>%
-ggplot(aes(x = factor(obs_infected), y = pr_survival, colour = idpar)) +
-  geom_boxplot() +
-  geom_point(position = position_dodge(width = 0.75)) +
-  facet_grid(virus ~ cohort, scales = "free_x")
+risk_mod_loglik = marginal_results %>%
+  subset(idpar != "HH") %>%
+  select(virus, idpar, loglik, betaE) %>%
+  gather(outcome, value, loglik, betaE) %>%
+  unite(mod_res, outcome, idpar) %>%
+  spread(mod_res, value)
 
-family_risk %>%
-  subset(cohort == "All") %>%
-  ggplot(aes(x = factor(obs_infected), y = total_exposure, colour = idpar)) +
-  geom_boxplot() +
-  geom_point(position = position_dodge(width = 0.75)) +
-  scale_y_log10() +
-  facet_grid(virus ~ cohort, scales = "free_x")
+combined_results = risk_mod_both %>%
+  group_by(virus) %>%
+  nest() %>%
+  mutate(
+    fit_res = if_else(virus == "CMV", map(data, unnest, fit_resBFGS),
+                      map(data, unnest, fit_resNM))
+  ) %>%
+  unnest(fit_res) %>%
+  select(-contains("fit"), -contains("data"), -contains("dat")) %>%
+  left_join(risk_mod_loglik, by = c("virus")) %>%
+  left_join(null_risk_mod, by = c("virus")) %>%
+  mutate(
+    LLR_stat_overall = 2 * (null_loglik - loglik),
+    pvalue_overall = pchisq(LLR_stat_overall, 2, lower.tail = F),
+    LLR_statM = 2 * (loglik_S - loglik),
+    pvalueM = pchisq(LLR_statM, 1, lower.tail = F),
+    LLR_statS = 2 * (loglik_M - loglik),
+    pvalueS = pchisq(LLR_statS, 1, lower.tail = F)
+    ) %>%
+  arrange(virus)
 
 ```
 
-```{r plot-coef}
-risk_mod %>%
- ggplot(aes(x = idpar, y = betaE, colour = cohort, shape = pvalue < 0.05)) +
-  geom_point(size = 2, position = position_dodge(width = 0.5)) +
-  scale_y_log10("Estimated weekly exposure risk coefficient") +
-  scale_x_discrete("Exposure source", drop = F) +
-  facet_wrap(~ virus) +
-  scale_shape_manual("Sig.", values = c(1,16)) +
-  theme(legend.position = "top")
+```{r res-tab}
+options(knitr.kable.NA = '')
+
+full_results = marginal_results %>%
+  gather(parameter, estimate, null_beta, beta0, betaE) %>%
+  bind_rows(
+    combined_results %>% gather(parameter, estimate, beta0, betaM, betaS) %>%
+      mutate(
+        idpar = "CM",
+        pvalue = if_else(parameter == "betaM", pvalue_overall, NA_real_),
+      )
+  ) %>%
+  mutate(
+    pvalue = if_else(parameter %in% c("null_beta", "beta0"), NA_real_, pvalue),
+    idpar = if_else(parameter == "null_beta", "Constant", idpar),
+    model = factor(idpar, 
+                   levels = c("Constant", "S", "M", "HH", "CM"),
+                   labels = c("Constant risk", "Secondary child", "Mother",
+                              "Household sum", "Combined model")
+    ),
+    parameter = case_when(
+      parameter == "null_beta" ~ "beta0",
+      parameter == "betaE" ~ str_c("beta", idpar),
+      TRUE ~ parameter
+    ),
+    estimate = if_else(estimate < 1e-25, 0, estimate)
+  ) %>%
+  select(virus, model, parameter, estimate, pvalue) %>%
+  distinct() 
+
+
+full_results %>%
+  arrange(virus, model) %>%
+  ungroup() %>%
+  mutate(
+    pvalue = clean_pvalues(pvalue, sig_alpha = 0)
+  ) %>%
+  mutate_if(is.numeric, format, digits = 3) %>%
+  kable(digits = 3) %>%
+  kable_styling(full_width = F) %>%
+  collapse_rows(1:2, valign = "top")
+  
 ```
 
+```{r IDx}
 
-```{r prediction}
+id_calc = function(b0, bE, prob){
+  (-log(1-prob) - b0)/(bE)
+}
+
+beta0_ests = full_results %>%
+  subset(model != "Constant risk" & parameter == "beta0") %>%
+  select(virus, model, estimate) %>%
+  rename(beta0 = estimate)
+
+full_results %>%
+  subset(parameter != "beta0" & model != "Household sum" & virus == "HHV-6") %>%
+  select(-pvalue) %>%
+  group_by(virus, model) %>%
+  left_join(beta0_ests, by = c("virus", "model")) %>%
+  mutate(
+    exposure_source = factor(case_when(
+      parameter == "betaS" ~ "Secondary Child",
+      parameter == "betaM" ~ "Mother"
+    ), levels = c("Secondary Child", "Mother")),
+    ID25 = id_calc(beta0, estimate, 0.25),
+    ID50 = id_calc(beta0, estimate, 0.5),
+    ID80 = id_calc(beta0, estimate, 0.8)
+  ) %>%
+  ungroup() %>%
+  mutate_if(is.numeric, log10) %>%
+  mutate(constant_risk = 100*(1-exp(-10^beta0))) %>%
+  select(-estimate, -beta0, -parameter) %>%
+  arrange(virus, model, exposure_source) %>%
+  kable(digits = 2) %>%
+  kable_styling(full_width = F) %>%
+  collapse_rows(1:2, valign = "top") %>%
+  add_header_above(c(" " = 3, "Infectious dose (ID)" = 3, ""))
+
+```
+
+```{r prediction, fig.height=8}
+
+exposure_max = exposure_data_long %>%
+  subset(idpar != "HH") %>%
+  group_by(virus, idpar) %>%
+  summarize(
+    max_exposure = max(exposure)
+  )
 
 risk_data = exposure_data_long %>%
+  subset(idpar != "HH") %>%
   mutate(
     exposure_cat = floor(count) + 0.5
   ) %>%
   group_by(idpar, virus, exposure_cat) %>%
   summarize(
+    total_exposures = n(),
     total_infected = sum(infectious_1wk),
     risk = mean(infectious_1wk)
   )
 
-test_doses = 0:14/2
+risk_grid = exposure_data %>%
+  mutate(
+    exposure_S = floor(S) + 0.5,
+    exposure_M = floor(M) + 0.5
+  ) %>%
+  group_by(virus, exposure_S, exposure_M) %>%
+  summarize(
+    total_exposures = n(),
+    total_infected = sum(infectious_1wk),
+    risk = mean(infectious_1wk)
+  )
 
-pred_fun = function(mod, pred){
-  exposure_max = log10(max(mod$data[, pred]))
+# risk_prediction = marginal_results %>%
+#   group_by(virus, idpar) %>%
+#   left_join(exposure_max, by = c("virus", "idpar")) %>%
+#   nest() %>%
+#   mutate(
+#     pred_res = map(data, ~with(.x, tibble(
+#       max_exposure = log10(max_exposure),
+#       exposure = seq(0, 5, length = 100),
+#       risk_full = 1 - exp(-beta0 - betaE * 10^exposure)
+#       #riskE = 1 - exp(-null_betaE * 10^exposure)
+#     )))
+#   ) %>%
+#   unnest(pred_res) %>%
+#   gather(risk_est, risk, risk_full)
 
-  pred_dat = tibble(exposure = 10^(seq(0, exposure_max, length = 100)))
-  pred_dat[, pred] = pred_dat$exposure
-  pred_dat %>%
-    mutate(
-      risk = 1 - predict(mod, pred_dat, type = "response"),
-    ) %>%
-    select(exposure, risk)
-}
-
-risk_prediction = risk_mod %>%
-  #subset(cohort == "All") %>%
-  group_by(cohort, virus, idpar) %>%
+risk_prediction_both = combined_results %>%
+  gather(parameter, est, betaM, betaS) %>%
+  mutate(idpar = str_remove(parameter, "beta")) %>%
+  left_join(exposure_max, by = c("virus", "idpar")) %>%
+  group_by(virus, idpar) %>%
   nest() %>%
   mutate(
     pred_res = map(data, ~with(.x, tibble(
-      exposure = seq(0, 6.75, length = 100),
-      risk_full = 1 - exp(-beta0 - betaE * 10^exposure),
-      riskE = 1 - exp(-null_betaE * 10^exposure)
+      exposure = seq(0, log10(max_exposure), length = 100),
+      risk = 1 - exp(-beta0 - est * 10^exposure)
     )))
   ) %>%
-  unnest(pred_res) %>%
-  gather(risk_est, risk, risk_full, riskE)
+  unnest(pred_res) 
 
-risk_data  %>%
+dr_plot = risk_data  %>%
+  subset(virus == "HHV-6") %>%
   ggplot(aes(x = exposure_cat, y = risk)) +
-  geom_bar(stat = "identity") +
-  geom_line(data = risk_prediction, aes(x = exposure, colour = cohort, linetype = risk_est)) +
-  scale_y_continuous("Estimated average risk", breaks = 0:4/4) +
-  scale_x_continuous("Log10 Exposure viral load") +
-  facet_grid(virus~idpar) +
+  geom_bar(stat = "identity", fill = "grey50") +
+  geom_line(data = subset(risk_prediction_both, virus == "HHV-6"),
+            aes(x = exposure), size = 1.25) +
+  scale_y_continuous("Estimated weekly risk of HHV-6 infection", breaks = 0:4/4) +
+  scale_x_continuous(expression(paste("Log"[10], " HHV-6 VL (DNA copies/swab)")),
+                     breaks = 0:6+0.5,
+                     labels = paste(0:6, 1:7, sep = "-")) +
+  facet_grid(.~idpar, labeller = as_labeller(c('S' = "Secondary Child", 'M' = "Mother"))) +
+  theme(legend.position = "top")
+
+exposure_heat = risk_grid %>%
+  subset(virus == "HHV-6") %>%
+  ggplot(aes(x = exposure_S, y = exposure_M, fill = total_exposures, 
+             label = total_infected)) +
+  geom_tile() +
+  #geom_label(label.padding = unit(0.1, "lines"), label.size = 0, fill = "white") +
+  geom_text(fontface = "bold", colour = "white") +
+  viridis::scale_fill_viridis("Total exposures", option = "viridis") +
+  scale_y_continuous(expression(paste("Mother log"[10], " VL (DNA copies/swab)")), 
+                     breaks = 0:6+0.5,
+                     labels = paste(0:6, 1:7, sep = "-")) +
+  scale_x_continuous(expression(paste("Secondary child log"[10], " VL (DNA copies/swab)")),
+                     breaks = 0:6+0.5,
+                     labels = paste(0:6, 1:7, sep = "-")) +
+  theme_classic() +
+  theme(legend.position = "bottom",
+        legend.title = element_text(size = 8),
+        legend.text = element_text(size = 8),
+        legend.key.width = unit(0.75, "cm"))
+
+  
+risk_heat = crossing(
+  virus = "HHV-6",
+  exposure_S = seq(0, 
+                   log10(subset(exposure_max, virus == "HHV-6" & idpar == "S")$max_exposure)+0.1,
+                   length = 100),
+  exposure_M = seq(0, 
+                   log10(subset(exposure_max, virus == "HHV-6" & idpar == "M")$max_exposure)+0.1,
+                   length = 100)
+) %>%
+  left_join(combined_results, by = "virus") %>%
+  mutate(
+    risk =  1 - exp(-beta0 - betaS * 10^exposure_S - betaM * 10^exposure_M)
+  ) %>%
+  ggplot(aes(x = exposure_S, y = exposure_M, fill = pmin(risk, 0.25))) +
+  geom_tile() +
+  scale_y_continuous(expression(paste("Mother log"[10], " VL (DNA copies/swab)")), 
+                     breaks = 0:6+0.5,
+                     labels = paste(0:6, 1:7, sep = "-")) +
+  scale_x_continuous(expression(paste("Secondary child log"[10], " VL (DNA copies/swab)")),
+                     breaks = 0:6+0.5,
+                     labels = paste(0:6, 1:7, sep = "-")) +
+  # scale_fill_gradient2("Weekly infection prob.",
+  #                      low = "#fee0d2",
+  #                      mid = "#fc9272", midpoint = 0.05,
+  #                      high = "#de2d26",
+  #                      breaks= c(0:5/20),
+  #                      labels = c(0:4/20, " >0.25")) +
+  scale_fill_distiller("Weekly infection prob.", palette = "RdYlBu") +
+  geom_text(data = subset(risk_grid, virus == "HHV-6"), aes(label = round(risk, 2)), 
+            fontface = "bold", colour = "black") +
+  theme_classic() +
+  theme(legend.position = "bottom",
+        legend.title = element_text(size = 8),
+        legend.text = element_text(size = 8),
+        legend.key.width = unit(0.75, "cm"))
+
+plot_grid(dr_plot,
+  plot_grid(exposure_heat, risk_heat, nrow = 1, labels = c("B", "C"), vjust = 1),
+  nrow = 2, labels = "A")
+
+
+```
+
+
+# Sensitivity analysis
+
+Make long datasets with infected only and removal of x% interpolated households
+
+```{r sens-data, eval = F}
+
+# duplicating the data to do sensitivity analysis for infected vs uninfected
+sensitivity_data = exposure_data %>%
+  subset(obs_infected == 1) %>%
+  mutate(cohort = "Infected only") %>%
+  bind_rows(mutate(exposure_data, cohort = "All"))
+
+sensitivity_data_long = exposure_data_long %>%
+  subset(obs_infected == 1) %>%
+  mutate(cohort = "Infected only") %>%
+  bind_rows(mutate(exposure_data_long, cohort = "All"))
+
+risk_mod %>%
+ ggplot(aes(x = idpar, y = betaE, colour = cohort, shape = pvalue < 0.05)) +
+  geom_point(size = 2, position = position_dodge(width = 0.5)) +
+  scale_y_log10("Estimated weekly exposure risk coefficient", limits = c(10^-15, 1)) +
+  scale_x_discrete("Exposure source", drop = F) +
+  facet_wrap(~ virus) +
+  scale_shape_manual("Sig.", values = c(1,16)) +
   theme(legend.position = "top")
 
 ```
