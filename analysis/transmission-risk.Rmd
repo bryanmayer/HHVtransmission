@@ -500,7 +500,7 @@ fid_maxinterp = subset(interpolated_summary, max_interp == 0) %>%
 ```{r sens-data}
 
 create_interp_dat = function(exp_dat, interp_dat, max_pct){
-  fid_max = subset(interpolated_summary, max_interp >= max_pct) %>%
+  fid_max = subset(interpolated_summary, max_interp <= max_pct) %>%
     ungroup() %>%
     select(FamilyID, virus, max_interp)
   
@@ -515,7 +515,7 @@ create_interp_dat = function(exp_dat, interp_dat, max_pct){
 
 # duplicating the data to do sensitivity analysis for infected vs uninfected
 sensitivity_data = exposure_data %>%
-  create_interp_dat(interpolated_summary, 0) %>%
+  create_interp_dat(interpolated_summary, 30) %>%
   bind_rows(mutate(subset(exposure_data, obs_infected == 1), cohort =  "Infected only")) %>%
   bind_rows(mutate(exposure_data, cohort = "All"))
 

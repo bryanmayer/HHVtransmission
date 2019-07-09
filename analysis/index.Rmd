@@ -1,14 +1,14 @@
 ---
-title: "Home"
+title: "Estimating Household Risk of Human Herpesvirus Acquisition Among Ugandan Infants Through Exposure to Viruses in Saliva"
 site: workflowr::wflow_site
 output:
   workflowr::wflow_html:
     toc: false
 ---
 
-Estimating weekly transmission risk for CMV and HHV-6 in Ugandan infants.
+Authors: Mayer BT, Krantz E, Wald A, Corey L, Casper C, Gantt S, and Schiffer JT
 
 Analysis Roadmap:
 
-1. [General statistics](general-statistics.html): Overview of the data, survival analysis, and marginal modeling.
+1. [General statistics](general-statistics.html): Overview of the data, survival analysis, and descriptive analysis of exposures.
 2. [Transmission modeling](transmission-risk.html): Results of weekly risk estimation for transmission using the survival likelihood optimization.

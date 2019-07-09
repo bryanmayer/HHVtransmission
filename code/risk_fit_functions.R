@@ -14,6 +14,18 @@ create_likdat = function(dat){
     ungroup()
 }
 
+# two exposure sources (S and M)
+create_likdat2 = function(dat){
+    dat %>%
+    group_by(FamilyID, infectious_1wk) %>%
+    summarize(
+      total_exposureM = sum(10^M), #should be 1 input for infectious_1wk == 1
+      total_exposureS = sum(10^S), #should be 1 input for infectious_1wk == 1
+      total_weeks = max(infant_wks)
+    ) %>%
+    ungroup()
+}
+
 
 # Survival log-likelihood function
 # log_betas: input vector of logged betas (log beta0, log betaE) for fitting
@@ -34,18 +46,6 @@ surv_logLik = function(log_betas, likdat){
 
 }
 
-# two exposure sources (S and M)
-create_likdat2 = function(dat){
-    dat %>%
-    group_by(FamilyID, infectious_1wk) %>%
-    summarize(
-      total_exposureM = sum(10^M), #should be 1 input for infectious_1wk == 1
-      total_exposureS = sum(10^S), #should be 1 input for infectious_1wk == 1
-      total_weeks = max(infant_wks)
-    ) %>%
-    ungroup()
-}
-
 surv_logLik_2E = function(log_betas, likdat){
 
   beta0 = exp(log_betas)[1]
@@ -62,16 +62,6 @@ surv_logLik_2E = function(log_betas, likdat){
 
 }
 
-tidy_fits2 = function(lik_res){
-  tibble(
-    beta0 = exp(lik_res$par[1]),
-    betaM = exp(lik_res$par[2]),
-    betaS = exp(lik_res$par[3]),
-    loglik = lik_res$value#,
-    #loglik_calc = surv_logLik(fit_2parm$par, fit_data)
-  )
-}
-
 # likelihood wrapper for use in optimizer when betaE = 0
 surv_logLik0 = function(x0, likdat) surv_logLik(c(x0, -Inf), likdat)
 
@@ -85,11 +75,24 @@ beta0_mle = function(likdat){
   -log(1 - n_distinct(likdat$FamilyID)/total_wks)
 }
 
+
+## Tidy processing functions
+
 # Tidy likelihood fit
 tidy_fits = function(lik_res){
   tibble(
     beta0 = exp(lik_res$par[1]),
     betaE = exp(lik_res$par[2]),
+    loglik = lik_res$value#,
+    #loglik_calc = surv_logLik(fit_2parm$par, fit_data)
+  )
+}
+
+tidy_fits2 = function(lik_res){
+  tibble(
+    beta0 = exp(lik_res$par[1]),
+    betaM = exp(lik_res$par[2]),
+    betaS = exp(lik_res$par[3]),
     loglik = lik_res$value#,
     #loglik_calc = surv_logLik(fit_2parm$par, fit_data)
   )
