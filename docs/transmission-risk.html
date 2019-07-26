@@ -11,7 +11,7 @@
 
 <meta name="author" content="Bryan Mayer" />
 
-<meta name="date" content="2019-05-07" />
+<meta name="date" content="2019-07-26" />
 
 <title>Transmission risk estimation</title>
 
@@ -402,7 +402,7 @@ div.tocify {
 </li>
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-    Data
+    Data &amp; Figures
      
     <span class="caret"></span>
   </a>
@@ -412,6 +412,12 @@ div.tocify {
     </li>
     <li>
       <a href="https://github.com/bryanmayer/HHVtransmission/tree/master/data">Data and Dictionary</a>
+    </li>
+    <li>
+      <a href="https://github.com/bryanmayer/HHVtransmission/tree/master/docs/figure/general-statistics.Rmd">Exposure Analysis Figures</a>
+    </li>
+    <li>
+      <a href="https://github.com/bryanmayer/HHVtransmission/tree/master/docs/figure/transmission-risk.Rmd">Transmission Risk Figures</a>
     </li>
   </ul>
 </li>
@@ -453,7 +459,7 @@ div.section {
 
 <h1 class="title toc-ignore">Transmission risk estimation</h1>
 <h4 class="author">Bryan Mayer</h4>
-<h4 class="date">2019-05-07</h4>
+<h4 class="date">2019-07-26</h4>
 
 </div>
 
@@ -478,7 +484,7 @@ div.section {
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2019-07-09
+<strong>Last updated:</strong> 2019-07-26
 </p>
 <p>
 <strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 5 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 1
@@ -557,10 +563,10 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcombryanmayerHHVtransmissiontree220afdb4ee5a3e943976b38938edea0ad293c89etargetblank220afdba"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/bryanmayer/HHVtransmission/tree/220afdb4ee5a3e943976b38938edea0ad293c89e" target="_blank">220afdb</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcombryanmayerHHVtransmissiontreee6ddfc5fc0d903af18474599c070369c035339d6targetblanke6ddfc5a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/bryanmayer/HHVtransmission/tree/e6ddfc5fc0d903af18474599c070369c035339d6" target="_blank">e6ddfc5</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcombryanmayerHHVtransmissiontree220afdb4ee5a3e943976b38938edea0ad293c89etargetblank220afdba" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcombryanmayerHHVtransmissiontreee6ddfc5fc0d903af18474599c070369c035339d6targetblanke6ddfc5a" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility. The version displayed above was the version of the Git repository at the time these results were generated. <br><br> Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -576,10 +582,14 @@ Ignored files:
     Ignored:    docs/.DS_Store
     Ignored:    docs/figure/.DS_Store
     Ignored:    docs/figure/general-statistics.Rmd/.DS_Store
+    Ignored:    docs/figure/transmission-risk.Rmd/.DS_Store
+
+Untracked files:
+    Untracked:  analysis/transmission-risk-sensitivity.Rmd
+    Untracked:  model_data.RData
 
 Unstaged changes:
     Modified:   analysis/transmission-risk.Rmd
-    Modified:   code/build_all.R
 
 </code></pre>
 <p>
@@ -618,6 +628,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/bryanmayer/HHVtransmission/blob/e6ddfc5fc0d903af18474599c070369c035339d6/analysis/transmission-risk.Rmd" target="_blank">e6ddfc5</a>
+</td>
+<td>
+Bryan Mayer
+</td>
+<td>
+2019-07-09
+</td>
+<td>
+analysis through first-final draft
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/bryanmayer/HHVtransmission/e6ddfc5fc0d903af18474599c070369c035339d6/docs/transmission-risk.html" target="_blank">e6ddfc5</a>
+</td>
+<td>
+Bryan Mayer
+</td>
+<td>
+2019-07-09
+</td>
+<td>
+analysis through first-final draft
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -693,6 +737,7 @@ first go at transmission risk
 </div>
 </div>
 </div>
+<p>This is the main analysis and results for the manuscript. For sensitivity analysis due to exposure interpolation, see the analysis of <a href="transmission-risk-sensitivity.html">model sensitivity to interpolation</a>.</p>
 <div id="setup" class="section level1">
 <h1>Setup</h1>
 <pre class="r"><code>library(tidyverse)
@@ -768,7 +813,9 @@ cols(
 1 CMV   AD       S             8
 2 HHV-6 AD       S             8</code></pre>
 <pre class="r"><code>model_data = exposure_data %&gt;% mutate(cohort = &quot;All&quot;) %&gt;% subset(FamilyID != &quot;AD&quot;)
-model_data_long = exposure_data_long %&gt;% mutate(cohort = &quot;All&quot;)  %&gt;% subset(FamilyID != &quot;AD&quot;)</code></pre>
+model_data_long = exposure_data_long %&gt;% mutate(cohort = &quot;All&quot;)  %&gt;% subset(FamilyID != &quot;AD&quot;)
+
+save(model_data, model_data_long, file = &quot;data/model_data.RData&quot;)</code></pre>
 </div>
 <div id="modeling" class="section level1">
 <h1>Modeling</h1>
@@ -814,8 +861,8 @@ null_risk_mod = model_data %&gt;%
     likdat = map(data, create_likdat),
     total = map_dbl(data, ~n_distinct(.x$FamilyID)), 
     total_infected = map_dbl(data, ~sum(.x$infectious_1wk)),
-    fit_modNM = map(likdat,  ~optim(c(-12, -12), surv_logLik, likdat = .x)),
-    fit_modBFGS = map(likdat,  ~optim(c(-12, -12), surv_logLik, likdat = .x,  method = &quot;BFGS&quot;)),
+    fit_modNM = map(likdat,  ~optim(c(-12, -3), surv_logLik, likdat = .x)),
+    fit_modBFGS = map(likdat,  ~optim(c(-12, -3), surv_logLik, likdat = .x,  method = &quot;BFGS&quot;)),
     #fit_modE = map(likdat, ~optimize(surv_logLikE, c(-20, 0), likdat = .x)),
     fit_resNM = map(fit_modNM, tidy_fits),
     fit_resBFGS = map(fit_modBFGS, tidy_fits)
@@ -829,13 +876,13 @@ risk_mod_both = model_data %&gt;%
     likdat = map(data, create_likdat2),
     total = map_dbl(data, ~n_distinct(.x$FamilyID)), 
     total_infected = map_dbl(data, ~sum(.x$infectious_1wk)),
-    fit_modNM = map(likdat,  ~optim(c(-1, -3, -3), surv_logLik_2E, likdat = .x)),
-    fit_modBFGS = map(likdat,  ~optim(c(-1, -3, -3), surv_logLik_2E, likdat = .x,  
+    fit_modNM = map(likdat,  ~optim(c(-12, -3, -3), surv_logLik_2E, likdat = .x)),
+    fit_modBFGS = map(likdat,  ~optim(c(-12, -3, -3), surv_logLik_2E, likdat = .x,  
                                       method = &quot;BFGS&quot;)),
     fit_resNM = map(fit_modNM, tidy_fits2),
     fit_resBFGS = map(fit_modBFGS, tidy_fits2)
   ) </code></pre>
-<p>For marginal models, BFGS finds equivalent or better loglik compared to NM. For combined model, the NM algorithm finds the equivalent or better.</p>
+<p>NM method doesn’t do well with boundary cases but BFGS is a bit overzealous at those. For CMV, when the logliks are equivalent, BFGS tends to selects a zero; for the combined model, BFGS finds a better fit (with 0 for betaS). For HHV-6, NM finds better fits amidst signal.</p>
 <pre class="r"><code>risk_mod %&gt;% 
   rename(NM = fit_resNM, BFGS = fit_resBFGS) %&gt;%
   unnest(BFGS, .sep = &quot;_&quot;) %&gt;%
@@ -893,13 +940,13 @@ S
 0.0194
 </td>
 <td style="text-align:left;">
-0.0193
+0.0198
 </td>
 <td style="text-align:left;">
-6.03e-143
+0
 </td>
 <td style="text-align:left;">
-4.68e-10
+1.01e-09
 </td>
 <td style="text-align:left;">
 74.1
@@ -916,19 +963,19 @@ HHV-6
 S
 </td>
 <td style="text-align:left;">
-0.0291
+0.035
 </td>
 <td style="text-align:left;">
-0.0291
+0.0288
 </td>
 <td style="text-align:left;">
-1.31e-07
+0
 </td>
 <td style="text-align:left;">
-1.31e-07
+1.36e-07
 </td>
 <td style="text-align:left;">
-92.7
+95.7
 </td>
 <td style="text-align:left;">
 92.7
@@ -948,10 +995,10 @@ M
 0.0194
 </td>
 <td style="text-align:left;">
-2.18e-08
+0
 </td>
 <td style="text-align:left;">
-1.83e-11
+3.25e-10
 </td>
 <td style="text-align:left;">
 74.1
@@ -968,19 +1015,19 @@ HHV-6
 M
 </td>
 <td style="text-align:left;">
-0.0293
+0.035
 </td>
 <td style="text-align:left;">
-0.0293
+0.0296
 </td>
 <td style="text-align:left;">
-7.9e-06
+0
 </td>
 <td style="text-align:left;">
-7.9e-06
+7.61e-06
 </td>
 <td style="text-align:left;">
-92
+95.7
 </td>
 <td style="text-align:left;">
 92
@@ -997,13 +1044,13 @@ HH
 0.0194
 </td>
 <td style="text-align:left;">
-0.0194
+0.0198
 </td>
 <td style="text-align:left;">
-4.65e-143
+0
 </td>
 <td style="text-align:left;">
-4.66e-10
+1.01e-09
 </td>
 <td style="text-align:left;">
 74.1
@@ -1020,22 +1067,22 @@ HHV-6
 HH
 </td>
 <td style="text-align:left;">
-0.0289
+0.035
 </td>
 <td style="text-align:left;">
-0.0289
+0.0267
 </td>
 <td style="text-align:left;">
-1.31e-07
+0
 </td>
 <td style="text-align:left;">
-1.32e-07
+1.69e-07
 </td>
 <td style="text-align:left;">
-92.5
+95.7
 </td>
 <td style="text-align:left;">
-92.5
+92.6
 </td>
 </tr>
 </tbody>
@@ -1100,25 +1147,25 @@ CMV
 0.0194
 </td>
 <td style="text-align:left;">
-0.0198
+0.0184
 </td>
 <td style="text-align:left;">
-3.94e-09
+8.77e-09
 </td>
 <td style="text-align:left;">
-5.5e-08
+3.15e-06
 </td>
 <td style="text-align:left;">
 0
 </td>
 <td style="text-align:left;">
-7.54e-10
+1.73e-08
 </td>
 <td style="text-align:left;">
 74.1
 </td>
 <td style="text-align:left;">
-74.2
+74.4
 </td>
 </tr>
 <tr>
@@ -1129,19 +1176,19 @@ HHV-6
 0.035
 </td>
 <td style="text-align:left;">
-0.0275
+0.0259
 </td>
 <td style="text-align:left;">
-1.05e-13
+1.04e-13
 </td>
 <td style="text-align:left;">
-5.85e-06
+7.22e-06
 </td>
 <td style="text-align:left;">
 0
 </td>
 <td style="text-align:left;">
-7.89e-08
+8.36e-08
 </td>
 <td style="text-align:left;">
 95.7
@@ -1156,11 +1203,15 @@ HHV-6
 <div id="model-results" class="section level2">
 <h2>Model results</h2>
 <pre class="r"><code>marginal_results = risk_mod %&gt;%
-  left_join(null_risk_mod, by = c(&quot;virus&quot;)) %&gt;%
-  unnest(fit_resBFGS) %&gt;%
+  group_by(virus, idpar) %&gt;%
+  nest() %&gt;%
+  left_join(null_risk_mod, by = c(&quot;virus&quot;))%&gt;%
   mutate(
-    #null_betaE = map_dbl(fit_modE, ~exp(`$`(.x, &quot;minimum&quot;))),
-    #betaE_loglik = map_dbl(fit_modE, ~`$`(.x, &quot;objective&quot;)),
+    fit_res = if_else(virus == &quot;CMV&quot;, map(data, unnest, fit_resBFGS),
+                      map(data, unnest, fit_resNM))
+  ) %&gt;%
+  unnest(fit_res) %&gt;%
+  mutate(
     LLR_stat = 2 * (null_loglik - loglik),
     pvalue = pchisq(LLR_stat, 1, lower.tail = F)
   ) %&gt;%
@@ -1316,10 +1367,10 @@ beta0
 betaM
 </td>
 <td style="text-align:left;">
-2.18e-08
+0.00e+00
 </td>
 <td style="text-align:left;">
-0.950
+0.939
 </td>
 </tr>
 <tr>
@@ -1366,7 +1417,7 @@ beta0
 betaM
 </td>
 <td style="text-align:left;">
-3.94e-09
+8.77e-09
 </td>
 <td style="text-align:left;">
 0.997
@@ -1408,7 +1459,7 @@ Secondary child
 beta0
 </td>
 <td style="text-align:left;">
-2.91e-02
+2.88e-02
 </td>
 <td style="text-align:left;">
 —
@@ -1419,7 +1470,7 @@ beta0
 betaS
 </td>
 <td style="text-align:left;">
-1.31e-07
+1.36e-07
 </td>
 <td style="text-align:left;">
 0.014
@@ -1433,7 +1484,7 @@ Mother
 beta0
 </td>
 <td style="text-align:left;">
-2.93e-02
+2.96e-02
 </td>
 <td style="text-align:left;">
 —
@@ -1444,7 +1495,7 @@ beta0
 betaM
 </td>
 <td style="text-align:left;">
-7.90e-06
+7.61e-06
 </td>
 <td style="text-align:left;">
 0.006
@@ -1458,7 +1509,7 @@ Household sum
 beta0
 </td>
 <td style="text-align:left;">
-2.89e-02
+2.67e-02
 </td>
 <td style="text-align:left;">
 —
@@ -1469,10 +1520,10 @@ beta0
 betaHH
 </td>
 <td style="text-align:left;">
-1.31e-07
+1.69e-07
 </td>
 <td style="text-align:left;">
-0.011
+0.012
 </td>
 </tr>
 <tr>
@@ -1483,7 +1534,7 @@ Combined model
 beta0
 </td>
 <td style="text-align:left;">
-2.75e-02
+2.59e-02
 </td>
 <td style="text-align:left;">
 —
@@ -1494,7 +1545,7 @@ beta0
 betaM
 </td>
 <td style="text-align:left;">
-5.85e-06
+7.22e-06
 </td>
 <td style="text-align:left;">
 0.008
@@ -1505,7 +1556,7 @@ betaM
 betaS
 </td>
 <td style="text-align:left;">
-7.89e-08
+8.36e-08
 </td>
 <td style="text-align:left;">
 —
@@ -1594,16 +1645,16 @@ Secondary child
 Secondary Child
 </td>
 <td style="text-align:right;">
-6.30
+6.28
 </td>
 <td style="text-align:right;">
-6.71
+6.69
 </td>
 <td style="text-align:right;">
-7.08
+7.06
 </td>
 <td style="text-align:right;">
-2.87
+2.83
 </td>
 </tr>
 <tr>
@@ -1614,16 +1665,16 @@ Mother
 Mother
 </td>
 <td style="text-align:right;">
-4.51
+4.53
 </td>
 <td style="text-align:right;">
-4.92
+4.94
 </td>
 <td style="text-align:right;">
-5.30
+5.32
 </td>
 <td style="text-align:right;">
-2.88
+2.92
 </td>
 </tr>
 <tr>
@@ -1634,16 +1685,16 @@ Combined model
 Secondary Child
 </td>
 <td style="text-align:right;">
-6.52
+6.50
 </td>
 <td style="text-align:right;">
-6.93
+6.90
 </td>
 <td style="text-align:right;">
-7.30
+7.28
 </td>
 <td style="text-align:right;">
-2.71
+2.56
 </td>
 </tr>
 <tr>
@@ -1651,16 +1702,16 @@ Secondary Child
 Mother
 </td>
 <td style="text-align:right;">
-4.65
+4.56
 </td>
 <td style="text-align:right;">
-5.06
+4.97
 </td>
 <td style="text-align:right;">
-5.43
+5.34
 </td>
 <td style="text-align:right;">
-2.71
+2.56
 </td>
 </tr>
 </tbody>
@@ -1695,21 +1746,6 @@ risk_grid = exposure_data %&gt;%
     total_infected = sum(infectious_1wk),
     risk = mean(infectious_1wk)
   )
-
-# risk_prediction = marginal_results %&gt;%
-#   group_by(virus, idpar) %&gt;%
-#   left_join(exposure_max, by = c(&quot;virus&quot;, &quot;idpar&quot;)) %&gt;%
-#   nest() %&gt;%
-#   mutate(
-#     pred_res = map(data, ~with(.x, tibble(
-#       max_exposure = log10(max_exposure),
-#       exposure = seq(0, 5, length = 100),
-#       risk_full = 1 - exp(-beta0 - betaE * 10^exposure)
-#       #riskE = 1 - exp(-null_betaE * 10^exposure)
-#     )))
-#   ) %&gt;%
-#   unnest(pred_res) %&gt;%
-#   gather(risk_est, risk, risk_full)
 
 risk_prediction_both = combined_results %&gt;%
   gather(parameter, est, betaM, betaS) %&gt;%
@@ -1829,387 +1865,6 @@ Bryan Mayer
 </table>
 </div>
 </div>
-</div>
-</div>
-<div id="sensitivity-analysis" class="section level1">
-<h1>Sensitivity analysis</h1>
-<p>Make long datasets with infected only and removal of x% interpolated households. No need to look at HH.</p>
-<p>Looking at % of interpolation: try using observed data only.</p>
-<pre class="r"><code>exposure_data %&gt;%
-  subset(obs_infected == 1) %&gt;%
-  select(virus, FamilyID) %&gt;%
-  distinct() %&gt;%
-  group_by(virus) %&gt;%
-  summarize(n_infected = n()) %&gt;%
-  kable() %&gt;%
-    kable_styling(full_width = F)</code></pre>
-<table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;">
-<thead>
-<tr>
-<th style="text-align:left;">
-virus
-</th>
-<th style="text-align:right;">
-n_infected
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:left;">
-CMV
-</td>
-<td style="text-align:right;">
-16
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-HHV-6
-</td>
-<td style="text-align:right;">
-23
-</td>
-</tr>
-</tbody>
-</table>
-<pre class="r"><code>interpolated_summary = exposure_data_long %&gt;%
-  subset(idpar != &quot;HH&quot;) %&gt;%
-  mutate(
-    pos_count = count &gt; 0
-    ) %&gt;%
-  group_by(virus, FamilyID, obs_infected, idpar) %&gt;%
-  summarize(
-    interpolated_pct = 100*mean(interpolated)
-    ) %&gt;%
-  select(FamilyID, virus, idpar, obs_infected, interpolated_pct) %&gt;%
-  spread(idpar, interpolated_pct) %&gt;%
-  mutate(max_interp = max(c(M, S)))
-
-interpolated_summary %&gt;%
-  gather(idpar, interp, M, S) %&gt;%
-  ggplot(aes(x = interp, fill = factor(obs_infected))) +
-  geom_histogram(binwidth = 1) +
-  facet_grid(idpar~virus)</code></pre>
-<p><img src="figure/transmission-risk.Rmd/sensitivity-dat-summary-1.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-sensitivity-dat-summary-1">
-Past versions of sensitivity-dat-summary-1.png
-</button>
-</p>
-<div id="fig-sensitivity-dat-summary-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/bryanmayer/HHVtransmission/blob/220afdb4ee5a3e943976b38938edea0ad293c89e/docs/figure/transmission-risk.Rmd/sensitivity-dat-summary-1.png" target="_blank">220afdb</a>
-</td>
-<td>
-Bryan Mayer
-</td>
-<td>
-2019-07-08
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre class="r"><code>interpolated_summary %&gt;%
-  group_by(virus, obs_infected) %&gt;%
-  summarize(
-    n = n(),
-    none = sum(max_interp == 0),
-    gt10 = sum(max_interp &lt;= 10),
-    gt20 = sum(max_interp &lt;= 20),
-    gt25 = sum(max_interp &lt;= 25)
-  ) %&gt;%
-  kable(caption = &quot;percent interpolated (gt = &gt;)&quot;) %&gt;%
-    kable_styling(full_width = F)</code></pre>
-<table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;">
-<caption>
-percent interpolated (gt = &gt;)
-</caption>
-<thead>
-<tr>
-<th style="text-align:left;">
-virus
-</th>
-<th style="text-align:right;">
-obs_infected
-</th>
-<th style="text-align:right;">
-n
-</th>
-<th style="text-align:right;">
-none
-</th>
-<th style="text-align:right;">
-gt10
-</th>
-<th style="text-align:right;">
-gt20
-</th>
-<th style="text-align:right;">
-gt25
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:left;">
-CMV
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-14
-</td>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:right;">
-5
-</td>
-<td style="text-align:right;">
-6
-</td>
-<td style="text-align:right;">
-10
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-CMV
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-16
-</td>
-<td style="text-align:right;">
-6
-</td>
-<td style="text-align:right;">
-9
-</td>
-<td style="text-align:right;">
-13
-</td>
-<td style="text-align:right;">
-14
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-HHV-6
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-8
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:right;">
-5
-</td>
-<td style="text-align:right;">
-6
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-HHV-6
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-23
-</td>
-<td style="text-align:right;">
-7
-</td>
-<td style="text-align:right;">
-8
-</td>
-<td style="text-align:right;">
-14
-</td>
-<td style="text-align:right;">
-17
-</td>
-</tr>
-</tbody>
-</table>
-<pre class="r"><code>fid_maxinterp = subset(interpolated_summary, max_interp == 0) %&gt;%
-  ungroup() %&gt;%
-  select(FamilyID, virus, max_interp)</code></pre>
-<pre class="r"><code>create_interp_dat = function(exp_dat, interp_dat, max_pct){
-  fid_max = subset(interpolated_summary, max_interp &lt;= max_pct) %&gt;%
-    ungroup() %&gt;%
-    select(FamilyID, virus, max_interp)
-  
-  interp_label = if(max_pct == 0) &quot;No exposure interpolation&quot; else paste0(&quot;Max interpolation: &quot;, max_pct, &quot;%&quot;)
-    
-  exp_dat %&gt;%
-    right_join(fid_max, by = c(&quot;virus&quot;, &quot;FamilyID&quot;)) %&gt;%
-    mutate(cohort = interp_label)
-  
-}
-
-
-# duplicating the data to do sensitivity analysis for infected vs uninfected
-sensitivity_data = exposure_data %&gt;%
-  create_interp_dat(interpolated_summary, 30) %&gt;%
-  bind_rows(mutate(subset(exposure_data, obs_infected == 1), cohort =  &quot;Infected only&quot;)) %&gt;%
-  bind_rows(mutate(exposure_data, cohort = &quot;All&quot;))
-
-sensitivity_data_long = exposure_data_long %&gt;%
-  create_interp_dat(interpolated_summary, 0) %&gt;%
-  bind_rows(mutate(subset(exposure_data_long, obs_infected == 1), cohort =  &quot;Infected only&quot;)) %&gt;%
-  bind_rows(mutate(exposure_data_long, cohort = &quot;All&quot;)) %&gt;%
-  subset(idpar != &quot;HH&quot;)</code></pre>
-<pre class="r"><code>null_risk_sens = sensitivity_data %&gt;% 
-  group_by(cohort, virus, FamilyID) %&gt;%
-  summarize(
-    infected = max(infectious_1wk),
-    surv_weeks = max(c(0, infant_wks[which(infectious_1wk == 0)]))
-  ) %&gt;%
-  group_by(cohort, virus) %&gt;%
-  summarize(
-    null_beta = -log(1-sum(infected)/sum(surv_weeks)),
-    null_loglik = null_beta * sum(surv_weeks) - log(1-exp(-null_beta)) * sum(infected)
-  )
-
-sens_mod = sensitivity_data_long %&gt;%
-  group_by(virus, idpar, cohort) %&gt;%
-  nest() %&gt;%
-  mutate(
-    likdat = map(data, create_likdat),
-    total = map_dbl(data, ~n_distinct(.x$FamilyID)), 
-    total_infected = map_dbl(data, ~sum(.x$infectious_1wk)),
-    fit_modNM = map(likdat,  ~optim(c(-1, -3), surv_logLik, likdat = .x)),
-    fit_modBFGS = map(likdat,  ~optim(c(-1, -3), surv_logLik, likdat = .x,  method = &quot;BFGS&quot;)),
-    fit_resNM = map(fit_modNM, tidy_fits),
-    fit_resBFGS = map(fit_modBFGS, tidy_fits)
-  ) 
-
-# using both exposures
-sens_mod_both = sensitivity_data %&gt;%
-  group_by(virus, cohort) %&gt;%
-  nest() %&gt;%
-  mutate(
-    likdat = map(data, create_likdat2),
-    total = map_dbl(data, ~n_distinct(.x$FamilyID)), 
-    total_infected = map_dbl(data, ~sum(.x$infectious_1wk)),
-    fit_modNM = map(likdat,  ~optim(c(-1, -3, -3), surv_logLik_2E, likdat = .x)),
-    fit_modBFGS = map(likdat,  ~optim(c(-1, -3, -3), surv_logLik_2E, likdat = .x,  
-                                      method = &quot;BFGS&quot;)),
-    fit_resNM = map(fit_modNM, tidy_fits2),
-    fit_resBFGS = map(fit_modBFGS, tidy_fits2)
-  ) </code></pre>
-<pre class="r"><code>marginal_sensitivity = sens_mod %&gt;%
-  group_by(virus, cohort) %&gt;%
-  nest() %&gt;%
-  mutate(
-    fit_res = if_else(virus == &quot;CMV&quot;, map(data, unnest, fit_resBFGS),
-                      map(data, unnest, fit_resNM))
-  ) %&gt;%
-  unnest(fit_res) %&gt;%
-  left_join(null_risk_sens, by = c(&quot;virus&quot;, &quot;cohort&quot;)) %&gt;%
-  mutate(
-    LLR_stat = 2 * (null_loglik - loglik),
-    pvalue = pchisq(LLR_stat, 1, lower.tail = F)
-  ) %&gt;%
-  select(-contains(&quot;dat&quot;), -contains(&quot;fit&quot;)) %&gt;%
-  arrange(virus) %&gt;%
-  mutate(model = &quot;Individual&quot;)
-
-
-combined_sensitivity = sens_mod_both %&gt;%
-  group_by(virus, cohort) %&gt;%
-  nest() %&gt;%
-  mutate(
-    fit_res = if_else(virus == &quot;CMV&quot;, map(data, unnest, fit_resBFGS),
-                      map(data, unnest, fit_resNM))
-  ) %&gt;%
-  unnest(fit_res) %&gt;%
-  select(-contains(&quot;fit&quot;), -contains(&quot;data&quot;), -contains(&quot;dat&quot;)) %&gt;%
-  gather(idpar, betaE, betaM, betaS) %&gt;%
-  mutate(model = &quot;Combined&quot;, idpar = str_remove_all(idpar, &quot;beta&quot;))</code></pre>
-<pre class="r"><code>combined_sensitivity %&gt;%
-  mutate(idpar = factor(idpar, 
-                   levels = c(&quot;S&quot;, &quot;M&quot;),
-                   labels = c(&quot;Secondary child&quot;, &quot;Mother&quot;))) %&gt;%
- ggplot(aes(x = idpar, y = pmax(betaE, 1e-12), colour = cohort)) +
-  geom_point(size = 2, position = position_dodge(width = 0.5)) +
-  scale_y_log10(&quot;Estimated weekly exposure risk coefficient&quot;,
-                breaks = 10^(-5:-12), labels = c(10^(-5:-11), &quot;&lt;1e-12&quot;)) +
-  scale_x_discrete(&quot;Exposure source&quot;, drop = F) +
-  facet_wrap(~ virus) +
-  scale_color_discrete(&quot;Cohort&quot;) +
-  theme(legend.position = &quot;top&quot;, legend.box = &quot;vertical&quot;)</code></pre>
-<p><img src="figure/transmission-risk.Rmd/pl-sensitivity-1.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-pl-sensitivity-1">
-Past versions of pl-sensitivity-1.png
-</button>
-</p>
-<div id="fig-pl-sensitivity-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/bryanmayer/HHVtransmission/blob/220afdb4ee5a3e943976b38938edea0ad293c89e/docs/figure/transmission-risk.Rmd/pl-sensitivity-1.png" target="_blank">220afdb</a>
-</td>
-<td>
-Bryan Mayer
-</td>
-<td>
-2019-07-08
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
@@ -2220,7 +1875,7 @@ Bryan Mayer
 <pre class="r"><code>sessionInfo()</code></pre>
 <pre><code>R version 3.6.0 (2019-04-26)
 Platform: x86_64-apple-darwin15.6.0 (64-bit)
-Running under: macOS Mojave 10.14.5
+Running under: macOS Mojave 10.14.6
 
 Matrix products: default
 BLAS:   /Library/Frameworks/R.framework/Versions/3.6/Resources/lib/libRblas.0.dylib
@@ -2260,6 +1915,7 @@ loaded via a namespace (and not attached):
 [58] rmarkdown_1.13     httr_1.4.0         rstudioapi_0.10   
 [61] R6_2.4.0           nlme_3.1-140       git2r_0.25.2      
 [64] compiler_3.6.0    </code></pre>
+</div>
 </div>
 </div>
 

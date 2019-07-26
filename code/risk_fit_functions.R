@@ -15,7 +15,7 @@ create_likdat = function(dat){
 }
 
 # two exposure sources (S and M)
-create_likdat2 = function(dat){
+create_likdat_combined = function(dat){
     dat %>%
     group_by(FamilyID, infectious_1wk) %>%
     summarize(
@@ -98,7 +98,11 @@ tidy_fits2 = function(lik_res){
   )
 }
 
-
 beta0_calc = function(risk) -log(1 - risk)
 risk0_calc = function(beta0) 1 - exp(-beta0)
+
+
+marginal_fitter = function(){}
+
+combined_fitter = function(){}
 

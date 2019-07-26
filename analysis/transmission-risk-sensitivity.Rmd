@@ -1,0 +1,338 @@
+---
+title: "Model sensitivity to exposure interpolation"
+author: "Bryan Mayer"
+date: "2019-07-26"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+---
+
+
+# Setup
+
+```{r,  warning = F, message = F, echo = F}
+knitr::opts_chunk$set(
+  comment = NA,
+  fig.align = "center",
+  tidy = FALSE
+)
+```
+
+```{r, message = F, warning = F}
+library(tidyverse)
+library(conflicted)
+library(kableExtra)
+library(cowplot)
+theme_set(
+  theme_bw() +
+    theme(panel.grid.minor = element_blank(),
+          legend.position = "top")
+)
+
+conflict_prefer("filter", "dplyr")
+source("code/risk_fit_functions.R")
+source("code/processing_functions.R")
+load("data/model_data.RData")
+
+max_consecutive = function(x, match_var = T){
+  if(!any(match_var %in% x)) return(0)
+  max(rle(x)$lengths[rle(x)$values == match_var])
+}
+
+model_data %>%
+  subset(obs_infected == 1) %>%
+  select(virus, FamilyID) %>%
+  distinct() %>%
+  group_by(virus) %>%
+  summarize(n_infected = n()) %>%
+  kable() %>%
+    kable_styling(full_width = F)
+
+
+# interpolation % data by family wide by exposure source and max
+interpolated_summary = model_data_long %>%
+  subset(idpar != "HH") %>%
+  group_by(virus, FamilyID, obs_infected, idpar) %>%
+  arrange(virus, FamilyID, obs_infected, idpar, infant_wks) %>%
+  summarize(
+    consecutive_int = max_consecutive(interpolated),
+    interpolated_pct = 100*mean(interpolated)
+    ) %>%
+  select(FamilyID, virus, idpar, obs_infected, interpolated_pct, consecutive_int) %>%
+  group_by(FamilyID, virus) %>%
+  mutate(
+    max_interp = max(interpolated_pct),
+    max_consecutive_interp =  max(consecutive_int)
+    )
+
+```
+
+# Interpolation Summary
+
+## Total % interpolation:
+
+```{r sensitivity-dat-summary}
+
+interpolated_summary %>%
+  group_by(virus) %>%
+  select(-consecutive_int, -max_consecutive_interp) %>%
+  spread(idpar, interpolated_pct) %>%
+  summarize(
+    all_M_lte_S = all(M <= S),
+    max_mom = max(M),
+    max_sec_child = max(S),
+    max_household = max(max_interp)
+  ) %>%
+  mutate_if(is.numeric, round) %>%
+  kable(caption = "max percent interpolated by exposure (mothers always have less interpolation)") %>%
+    kable_styling(full_width = F)
+
+interpolated_summary %>%
+  select(FamilyID, virus, obs_infected, max_interp) %>%
+  distinct() %>%
+  group_by(virus, obs_infected) %>%
+  summarize(
+    n = n(),
+    none = sum(max_interp == 0),
+    lt10 = sum(max_interp < 10),
+    gte10 = sum(max_interp >= 10)
+  ) %>%
+  kable(caption = "Household percent interpolated") %>%
+    kable_styling(full_width = F)
+
+interpolated_summary %>%
+  bind_rows(mutate(ungroup(interpolated_summary), obs_infected = 2)) %>%
+  group_by(virus, idpar, interpolated_pct, obs_infected) %>%
+  summarize(total_households = n()) %>%
+  group_by(virus, idpar, obs_infected) %>%
+  arrange(virus, idpar, obs_infected, interpolated_pct) %>%
+  mutate(cumulative_households = cumsum(total_households)) %>%
+  ungroup() %>%
+  mutate(households = factor(obs_infected, levels = 0:2,
+                               labels = c("Uninfected", "Infected", "Total")),
+         idpar = factor(idpar, levels = c("S", "M"),
+                   labels = c("Secondary child", "Mother"))) %>%
+  ggplot(aes(x = interpolated_pct, y = cumulative_households, colour = households)) + 
+  geom_step() +
+  scale_x_continuous("Total interpolation (%)") +
+  scale_y_continuous("Total households", breaks = 0:6*5) +
+  labs(color = "Household infection status") +
+  facet_grid(virus~idpar)
+
+```
+
+## Consecutive interpolation
+
+There are several households that have at least one long stretch of interpolated values. For CMV. For CMV, consecutive interpolation generally maps with total interpolation. For HHV-6, this was not as clear. 
+
+```{r}
+
+interpolated_summary %>%
+  group_by(virus) %>%
+  select(-interpolated_pct, -max_interp) %>%
+  spread(idpar, consecutive_int) %>%
+  group_by(virus) %>%
+  summarize(
+    all_M_lte_S = all(M <= S),
+    max_mom = max(M),
+    max_sec_child = max(S),
+    max_household = max(max_consecutive_interp)
+  ) %>%
+  mutate_if(is.numeric, round) %>%
+  kable(caption = "max consecutive interpolated weeks by exposure (mothers always have less interpolation)") %>%
+    kable_styling(full_width = F)
+
+interpolated_summary %>%
+  ggplot(aes(y = interpolated_pct, x = consecutive_int, 
+             colour = factor(as.logical(obs_infected)))) +
+  geom_point() +
+  scale_x_continuous("Maximum consecutive interpolated weeks", breaks = 0:12) +
+  scale_y_continuous("Percentage of interpolated exposures", breaks = 0:6*10) +
+  facet_grid(virus ~ idpar) +
+  labs(colour = "Infant transmission") +
+  coord_flip()
+
+```
+
+## Modeling sensivity to total interpolation
+
+To assess how families with varying interpolated exposures affect the estimate, we refit the models restricting  maximum interpolation. For the marginal models, we look at this by exposure source. For combined model, we look at total household interpolation (driven by secondary children missing data). Any rules regarding interpolation-based exclusion would be applied at the household-level for consistency. 
+
+```{r sens-data}
+
+# this is used for the marginal models
+sensitivity_data_long = 
+  interpolated_summary %>%
+  ungroup() %>%
+  mutate(interpolated_pct = round(interpolated_pct)) %>%
+  select(virus, idpar, interpolated_pct) %>%
+  distinct() %>%
+  pmap_df(~(
+     interpolated_summary %>%
+       subset(virus == ..1 & idpar == ..2 & interpolated_pct <= ..3) %>%
+       ungroup() %>% 
+       select(FamilyID, idpar, virus, interpolated_pct) %>%
+       left_join(model_data_long, by = c("virus", "FamilyID", "idpar")) %>%
+       mutate(cohort = as.character(..3))
+     )) %>%
+  bind_rows(mutate(subset(model_data_long, obs_infected == 1), 
+                   cohort =  "Infected only")) %>%
+  bind_rows(mutate(model_data_long, cohort = "All")) %>%
+  subset(idpar != "HH")
+
+# the following data is for the combined model, use max interp. across idpar to subset
+maxinterp_list = interpolated_summary %>%
+  ungroup() %>%
+  select(virus, max_interp) %>%
+  mutate(max_interp = round(max_interp)) %>%
+  distinct() 
+
+# left_join used to subset
+sensitivity_data = map2_df(maxinterp_list$virus, maxinterp_list$max_interp, function(i, j){
+  interpolated_summary %>%
+    ungroup() %>%
+    select(FamilyID, max_interp, virus) %>%
+    distinct() %>%
+    subset(max_interp <= j & virus == i) %>%
+    select(FamilyID, virus, max_interp) %>%
+    left_join(model_data, by = c("virus", "FamilyID")) %>%
+    mutate(cohort = as.character(j))  
+}) %>%
+  bind_rows(mutate(subset(model_data, obs_infected == 1), cohort =  "Infected only")) %>%
+  bind_rows(mutate(model_data, cohort = "All"))
+
+```
+
+
+```{r sensitivity-models}
+
+null_risk_sens = sensitivity_data_long %>% 
+  group_by(cohort, idpar, virus, FamilyID) %>%
+  summarize(
+    infected = max(infectious_1wk),
+    surv_weeks = max(c(0, infant_wks[which(infectious_1wk == 0)]))
+  ) %>%
+  group_by(cohort, idpar, virus) %>%
+  summarize(
+    frac_infected = paste(sum(infected), n(), sep = "/"),
+    null_beta = -log(1-sum(infected)/sum(surv_weeks)),
+    null_loglik = null_beta * sum(surv_weeks) - log(1-exp(-null_beta)) * sum(infected)
+  )
+
+sens_mod = sensitivity_data_long %>%
+  group_by(virus, idpar, cohort) %>%
+  nest() %>%
+  mutate(
+    likdat = map(data, create_likdat),
+    total = map_dbl(data, ~n_distinct(.x$FamilyID)), 
+    total_infected = map_dbl(data, ~sum(.x$infectious_1wk)),
+    fit_modNM = map(likdat,  ~optim(c(-12, -3), surv_logLik, likdat = .x)),
+    fit_modBFGS = map(likdat,  ~optim(c(-12, -3), surv_logLik, likdat = .x,  method = "BFGS")),
+    fit_resNM = map(fit_modNM, tidy_fits),
+    fit_resBFGS = map(fit_modBFGS, tidy_fits)
+  ) 
+
+# using both exposures
+sens_mod_both = sensitivity_data %>%
+  group_by(virus, cohort) %>%
+  nest() %>%
+  mutate(
+    likdat = map(data, create_likdat2),
+    total = map_dbl(data, ~n_distinct(.x$FamilyID)), 
+    total_infected = map_dbl(data, ~sum(.x$infectious_1wk)),
+    fit_modNM = map(likdat,  ~optim(c(-2, -3, -3), surv_logLik_2E, likdat = .x)),
+    fit_modBFGS = map(likdat,  ~optim(c(-2, -3, -3), surv_logLik_2E, likdat = .x,  
+                                      method = "BFGS")),
+    fit_resNM = map(fit_modNM, tidy_fits2),
+    fit_resBFGS = map(fit_modBFGS, tidy_fits2)
+  ) 
+
+```
+
+
+```{r sensitivity-results}
+
+marginal_sensitivity = sens_mod %>%
+  group_by(virus, cohort, idpar) %>%
+  nest() %>%
+  mutate(
+    fit_res = if_else(virus == "CMV", map(data, unnest, fit_resBFGS),
+                      map(data, unnest, fit_resNM))
+  ) %>%
+  unnest(fit_res) %>%
+  left_join(null_risk_sens, by = c("virus", "cohort", "idpar")) %>%
+  mutate(
+    LLR_stat = 2 * (null_loglik - loglik),
+    pvalue = pchisq(LLR_stat, 1, lower.tail = F)
+  ) %>%
+  select(-contains("dat"), -contains("fit")) %>%
+  arrange(virus) %>%
+  mutate(model = "Marginal")
+
+combined_sensitivity = sens_mod_both %>%
+  group_by(virus, cohort) %>%
+  nest() %>%
+  mutate(
+    fit_res = if_else(virus == "CMV", map(data, unnest, fit_resBFGS),
+                      map(data, unnest, fit_resNM))
+  ) %>%
+  unnest(fit_res) %>%
+  select(-contains("fit"), -contains("data"), -contains("dat")) %>%
+  gather(idpar, betaE, betaM, betaS) %>%
+  mutate(model = "Combined", idpar = str_remove_all(idpar, "beta")) 
+
+
+pls_sensitivity = map(c("CMV", "HHV-6"), function(v){
+  combined_sensitivity %>%
+  bind_rows(marginal_sensitivity) %>%
+  subset(cohort != "Infected only" & cohort != "All" & virus == v) %>%
+  mutate(idpar = factor(idpar, 
+                   levels = c("S", "M"),
+                   labels = c("Secondary child", "Mother")),
+         model = factor(model, levels = c("Marginal", "Combined")),
+         cohort = as.numeric(cohort),
+         frac_infected = paste(total_infected, total, sep = "/")
+         ) %>%
+  arrange(idpar, virus, cohort) %>%
+  ggplot(aes(x = factor(cohort), y = pmax(betaE, 1e-12), color = idpar)) +
+  geom_point(size = 2) +
+  geom_path(aes(group = idpar)) +
+  scale_y_log10(paste("Est.", v, "weekly exposure risk coefficient"),
+                breaks = 10^(-5:-12), labels = c(10^(-5:-11), "<1e-12")) +
+  scale_x_discrete("Max interpolation (%) by household") +
+  facet_wrap( ~ model) +
+  scale_color_discrete("Exposure Source") +
+  theme(legend.position = "top", legend.box = "vertical")
+  
+})
+
+```
+
+### CMV sensitivity to interpolation
+
+The marginal models are robust (consistently zero). The combined model occasionally catches signal for mother exposure but it is never statistically significant (note that mother exposures are small).
+
+```{r pl-sensitivity-CMV}
+
+pls_sensitivity[[1]]
+
+```
+
+
+### HHV-6 sensitivity to interpolation
+
+The marginal models for secondary children exhibit drift as households with more interpolation are included. The mother exposure risk in the combined model is very sensitive before apparent stabilization. Without including interpolation, mother and child exposure risks are less different than using the full interpolation data.
+
+
+```{r pl-sensitivity-HHV6}
+
+pls_sensitivity[[2]]
+
+```
+
+
+## Modeling sensitivity to consecutive interpolation
+
+
+
+
