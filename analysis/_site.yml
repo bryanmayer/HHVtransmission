@@ -9,10 +9,12 @@ navbar:
     href: index.html
   - text: Data & Figures
     menu:
-    - text: Data Processing
+    - text: Exposure Data Processing
       href: setup-exposure-data.html
-    - text: Data and Dictionary
+    - text: Exposure Data and Dictionary
       href: https://github.com/bryanmayer/HHVtransmission/tree/master/data
+    - text: Model Data Setup and Background
+      href: setup-model-data.html
     - text: Exposure Analysis Figures
       href: https://github.com/bryanmayer/HHVtransmission/tree/master/docs/figure/general-statistics.Rmd
     - text: Transmission Risk Figures

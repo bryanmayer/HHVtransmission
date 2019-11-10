@@ -1,0 +1,85 @@
+---
+title: "Transmission model data setup and background"
+author: "Bryan"
+date: "2019-11-10"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+---
+
+# Model data processing
+
+Set up model data. Only pre-processing is removing left censored family starting at week 8.
+
+```{r knitr-opt,  warning = F, message = F, echo = F}
+knitr::opts_chunk$set(
+  comment = NA,
+  fig.align = "center",
+  tidy = FALSE
+)
+```
+
+```{r setup, warning = F}
+
+library(tidyverse)
+library(conflicted)
+
+```
+
+
+```{r data-processing}
+
+exposure_data = read_csv("data/exposure_data.csv") 
+exposure_data_long = read_csv("data/exposure_data_long.csv") %>%
+  mutate(exposure = if_else(count == 1, 0, 10^(count)))
+
+exposure_data_long %>%
+  subset(idpar != "HH") %>%
+  group_by(virus, FamilyID, idpar) %>%
+  mutate(any_interp = any(interpolated)) %>%
+  subset(any_interp) %>%
+  summarize(
+    first_obs = min(which(is.na(interpolate_idpar)))
+  ) %>%
+  subset(first_obs > 2)
+
+model_data = exposure_data %>% mutate(cohort = "All") %>% subset(FamilyID != "AD")
+model_data_long = exposure_data_long %>% mutate(cohort = "All")  %>% subset(FamilyID != "AD")
+
+save(model_data, model_data_long, file = "output/model_data.RData")
+
+```
+
+
+# Model background
+
+The probability of being uninfected after a single, weekly exposure can written as following:
+
+$$ s(i) = exp(-\beta_0  - \beta_{E}E_i) $$
+or
+$$ s(i) = exp(-\lambda(i)) $$
+
+Instead of continuous time, we consider discretized time denoted by $i \in \{1, ..., n+1\}$ for n+1 weeks of exposures (with n survived exposures). The likelihood follows for a single, infected participant (note that in discrete time we don't apply an instantaneous hazard but use 1 - S(n) for the infectious week):
+
+$$ L_j(n_j+1) = \prod_{i = 1}^{n_j} s_j(i) * (1-s_j(n_j+1))$$
+
+for the j$^{th}$ participant with a unique set of total exposures. We next setup the log-likelihood for the population (m participants) and use $\Delta$ to denote an observed infection.
+
+$$ \sum_{j = 1}^{m} log L_j(n_j) = \sum_{j = 1}^{m}\sum_{i = 1}^{n_j} log(s_j(i)) +  \sum_{j = 1}^{m} \Delta_j * log(1-s_j(n_j+1))$$
+
+
+The following assumptions are used: at-risk individuals are independent and the risk associated with a weekly exposures is unique from other exposures (i.e., non-infectious exposure weeks are exchangeable). From this formulation, we can find the maximum likelihood estimators for the parameters by minimizing the negative log likelihood. Both parameters are solved numerically.
+
+The null model has the following form for weekly risk:
+
+$$ s_0(i) = exp(-\beta_0) $$
+
+I.e., risk is constant and not affected by household exposure.  The null model has a simplified log-likelihood 
+
+$$ \sum_{j = 1}^{m} log L_j(n_j) = -\beta_0 \sum_{j = 1}^{m}n_j + log(1-exp(-\beta_0)) \sum_{j = 1}^{m} \Delta_j $$
+
+with closed-form solution for the null risk 
+
+$$\hat{\beta_0} = -log(1 - \frac{\sum_{j = 1}^{m} \Delta_j}{\sum_{j = 1}^{m}n_j})$$
+
+
