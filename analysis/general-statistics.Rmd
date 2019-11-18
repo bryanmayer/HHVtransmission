@@ -276,7 +276,7 @@ pl_exposure = map(plot_labels$stat %>% levels(), function(s){
     facet_wrap( ~ virus) +
     tmp_theme + theme(axis.text.x = element_text(size = 7))
   
-    plot_grid(pl1, pl2, nrow = 1, labels = LETTERS[c(pl_lab$letter_code, pl_lab$letter_code + 3)])
+    plot_grid(pl1, pl2, nrow = 1, labels = paste0("(",letters[c(pl_lab$letter_code, pl_lab$letter_code + 3)], ")"))
     
 })
 
