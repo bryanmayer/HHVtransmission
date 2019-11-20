@@ -5,11 +5,11 @@ date: "2019-07-26"
 output: workflowr::wflow_html
 ---
 
-This is the main analysis and results for the manuscript. For sensitivity analysis due to exposure interpolation, see the analysis of [model sensitivity to interpolation](transmission-risk-sensitivity.html).
+This is the main analysis and results for the manuscript. For pre-processing of the model data and a brief background on the model, see [transmission model data setup and background](transmission-risksetup-model-data.html). For full model fitting and sensitivity analysis, see the analysis of [model fitting and sensitivity analysis](transmission-risk-sensitivity.html). The sensitivity analysis had downstream effects on the final model analysis presented here.
 
-# Setup
+# Data Setup
 
-```{r,  warning = F, message = F, echo = F}
+```{r knitr-opt,  warning = F, message = F, echo = F}
 knitr::opts_chunk$set(
   comment = NA,
   fig.align = "center",
@@ -17,183 +17,65 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{r, message = F, warning = F}
+```{r packages, message = F, warning = F}
 library(tidyverse)
 library(conflicted)
 library(kableExtra)
 library(cowplot)
+library(lhs)
 conflict_prefer("filter", "dplyr")
 source("code/risk_fit_functions.R")
+source("code/optim_functions.R")
 source("code/processing_functions.R")
 
-```
-
-Set up model data. Only pre-processing is removing left censored family starting at week 8.
-
-```{r setup}
 theme_set(
   theme_bw() +
     theme(panel.grid.minor = element_blank(),
           legend.position = "top")
 )
 
-exposure_data = read_csv("data/exposure_data.csv") %>%
-  subset()
-exposure_data_long = read_csv("data/exposure_data_long.csv") %>%
-  mutate(exposure = if_else(count == 1, 0, 10^(count))) %>%
-  subset()
-
-exposure_data_long %>%
-  subset(idpar != "HH") %>%
-  group_by(virus, FamilyID, idpar) %>%
-  mutate(any_interp = any(interpolated)) %>%
-  subset(any_interp) %>%
-  summarize(
-    first_obs = min(which(is.na(interpolate_idpar)))
-  ) %>%
-  subset(first_obs > 2)
-
-model_data = exposure_data %>% mutate(cohort = "All") %>% subset(FamilyID != "AD")
-model_data_long = exposure_data_long %>% mutate(cohort = "All")  %>% subset(FamilyID != "AD")
-
-save(model_data, model_data_long, file = "data/model_data.RData")
+load("output/model_data.RData")
 
 ```
 
-# Modeling
-
-## Model setup
-
-The probability of being uninfected after a single, weekly exposure can written as following:
-
-$$ s(i) = exp(-\beta_0  - \beta_{E}E_i) $$
-or
-$$ s(i) = exp(-\lambda(i)) $$
-
-Instead of continuous time, we consider discretized time denoted by $i \in \{1, ..., n+1\}$ for n+1 weeks of exposures (with n survived exposures). The likelihood follows for a single, infected participant (note that in discrete time we don't apply an instantaneous hazard but use 1 - S(n) for the infectious week):
-
-$$ L_j(n_j+1) = \prod_{i = 1}^{n_j} s_j(i) * (1-s_j(n_j+1))$$
-
-for the j$^{th}$ participant with a unique set of total exposures. We next setup the log-likelihood for the population (m participants) and use $\Delta$ to denote an observed infection.
-
-$$ \sum_{j = 1}^{m} log L_j(n_j) = \sum_{j = 1}^{m}\sum_{i = 1}^{n_j} log(s_j(i)) +  \sum_{j = 1}^{m} \Delta_j * log(1-s_j(n_j+1))$$
-
-
-The following assumptions are used: at-risk individuals are independent and the risk associated with a weekly exposures is unique from other exposures (i.e., non-infectious exposure weeks are exchangeable). From this formulation, we can find the maximum likelihood estimators for the parameters by minimizing the negative log likelihood. Both parameters are solved numerically.
-
-The null model has the following form for weekly risk:
-
-$$ s_0(i) = exp(-\beta_0) $$
-
-I.e., risk is constant and not affected by household exposure.  The null model has a simplified log-likelihood 
-
-$$ \sum_{j = 1}^{m} log L_j(n_j) = -\beta_0 \sum_{j = 1}^{m}n_j + log(1-exp(-\beta_0)) \sum_{j = 1}^{m} \Delta_j $$
-
-with closed-form solution for the null risk 
-
-$$\hat{\beta_0} = -log(1 - \frac{\sum_{j = 1}^{m} \Delta_j}{\sum_{j = 1}^{m}n_j})$$
-
-## Run models
-
-- Null model is just constant risk model.
-- First set of fitted models are the marginal models
-- Second set is the combined M + S mode
-
-```{r null-model}
-
-# note negative loglik is calculated
-null_risk_mod = model_data %>% 
-  group_by(virus, FamilyID) %>%
-  summarize(
-    infected = max(infectious_1wk),
-    surv_weeks = max(c(0, infant_wks[which(infectious_1wk == 0)]))
-  ) %>%
-  group_by(virus) %>%
-  summarize(
-    null_beta = -log(1-sum(infected)/sum(surv_weeks)),
-    null_loglik = null_beta * sum(surv_weeks) - log(1-exp(-null_beta)) * sum(infected)
-  )
-
-```
 
 ```{r fitted-models}
+set.seed(10)
+marginal_initials = -(20 * optimumLHS(25, 2))
+combined_initials = -(20 * optimumLHS(25, 3))
 
 risk_mod = model_data_long %>%
-  group_by(virus, idpar, cohort) %>%
+  group_by(virus, idpar) %>%
   nest() %>%
   mutate(
     likdat = map(data, create_likdat),
     total = map_dbl(data, ~n_distinct(.x$FamilyID)), 
     total_infected = map_dbl(data, ~sum(.x$infectious_1wk)),
-    fit_modNM = map(likdat,  ~optim(c(-12, -3), surv_logLik, likdat = .x)),
-    fit_modBFGS = map(likdat,  ~optim(c(-12, -3), surv_logLik, likdat = .x,  method = "BFGS")),
-    #fit_modE = map(likdat, ~optimize(surv_logLikE, c(-20, 0), likdat = .x)),
-    fit_resNM = map(fit_modNM, tidy_fits),
-    fit_resBFGS = map(fit_modBFGS, tidy_fits)
+    fit_mod = map(likdat, marginal_fitter, initials = marginal_initials),
+    fit_res = map(fit_mod, tidy_fits)
   ) 
 
 # using both exposures
 risk_mod_both = model_data %>%
-  group_by(virus, cohort) %>%
+  group_by(virus) %>%
   nest() %>%
   mutate(
     likdat = map(data, create_likdat_combined),
     total = map_dbl(data, ~n_distinct(.x$FamilyID)), 
     total_infected = map_dbl(data, ~sum(.x$infectious_1wk)),
-    fit_modNM = map(likdat,  ~optim(c(-12, -3, -3), surv_logLik_2E, likdat = .x)),
-    fit_modBFGS = map(likdat,  ~optim(c(-12, -3, -3), surv_logLik_2E, likdat = .x,  
-                                      method = "BFGS")),
-    fit_resNM = map(fit_modNM, tidy_fits2),
-    fit_resBFGS = map(fit_modBFGS, tidy_fits2)
+    fit_mod = map(likdat, combined_fitter, initials = combined_initials),
+    fit_res = map(fit_mod, tidy_fits_combined)
   ) 
 
 ```
 
-
-NM method doesn't do well with boundary cases but BFGS is a bit overzealous at those. For CMV, when the logliks are equivalent, BFGS tends to selects a zero; for the combined model, BFGS finds a better fit (with 0 for betaS). For HHV-6, NM finds better fits amidst signal.
-
-```{r check-solver}
-risk_mod %>% 
-  rename(NM = fit_resNM, BFGS = fit_resBFGS) %>%
-  unnest(BFGS, .sep = "_") %>%
-  unnest(NM, .sep = "_") %>% 
-  select(virus, idpar, contains("beta"), contains("loglik")) %>%
-  group_by(virus, idpar) %>%
-  select(virus, idpar, BFGS_beta0, NM_beta0, BFGS_betaE, NM_betaE, BFGS_loglik, NM_loglik) %>%
-  mutate_if(is.numeric, format, digits = 3) %>%
-  kable(caption = "Comparing optimization results from marginal models (BFGS vs. Nelder-Mead (NM))", 
-        digits = 3) %>%
-  kable_styling(full_width = F)
-
-risk_mod_both %>% 
-  rename(NM = fit_resNM, BFGS = fit_resBFGS) %>%
-  unnest(BFGS, .sep = "_") %>%
-  unnest(NM, .sep = "_") %>% 
-  select(virus, contains("beta"), contains("loglik"), -contains("betaE")) %>%
-  group_by(virus) %>%
-  select(virus, BFGS_beta0, NM_beta0, 
-         BFGS_betaM, NM_betaM, 
-         BFGS_betaS, NM_betaS, 
-         BFGS_loglik, NM_loglik) %>%
-  mutate_if(is.numeric, format, digits = 3) %>%
-  kable(caption = "Comparing optimization results from full model (BFGS vs. Nelder-Mead (NM))",
-        digits = 3) %>%
-  kable_styling(full_width = F)
-
-```
-
-## Model results
+# Model results
 
 ```{r process-results}
 
 marginal_results = risk_mod %>%
   group_by(virus, idpar) %>%
-  nest() %>%
-  left_join(null_risk_mod, by = c("virus"))%>%
-  mutate(
-    fit_res = if_else(virus == "CMV", map(data, unnest, fit_resBFGS),
-                      map(data, unnest, fit_resNM))
-  ) %>%
+  left_join(null_risk_mod, by = c("virus") )%>%
   unnest(fit_res) %>%
   mutate(
     LLR_stat = 2 * (null_loglik - loglik),
@@ -202,6 +84,7 @@ marginal_results = risk_mod %>%
   select(-contains("dat"), -contains("fit")) %>%
   arrange(virus)
 
+# for tests of the combined model
 risk_mod_loglik = marginal_results %>%
   subset(idpar != "HH") %>%
   select(virus, idpar, loglik, betaE) %>%
@@ -211,11 +94,6 @@ risk_mod_loglik = marginal_results %>%
 
 combined_results = risk_mod_both %>%
   group_by(virus) %>%
-  nest() %>%
-  mutate(
-    fit_res = if_else(virus == "CMV", map(data, unnest, fit_resBFGS),
-                      map(data, unnest, fit_resNM))
-  ) %>%
   unnest(fit_res) %>%
   select(-contains("fit"), -contains("data"), -contains("dat")) %>%
   left_join(risk_mod_loglik, by = c("virus")) %>%
@@ -229,6 +107,8 @@ combined_results = risk_mod_both %>%
     pvalueS = pchisq(LLR_statS, 1, lower.tail = F)
     ) %>%
   arrange(virus)
+
+save(marginal_results, combined_results, file = "output/model_results.RData")
 
 ```
 
@@ -244,6 +124,7 @@ full_results = marginal_results %>%
         pvalue = if_else(parameter == "betaM", pvalue_overall, NA_real_),
       )
   ) %>%
+  ungroup() %>%
   mutate(
     pvalue = if_else(parameter %in% c("null_beta", "beta0"), NA_real_, pvalue),
     idpar = if_else(parameter == "null_beta", "Constant", idpar),
@@ -276,9 +157,12 @@ full_results %>%
   
 ```
 
+## Infectious dose calculations
+
 ```{r IDx}
 
-id_calc = function(b0, bE, prob){
+# function calculate IDX (e.g., X (prob) = 50 for ID50)
+IDX_calc = function(b0, bE, prob){
   (-log(1-prob) - b0)/(bE)
 }
 
@@ -297,9 +181,9 @@ full_results %>%
       parameter == "betaS" ~ "Secondary Child",
       parameter == "betaM" ~ "Mother"
     ), levels = c("Secondary Child", "Mother")),
-    ID25 = id_calc(beta0, estimate, 0.25),
-    ID50 = id_calc(beta0, estimate, 0.5),
-    ID80 = id_calc(beta0, estimate, 0.8)
+    ID25 = IDX_calc(beta0, estimate, 0.25),
+    ID50 = IDX_calc(beta0, estimate, 0.5),
+    ID80 = IDX_calc(beta0, estimate, 0.8)
   ) %>%
   ungroup() %>%
   mutate_if(is.numeric, log10) %>%
@@ -312,6 +196,8 @@ full_results %>%
   add_header_above(c(" " = 3, "Infectious dose (ID)" = 3, ""))
 
 ```
+
+## Dose-response results
 
 ```{r prediction, fig.height=8}
 
