@@ -1,4 +1,6 @@
-# Generate sufficient statistics for use in likelihood function
+# Generate sufficient statistics for use in likelihood function ----
+
+# create_likdat for marginal models, create_likdat_combined for two exposure model
 # dat: data for optimization formatted per this analysis,
 ## requires infant_wks, infectious_1wk, exposure (10^count), FamilyID
 ## output is input data for two components of survival likelihood
@@ -26,8 +28,9 @@ create_likdat_combined = function(dat){
     ungroup()
 }
 
+# Survival log-likelihood functions ----
 
-# Survival log-likelihood function
+# surv_logLik for marginal/single exposure source, combined for two exposure sources
 # log_betas: input vector of logged betas (log beta0, log betaE) for fitting
 # dat: lik data for optimization formatted per this analysis,
 ## requires infectious_1wk (surv_indicator), total_exposure, total_weeks, FamilyID
@@ -46,7 +49,7 @@ surv_logLik = function(log_betas, likdat){
 
 }
 
-surv_logLik_2E = function(log_betas, likdat){
+surv_logLik_combined = function(log_betas, likdat){
 
   beta0 = exp(log_betas)[1]
   betaM = exp(log_betas)[2]
@@ -61,48 +64,3 @@ surv_logLik_2E = function(log_betas, likdat){
   -(sum(logsurv$calc) + sum(loginf$calc))
 
 }
-
-# likelihood wrapper for use in optimizer when betaE = 0
-surv_logLik0 = function(x0, likdat) surv_logLik(c(x0, -Inf), likdat)
-
-# likelihood calculation for beta0 model (constant risk)
-exact_loglik0 = function(beta0, likdat) {
-  beta0 * sum(dat$surv_weeks) - log(1-exp(-beta0)) * sum(dat$infected)
-}
-
-beta0_mle = function(likdat){
-  total_wks = sum(subset(likdat, infectious_1wk == 1)$total_weeks)
-  -log(1 - n_distinct(likdat$FamilyID)/total_wks)
-}
-
-
-## Tidy processing functions
-
-# Tidy likelihood fit
-tidy_fits = function(lik_res){
-  tibble(
-    beta0 = exp(lik_res$par[1]),
-    betaE = exp(lik_res$par[2]),
-    loglik = lik_res$value#,
-    #loglik_calc = surv_logLik(fit_2parm$par, fit_data)
-  )
-}
-
-tidy_fits2 = function(lik_res){
-  tibble(
-    beta0 = exp(lik_res$par[1]),
-    betaM = exp(lik_res$par[2]),
-    betaS = exp(lik_res$par[3]),
-    loglik = lik_res$value#,
-    #loglik_calc = surv_logLik(fit_2parm$par, fit_data)
-  )
-}
-
-beta0_calc = function(risk) -log(1 - risk)
-risk0_calc = function(beta0) 1 - exp(-beta0)
-
-
-marginal_fitter = function(){}
-
-combined_fitter = function(){}
-
