@@ -1,0 +1,5 @@
+virus,model,parameter,estimate,beta0,exposure_source,ID25,ID50,ID75
+HHV-6,Secondary children,bS,-6.04,-1.68,Secondary Children,5.47,5.87,6.17
+HHV-6,Mother,bM,-5.10,-1.53,Mother,4.51,4.92,5.23
+HHV-6,Combined model,bS,-6.10,-1.74,Secondary Children,5.53,5.92,6.23
+HHV-6,Combined model,bM,-5.18,-1.74,Mother,4.61,5.01,5.32

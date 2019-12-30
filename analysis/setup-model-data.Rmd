@@ -1,7 +1,7 @@
 ---
 title: "Transmission model data setup and background"
 author: "Bryan"
-date: "2019-11-10"
+date: "`r Sys.Date()`"
 output: workflowr::wflow_html
 editor_options:
   chunk_output_type: console
@@ -46,7 +46,7 @@ exposure_data_long %>%
 model_data = exposure_data %>% mutate(cohort = "All") %>% subset(FamilyID != "AD")
 model_data_long = exposure_data_long %>% mutate(cohort = "All")  %>% subset(FamilyID != "AD")
 
-save(model_data, model_data_long, file = "output/model_data.RData")
+save(model_data, model_data_long, file = "output/preprocess-model-data/model_data.RData")
 
 ```
 

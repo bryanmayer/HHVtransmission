@@ -1,0 +1,3 @@
+virus,constant_risk,mean_S,max_S,mean_M,max_M,pvalue
+HHV-6,1.80,2.55,92.39,2.22,95.58,<0.001
+CMV,1.92,1.92,1.92,1.92,1.92,0.997

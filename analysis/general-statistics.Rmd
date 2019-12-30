@@ -1,7 +1,7 @@
 ---
 title: "Exposure and Statistics Overview"
 author: "Bryan Mayer"
-date: "2019-07-04"
+date: "`r Sys.Date()`"
 output: workflowr::wflow_html
 ---
 
@@ -183,7 +183,7 @@ exposure_data_long %>%
       labels = c("Secondary Children", "Mother"))) %>%
   select(virus, `Exposure source`, everything(), -idpar) %>%
   arrange(desc(virus), `Exposure source`) %>%
-  write_csv("output/supp_table1.csv") %>%
+  write_csv("output/results-tables/supp_table1.csv") %>%
   kable() %>%
   kable_styling(full_width = F)
 
@@ -312,7 +312,7 @@ exposure_data_summary %>%
   ungroup() %>%
   select(virus, Endpoint, Estimate, p.value) %>%
   arrange(desc(virus), Endpoint) %>%
-  write_csv("output/supp_table2.csv") %>%
+  write_csv("output/results-tables/supp_table2.csv") %>%
   kable(digits = 3) %>%
   kable_styling(full_width = F) %>%
   collapse_rows(1)
@@ -356,7 +356,7 @@ overall_summary %>%
   select(virus, Endpoint, `Exposure source`, everything(), -idpar, -stat) %>%
   mutate_if(is.numeric, round, 2) %>% 
   arrange(desc(virus), Endpoint, `Exposure source`) %>%
-  write_csv("output/supp_table3.csv") %>%
+  write_csv("output/results-tables/supp_table3.csv") %>%
   kable() %>%
   kable_styling(full_width = F) %>%
   collapse_rows(columns = 1:2)

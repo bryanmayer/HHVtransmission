@@ -8,7 +8,13 @@ output:
 
 Authors: Mayer BT, Krantz E, Wald A, Corey L, Casper C, Gantt S, and Schiffer JT
 
-Analysis Roadmap:
+# Analysis Roadmap:
 
 1. [General statistics](general-statistics.html): Overview of the data, survival analysis, and descriptive analysis of exposures.
-2. [Transmission modeling](transmission-risk.html): Results of weekly risk estimation for transmission using the survival likelihood optimization.
+2. [Transmission modeling](transmission-risk-sensitivity.html): Code that fits transmission models using the survival likelihood optimization and sensitivity analysis. 
+3. [Transmission model analysis](transmission-risk.html): Results from the final transmission model: weekly risk estimation by exposure source and dose-response curves.
+
+# Data and other code
+
+- Data and data processing code accessible through the "Data & Figures" tab above.
+- Functions used throughout the analysis are [described and displayed here](project-functions.html). 

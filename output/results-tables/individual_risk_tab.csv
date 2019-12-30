@@ -1,0 +1,9 @@
+virus,model,constant_risk,mean_exposure,exposure_risk_mean,max_exposure,exposure_risk_max,pvalue
+HHV-6,Null,3.60,NA,NA,NA,NA,---
+HHV-6,Secondary children,2.07,3.98,2.92,6.50,94.66,<0.001
+HHV-6,Mother,2.88,2.82,3.39,5.68,97.75,0.007
+HHV-6,Household sum,2.01,3.94,2.79,6.50,94.63,<0.001
+CMV,Null,1.96,NA,NA,NA,NA,---
+CMV,Secondary children,1.92,3.72,1.92,6.72,1.92,0.939
+CMV,Mother,1.92,2.56,1.92,3.88,1.92,0.939
+CMV,Household sum,1.92,3.77,1.92,6.72,1.92,0.939

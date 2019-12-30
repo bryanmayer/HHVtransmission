@@ -10,11 +10,11 @@
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
-<meta name="author" content="Bryan" />
+<meta name="author" content="Bryan Mayer" />
 
 <meta name="date" content="2019-12-30" />
 
-<title>Transmission model data setup and background</title>
+<title>Functions used in the analysis</title>
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -26,7 +26,6 @@
 <link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
 <script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
-<script src="site_libs/navigation-1.1/codefolding.js"></script>
 <link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
 <link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
@@ -253,9 +252,6 @@ $(document).ready(function () {
 </style>
 
 <!-- code folding -->
-<style type="text/css">
-.code-folding-btn { margin-bottom: 4px; }
-</style>
 
 
 
@@ -411,18 +407,10 @@ div.section {
 
 <div class="fluid-row" id="header">
 
-<div class="btn-group pull-right">
-<button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
-<ul class="dropdown-menu" style="min-width: 50px;">
-<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
-<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
-</ul>
-</div>
 
 
-
-<h1 class="title toc-ignore">Transmission model data setup and background</h1>
-<h4 class="author">Bryan</h4>
+<h1 class="title toc-ignore">Functions used in the analysis</h1>
+<h4 class="author">Bryan Mayer</h4>
 <h4 class="date">2019-12-30</h4>
 
 </div>
@@ -472,7 +460,7 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 </div>
 <div id="strongRMarkdownfilestronguncommittedchanges" class="panel-collapse collapse">
 <div class="panel-body">
-<p>The R Markdown file has unstaged changes. To know which version of the R Markdown file created these results, you’ll want to first commit it to the Git repo. If you’re still working on the analysis, you can ignore this warning. When you’re finished, you can run <code>wflow_publish</code> to commit the R Markdown file and build the HTML.</p>
+<p>The R Markdown is untracked by Git. To know which version of the R Markdown file created these results, you’ll want to first commit it to the Git repo. If you’re still working on the analysis, you can ignore this warning. When you’re finished, you can run <code>wflow_publish</code> to commit the R Markdown file and build the HTML.</p>
 </div>
 </div>
 </div>
@@ -596,162 +584,260 @@ Note that any generated files, e.g. HTML, png, CSS, etc., are not included in t
 <hr>
 </div>
 <div id="versions" class="tab-pane fade">
-
 <p>
-These are the previous versions of the R Markdown and HTML files. If you’ve configured a remote Git repository (see <code>?wflow_git_remote</code>), click on the hyperlinks in the table below to view them.
+There are no past versions. Publish this analysis with <code>wflow_publish()</code> to start tracking its development.
 </p>
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-File
-</th>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-<th>
-Message
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-Rmd
-</td>
-<td>
-<a href="https://github.com/bryanmayer/HHVtransmission/blob/d242e92e8742cc12b1efea72d3be5e64b7401487/analysis/setup-model-data.Rmd" target="_blank">d242e92</a>
-</td>
-<td>
-Bryan
-</td>
-<td>
-2019-11-10
-</td>
-<td>
-separate pre-process model data and update index
-</td>
-</tr>
-<tr>
-<td>
-html
-</td>
-<td>
-<a href="https://rawcdn.githack.com/bryanmayer/HHVtransmission/d242e92e8742cc12b1efea72d3be5e64b7401487/docs/setup-model-data.html" target="_blank">d242e92</a>
-</td>
-<td>
-Bryan
-</td>
-<td>
-2019-11-10
-</td>
-<td>
-separate pre-process model data and update index
-</td>
-</tr>
-</tbody>
-</table>
-</div>
 <hr>
 </div>
 </div>
 </div>
-<div id="model-data-processing" class="section level1">
-<h1>Model data processing</h1>
-<p>Set up model data. Only pre-processing is removing left censored family starting at week 8.</p>
-<pre class="r"><code>library(tidyverse)</code></pre>
-<pre><code>── Attaching packages ─────────────────────────────────────────────────────────────────────────────────────────── tidyverse 1.2.1 ──</code></pre>
-<pre><code>✔ ggplot2 3.2.1     ✔ purrr   0.3.3
-✔ tibble  2.1.3     ✔ dplyr   0.8.3
-✔ tidyr   1.0.0     ✔ stringr 1.4.0
-✔ readr   1.3.1     ✔ forcats 0.4.0</code></pre>
-<pre><code>── Conflicts ────────────────────────────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
-✖ dplyr::filter() masks stats::filter()
-✖ dplyr::lag()    masks stats::lag()</code></pre>
-<pre class="r"><code>library(conflicted)</code></pre>
-<pre class="r"><code>exposure_data = read_csv(&quot;data/exposure_data.csv&quot;) </code></pre>
-<pre><code>Parsed with column specification:
-cols(
-  FamilyID = col_character(),
-  virus = col_character(),
-  infant_wks = col_double(),
-  infectious_1wk = col_double(),
-  final_infant_wk = col_double(),
-  infected = col_double(),
-  momhiv = col_character(),
-  final_exposure = col_double(),
-  interpolate_idpar = col_character(),
-  M = col_double(),
-  S = col_double(),
-  HH = col_double(),
-  obs_infected = col_double(),
-  final_wk = col_double(),
-  outcome_time = col_double(),
-  enrollment_age = col_double()
-)</code></pre>
-<pre class="r"><code>exposure_data_long = read_csv(&quot;data/exposure_data_long.csv&quot;) %&gt;%
-  mutate(exposure = if_else(count == 1, 0, 10^(count)))</code></pre>
-<pre><code>Parsed with column specification:
-cols(
-  FamilyID = col_character(),
-  virus = col_character(),
-  infant_wks = col_double(),
-  infectious_1wk = col_double(),
-  final_infant_wk = col_double(),
-  infected = col_double(),
-  momhiv = col_character(),
-  final_exposure = col_double(),
-  interpolate_idpar = col_character(),
-  obs_infected = col_double(),
-  final_wk = col_double(),
-  outcome_time = col_double(),
-  enrollment_age = col_double(),
-  idpar = col_character(),
-  count = col_double(),
-  interpolated = col_logical()
-)</code></pre>
-<pre class="r"><code>exposure_data_long %&gt;%
-  subset(idpar != &quot;HH&quot;) %&gt;%
-  group_by(virus, FamilyID, idpar) %&gt;%
-  mutate(any_interp = any(interpolated)) %&gt;%
-  subset(any_interp) %&gt;%
-  summarize(
-    first_obs = min(which(is.na(interpolate_idpar)))
-  ) %&gt;%
-  subset(first_obs &gt; 2)</code></pre>
-<pre><code># A tibble: 2 x 4
-# Groups:   virus, FamilyID [2]
-  virus FamilyID idpar first_obs
-  &lt;chr&gt; &lt;chr&gt;    &lt;chr&gt;     &lt;int&gt;
-1 CMV   AD       S             8
-2 HHV-6 AD       S             8</code></pre>
-<pre class="r"><code>model_data = exposure_data %&gt;% mutate(cohort = &quot;All&quot;) %&gt;% subset(FamilyID != &quot;AD&quot;)
-model_data_long = exposure_data_long %&gt;% mutate(cohort = &quot;All&quot;)  %&gt;% subset(FamilyID != &quot;AD&quot;)
+<div id="processing-functions-processing_functions.r" class="section level2">
+<h2>Processing functions (<code>processing_functions.R</code>)</h2>
+<p>These functions were used for data manipulation generally related to presentation in tables and figures.</p>
+<pre class="r"><code>round_away_0 = function (x, digits = 0, trailing_zeros = FALSE)
+{
+    rounded_vals &lt;- sign(x) * round(abs(x) + 1e-15, digits)
+    if (trailing_zeros) {
+        rounded_vals[!is.na(rounded_vals)] &lt;- formatC(rounded_vals[!is.na(rounded_vals)],
+            digits, format = &quot;f&quot;)
+        neg_to_change &lt;- paste0(&quot;-0.&quot;, paste0(rep(0, digits),
+            collapse = &quot;&quot;))
+        if (any(rounded_vals == neg_to_change, na.rm = TRUE))
+            rounded_vals[rounded_vals == neg_to_change] &lt;- substr(neg_to_change,
+                2, nchar(neg_to_change))
+    }
+    rounded_vals
+}
 
-save(model_data, model_data_long, file = &quot;output/preprocess-model-data/model_data.RData&quot;)</code></pre>
+
+round_if_numeric = function (x, digits = 0, trailing_zeros = FALSE)
+{
+    if (is.numeric(x))
+        round_away_0(x, digits = digits, trailing_zeros = trailing_zeros)
+    else x
+}
+
+stat_paste = function (stat1, stat2 = NULL, stat3 = NULL, digits = 0, trailing_zeros = TRUE,
+    bound_char = c(&quot;(&quot;, &quot;[&quot;, &quot;{&quot;, &quot;|&quot;), sep = &quot;, &quot;, na_str_out = &quot;---&quot;)
+{
+    bound_char &lt;- match.arg(bound_char)
+    end_bound_char &lt;- switch(bound_char, `(` = &quot;)&quot;, `[` = &quot;]&quot;,
+        `{` = &quot;}&quot;, `|` = &quot;|&quot;)
+    stat1_pasted_obj &lt;- ifelse(is.na(stat1), na_str_out, as.character(round_if_numeric(stat1,
+        digits = digits, trailing_zeros = trailing_zeros)))
+    if (is.null(stat2)) {
+        pasted_output &lt;- stat1_pasted_obj
+    }
+    else {
+        stat2_pasted_obj &lt;- ifelse(is.na(stat2), na_str_out,
+            as.character(round_if_numeric(stat2, digits = digits,
+                trailing_zeros = trailing_zeros)))
+        if (is.null(stat3)) {
+            pasted_output &lt;- ifelse(is.na(stat1) &amp; is.na(stat2),
+                na_str_out, paste0(stat1_pasted_obj, &quot; &quot;, bound_char,
+                  stat2_pasted_obj, end_bound_char))
+        }
+        else {
+            stat3_pasted_obj &lt;- ifelse(is.na(stat3), na_str_out,
+                as.character(round_if_numeric(stat3, digits = digits,
+                  trailing_zeros = trailing_zeros)))
+            pasted_output &lt;- ifelse(is.na(stat1) &amp; is.na(stat2) &amp;
+                is.na(stat3), na_str_out, paste0(stat1_pasted_obj,
+                &quot; &quot;, bound_char, stat2_pasted_obj, sep, stat3_pasted_obj,
+                end_bound_char))
+        }
+    }
+    pasted_output
+}
+
+clean_pvalues = function (pvalues, digits = 3, bold = FALSE, italic = FALSE,
+    background = NULL, sig_alpha = 0.05, missing_char = &quot;---&quot;, trailing_zeros = TRUE)
+{
+    lower_cutoff = 10^(-digits)
+    missing_p = which(is.na(pvalues))
+    below_cutoff_p = which(pvalues &lt; lower_cutoff)
+    sig_p = which(pvalues &lt; sig_alpha)
+    if (trailing_zeros)
+        pvalues_new = round_away_0(pvalues, trailing_zeros = TRUE,
+            digits = digits) else pvalues_new =
+        as.character(round_away_0(pvalues, trailing_zeros = FALSE, digits))
+    pvalues_new[missing_p] = missing_char
+    pvalues_new[below_cutoff_p] = paste0(&quot;&lt;&quot;, lower_cutoff)
+
+    pvalues_new[sig_p] = kableExtra::cell_spec(pvalues_new[sig_p],
+                                               bold = bold, italic = italic,
+                                               background = background, escape = FALSE)
+
+    pvalues_new
+}</code></pre>
+<p>Labels for exposure analysis plots:</p>
+<pre class="r"><code>infection_labels = tibble(
+  labels = c(&quot;No Transmission&quot;, &quot;Transmission&quot;),
+  colours = c(&quot;#4393C3&quot;, &quot;#D6604D&quot;),
+  breaks = c(0, 1)
+)</code></pre>
 </div>
-<div id="model-background" class="section level1">
-<h1>Model background</h1>
-<p>The probability of being uninfected after a single, weekly exposure can written as following:</p>
-<p><span class="math display">\[ s(i) = exp(-\beta_0  - \beta_{E}E_i) \]</span> or <span class="math display">\[ s(i) = exp(-\lambda(i)) \]</span></p>
-<p>Instead of continuous time, we consider discretized time denoted by <span class="math inline">\(i \in \{1, ..., n+1\}\)</span> for n+1 weeks of exposures (with n survived exposures). The likelihood follows for a single, infected participant (note that in discrete time we don’t apply an instantaneous hazard but use 1 - S(n) for the infectious week):</p>
-<p><span class="math display">\[ L_j(n_j+1) = \prod_{i = 1}^{n_j} s_j(i) * (1-s_j(n_j+1))\]</span></p>
-<p>for the j<span class="math inline">\(^{th}\)</span> participant with a unique set of total exposures. We next setup the log-likelihood for the population (m participants) and use <span class="math inline">\(\Delta\)</span> to denote an observed infection.</p>
-<p><span class="math display">\[ \sum_{j = 1}^{m} log L_j(n_j) = \sum_{j = 1}^{m}\sum_{i = 1}^{n_j} log(s_j(i)) +  \sum_{j = 1}^{m} \Delta_j * log(1-s_j(n_j+1))\]</span></p>
-<p>The following assumptions are used: at-risk individuals are independent and the risk associated with a weekly exposures is unique from other exposures (i.e., non-infectious exposure weeks are exchangeable). From this formulation, we can find the maximum likelihood estimators for the parameters by minimizing the negative log likelihood. Both parameters are solved numerically.</p>
-<p>The null model has the following form for weekly risk:</p>
-<p><span class="math display">\[ s_0(i) = exp(-\beta_0) \]</span></p>
-<p>I.e., risk is constant and not affected by household exposure. The null model has a simplified log-likelihood</p>
-<p><span class="math display">\[ \sum_{j = 1}^{m} log L_j(n_j) = -\beta_0 \sum_{j = 1}^{m}n_j + log(1-exp(-\beta_0)) \sum_{j = 1}^{m} \Delta_j \]</span></p>
-<p>with closed-form solution for the null risk</p>
-<p><span class="math display">\[\hat{\beta_0} = -log(1 - \frac{\sum_{j = 1}^{m} \Delta_j}{\sum_{j = 1}^{m}n_j})\]</span></p>
+<div id="model-fitting-code" class="section level2">
+<h2>Model fitting code</h2>
+<div id="model-data-preparation-risk_fit_functions.r" class="section level3">
+<h3>Model data preparation (<code>risk_fit_functions.R</code>)</h3>
+<p>These are functions that prepare the data for model fitting.</p>
+<pre class="r"><code># Generate sufficient statistics for use in likelihood function ----
+
+# create_likdat for marginal models, create_likdat_combined for two exposure model
+# dat: data for optimization formatted per this analysis,
+## requires infant_wks, infectious_1wk, exposure (10^count), FamilyID
+## output is input data for two components of survival likelihood
+### (infectious_1wk = 0: survival input; infectious_1wk = 1: infection interval input)
+
+create_likdat = function(dat){
+    dat %&gt;%
+    group_by(FamilyID, infectious_1wk) %&gt;%
+    summarize(
+      total_exposure = sum(exposure), #should be 1 input for infectious_1wk == 1
+      total_weeks = max(infant_wks)
+    ) %&gt;%
+    ungroup()
+}
+
+# two exposure sources (S and M)
+create_likdat_combined = function(dat){
+    dat %&gt;%
+    group_by(FamilyID, infectious_1wk) %&gt;%
+    summarize(
+      total_exposureM = sum(10^M), #should be 1 input for infectious_1wk == 1
+      total_exposureS = sum(10^S), #should be 1 input for infectious_1wk == 1
+      total_weeks = max(infant_wks)
+    ) %&gt;%
+    ungroup()
+}
+
+# Survival log-likelihood functions ----
+
+# surv_logLik for marginal/single exposure source, combined for two exposure sources
+# log_betas: input vector of logged betas (log beta0, log betaE) for fitting
+# dat: lik data for optimization formatted per this analysis,
+## requires infectious_1wk (surv_indicator), total_exposure, total_weeks, FamilyID
+
+surv_logLik = function(log_betas, likdat){
+  beta0 = exp(log_betas)[1]
+  betaE = exp(log_betas)[2]
+
+  logsurv = likdat %&gt;% subset(infectious_1wk == 0) %&gt;%
+    mutate(calc = -total_exposure * betaE - total_weeks * beta0)
+
+  loginf = likdat %&gt;% subset(infectious_1wk == 1) %&gt;%
+    mutate(calc = log(1 - exp(-beta0 - betaE * total_exposure)))
+
+  -(sum(logsurv$calc) + sum(loginf$calc))
+
+}
+
+surv_logLik_combined = function(log_betas, likdat){
+
+  beta0 = exp(log_betas)[1]
+  betaM = exp(log_betas)[2]
+  betaS = exp(log_betas)[3]
+
+  logsurv = likdat %&gt;% subset(infectious_1wk == 0) %&gt;%
+    mutate(calc = -total_exposureM * betaM - total_exposureS * betaS - total_weeks * beta0)
+
+  loginf = likdat %&gt;% subset(infectious_1wk == 1) %&gt;%
+    mutate(calc = log(1 - exp(-beta0 - total_exposureM * betaM - total_exposureS * betaS)))
+
+  -(sum(logsurv$calc) + sum(loginf$calc))
+
+}</code></pre>
+</div>
+<div id="optimization-functions-optim_functions.r" class="section level3">
+<h3>Optimization functions (<code>optim_functions.R</code>)</h3>
+<p>These are wrappers around the optim function to fit the model parameters. The tidy functions process the model output into a tidy results format.</p>
+<pre class="r"><code># Wrappers for the optim functions ----
+
+# the fitters are similar except marginal expects initials to be a n X 2 matrix and combined expects initials to be a n X 3 matrix. Initials are randomly generated initial values
+# likdat is processed data from create_likdat (risk_fit_functions.R)
+# fitfun is the appropriate survival likelihood function (risk_fit_functions.R)
+# get_best_fit() is below
+
+marginal_fitter = function(likdat, initials, fitfun = surv_logLik){
+
+  if(!is.matrix(initials)) initials = matrix(initials, ncol = 2)
+
+  fits_mods = map2(initials[,1], initials[,2],
+                   ~optim(c(.x, .y), fitfun, likdat = likdat))
+  fit_modsBFGS = map2(initials[1], initials[2],
+                      ~optim(c(.x, .y), fitfun, likdat = likdat, method = &quot;BFGS&quot;))
+  get_best_fit(fits_mods, fit_modsBFGS)
+
+}
+
+combined_fitter = function(likdat, initials, fitfun = surv_logLik_combined){
+
+  fits_mods = pmap(as.data.frame(initials),
+                   ~optim(c(..1, ..2, ..3), fitfun, likdat = likdat))
+  fit_modsBFGS = pmap(as.data.frame(initials),
+                   ~optim(c(..1, ..2, ..3), fitfun, likdat = likdat,
+                          method = &quot;BFGS&quot;))
+
+  get_best_fit(fits_mods, fit_modsBFGS)
+
+}
+
+# get_best_fit traverses the model results to find the smallest log likelihood
+# which.min chooses the first minimum (effectively random as initials were generated randomly)
+# BFGS is chosen of NM for ties because BFGS will find boundary (zero) fits
+
+get_best_fit = function(fits_mods, fit_modsBFGS){
+  loglik = map(fits_mods, ~(.x$value)) %&gt;% flatten_dbl()
+  loglikBFGS = map(fit_modsBFGS, ~(.x$value)) %&gt;% flatten_dbl()
+
+  best_fitNM =  which.min(loglik)
+  best_fitBFGS = which.min(loglikBFGS)
+
+  if(loglikBFGS[best_fitBFGS] &lt;= loglik[best_fitNM]){
+    final_model = fit_modsBFGS[[best_fitBFGS]]
+    final_model$method = &quot;BFGS&quot;
+  } else {
+    final_model = fits_mods[[best_fitNM]]
+    final_model$method = &quot;NM&quot;
+  }
+
+  final_model
+}
+
+
+## Tidy processing functions ----
+
+# Wrappers to convert optim mode output into tidy data
+
+tidy_fits = function(lik_res){
+  tibble(
+    beta0 = exp(lik_res$par[1]),
+    betaE = exp(lik_res$par[2]),
+    loglik = lik_res$value,
+    method = lik_res$method
+  )
+}
+
+tidy_fits_combined = function(lik_res){
+  tibble(
+    beta0 = exp(lik_res$par[1]),
+    betaM = exp(lik_res$par[2]),
+    betaS = exp(lik_res$par[3]),
+    loglik = lik_res$value,
+    method = lik_res$method
+  )
+}</code></pre>
+</div>
+</div>
+<div id="build-project-build_all.r" class="section level2">
+<h2>Build project (<code>build_all.R</code>)</h2>
+<p>Builds the project website by compiling all of the Rmarkdown files using the workflowr API.</p>
+<pre class="r"><code># builds full pipeline
+wflow_build(c(&quot;analysis/about.Rmd&quot;, &quot;analysis/index.Rmd&quot;,
+              &quot;analysis/project-functions.Rmd&quot;, &quot;analysis/setup-exposure-data.Rmd&quot;,
+              &quot;analysis/general-statistics.Rmd&quot;,  &quot;analysis/setup-model-data.Rmd&quot;,
+              &quot;analysis/transmission-risk-sensitivity.Rmd&quot;, &quot;analysis/transmission-risk.Rmd&quot;))</code></pre>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
@@ -774,26 +860,12 @@ locale:
 attached base packages:
 [1] stats     graphics  grDevices utils     datasets  methods   base     
 
-other attached packages:
- [1] conflicted_1.0.4 forcats_0.4.0    stringr_1.4.0    dplyr_0.8.3     
- [5] purrr_0.3.3      readr_1.3.1      tidyr_1.0.0      tibble_2.1.3    
- [9] ggplot2_3.2.1    tidyverse_1.2.1 
-
 loaded via a namespace (and not attached):
- [1] tidyselect_0.2.5 xfun_0.10        haven_2.1.1      lattice_0.20-38 
- [5] colorspace_1.4-1 vctrs_0.2.0      generics_0.0.2   htmltools_0.4.0 
- [9] yaml_2.2.0       utf8_1.1.4       rlang_0.4.2      pillar_1.4.2    
-[13] glue_1.3.1       withr_2.1.2      modelr_0.1.5     readxl_1.3.1    
-[17] lifecycle_0.1.0  munsell_0.5.0    gtable_0.3.0     workflowr_1.4.0 
-[21] cellranger_1.1.0 rvest_0.3.5      evaluate_0.14    memoise_1.1.0   
-[25] knitr_1.25       fansi_0.4.0      broom_0.5.2      Rcpp_1.0.3      
-[29] scales_1.1.0     backports_1.1.5  jsonlite_1.6     fs_1.3.1        
-[33] hms_0.5.1        digest_0.6.23    stringi_1.4.3    grid_3.6.1      
-[37] rprojroot_1.3-2  cli_1.1.0        tools_3.6.1      magrittr_1.5    
-[41] lazyeval_0.2.2   crayon_1.3.4     whisker_0.4      pkgconfig_2.0.3 
-[45] zeallot_0.1.0    xml2_1.2.2       lubridate_1.7.4  assertthat_0.2.1
-[49] rmarkdown_1.17   httr_1.4.1       rstudioapi_0.10  R6_2.4.1        
-[53] nlme_3.1-142     git2r_0.26.1     compiler_3.6.1  </code></pre>
+ [1] workflowr_1.4.0 Rcpp_1.0.3      digest_0.6.23   rprojroot_1.3-2
+ [5] backports_1.1.5 git2r_0.26.1    magrittr_1.5    evaluate_0.14  
+ [9] rlang_0.4.2     stringi_1.4.3   fs_1.3.1        rmarkdown_1.17 
+[13] tools_3.6.1     stringr_1.4.0   glue_1.3.1      xfun_0.10      
+[17] yaml_2.2.0      compiler_3.6.1  htmltools_0.4.0 knitr_1.25     </code></pre>
 </div>
 </div>
 
@@ -844,11 +916,6 @@ $(document).ready(function () {
 </script>
 
 <!-- code folding -->
-<script>
-$(document).ready(function () {
-  window.initializeCodeFolding("hide" === "show");
-});
-</script>
 
 <script>
 $(document).ready(function ()  {

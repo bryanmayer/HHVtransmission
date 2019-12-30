@@ -1,0 +1,46 @@
+---
+title: "Functions used in the analysis"
+author: "Bryan Mayer"
+date: "`r Sys.Date()`"
+output:
+  workflowr::wflow_html:
+    code_folding: none
+editor_options:
+  chunk_output_type: console
+---
+
+
+## Processing functions (`processing_functions.R`)
+
+These functions were used for data manipulation generally related to presentation in tables and figures.
+
+```{r, code=readLines("../code/processing_functions.R"), eval = F}
+```
+
+Labels for exposure analysis plots:
+
+```{r, code=readLines("../code/plot_labels.R"), eval = F}
+```
+
+## Model fitting code
+
+###  Model data preparation (`risk_fit_functions.R`)
+
+These are functions that prepare the data for model fitting.
+
+```{r, code=readLines("../code/risk_fit_functions.R"), eval = F}
+```
+
+### Optimization functions (`optim_functions.R`)
+
+These are wrappers around the optim function to fit the model parameters. The tidy functions process the model output into a tidy results format.
+
+```{r, code=readLines("../code/optim_functions.R"), eval = F}
+```
+
+## Build project (`build_all.R`)
+
+Builds the project website by compiling all of the Rmarkdown files using the workflowr API.
+
+```{r, code=readLines("../code/build_all.R"), eval = F}
+```

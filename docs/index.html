@@ -350,7 +350,7 @@ div.section {
 
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
-<span class="glyphicon glyphicon-list" aria-hidden="true"></span> workflowr <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+<span class="glyphicon glyphicon-list" aria-hidden="true"></span> workflowr <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span>
 </button>
 </p>
 <div id="workflowr-report" class="collapse">
@@ -359,7 +359,7 @@ div.section {
 <a data-toggle="tab" href="#summary">Summary</a>
 </li>
 <li>
-<a data-toggle="tab" href="#checks"> Checks <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> </a>
+<a data-toggle="tab" href="#checks"> Checks <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> </a>
 </li>
 <li>
 <a data-toggle="tab" href="#versions">Past versions</a>
@@ -368,10 +368,10 @@ div.section {
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2019-11-10
+<strong>Last updated:</strong> 2019-12-30
 </p>
 <p>
-<strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 2 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
+<strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 1 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 1
 </p>
 <p>
 <strong>Knit directory:</strong> <code>HHVtransmission/</code> <span class="glyphicon glyphicon-question-sign" aria-hidden="true" title="This is the local directory in which the code in this file was executed."> </span>
@@ -387,22 +387,22 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguncommittedchanges"> <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> <strong>R Markdown file:</strong> uncommitted changes </a>
 </p>
 </div>
-<div id="strongRMarkdownfilestronguptodate" class="panel-collapse collapse">
+<div id="strongRMarkdownfilestronguncommittedchanges" class="panel-collapse collapse">
 <div class="panel-body">
-<p>Great! Since the R Markdown file has been committed to the Git repository, you know the exact version of the code that produced these results.</p>
+<p>The R Markdown file has unstaged changes. To know which version of the R Markdown file created these results, you’ll want to first commit it to the Git repo. If you’re still working on the analysis, you can ignore this warning. When you’re finished, you can run <code>wflow_publish</code> to commit the R Markdown file and build the HTML.</p>
 </div>
 </div>
 </div>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcombryanmayerHHVtransmissiontree5ab3f974477bf1ae9f46d48747249a6f867b979ctargetblank5ab3f97a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/bryanmayer/HHVtransmission/tree/5ab3f974477bf1ae9f46d48747249a6f867b979c" target="_blank">5ab3f97</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcombryanmayerHHVtransmissiontree9ec3ff208deb346d8e9afb8d9676f62d3ab7b0abtargetblank9ec3ff2a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/bryanmayer/HHVtransmission/tree/9ec3ff208deb346d8e9afb8d9676f62d3ab7b0ab" target="_blank">9ec3ff2</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcombryanmayerHHVtransmissiontree5ab3f974477bf1ae9f46d48747249a6f867b979ctargetblank5ab3f97a" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcombryanmayerHHVtransmissiontree9ec3ff208deb346d8e9afb8d9676f62d3ab7b0abtargetblank9ec3ff2a" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility. The version displayed above was the version of the Git repository at the time these results were generated. <br><br> Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -415,21 +415,35 @@ Ignored files:
     Ignored:    analysis/.Rhistory
     Ignored:    docs/.DS_Store
     Ignored:    docs/figure/.DS_Store
+    Ignored:    docs/figure/transmission-risk-sensitivity.Rmd/.DS_Store
+    Ignored:    docs/figure/transmission-risk.Rmd/.DS_Store
+    Ignored:    output/.DS_Store
 
 Untracked files:
-    Untracked:  analysis/setup-model-data.Rmd
-    Untracked:  code/optim_functions.R
-    Untracked:  docs/figure/transmission-risk-sensitivity.Rmd/
-    Untracked:  output/model_data.RData
-    Untracked:  output/model_results.RData
+    Untracked:  analysis/project-functions.Rmd
+    Untracked:  output/final-model/
+    Untracked:  output/preprocess-model-data/
+    Untracked:  output/results-tables/combined_risk_tab.csv
+    Untracked:  output/results-tables/hhv6_id50_tab.csv
+    Untracked:  output/results-tables/individual_risk_tab.csv
+    Untracked:  output/results-tables/supp_table1.csv
+    Untracked:  output/results-tables/supp_table2.csv
+    Untracked:  output/results-tables/supp_table4.csv
 
 Unstaged changes:
-    Modified:   analysis/_site.yml
+    Modified:   analysis/about.Rmd
+    Modified:   analysis/general-statistics.Rmd
+    Modified:   analysis/index.Rmd
     Modified:   analysis/setup-exposure-data.Rmd
+    Modified:   analysis/setup-model-data.Rmd
     Modified:   analysis/transmission-risk-sensitivity.Rmd
     Modified:   analysis/transmission-risk.Rmd
-    Modified:   code/risk_fit_functions.R
-    Deleted:    data/model_data.RData
+    Modified:   code/build_all.R
+    Deleted:    output/final_model.rds
+    Deleted:    output/model_data.RData
+    Deleted:    output/supp_table1.csv
+    Deleted:    output/supp_table2.csv
+    Deleted:    output/supp_table3.csv
 
 </code></pre>
 <p>
@@ -468,6 +482,23 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/bryanmayer/HHVtransmission/d242e92e8742cc12b1efea72d3be5e64b7401487/docs/index.html" target="_blank">d242e92</a>
+</td>
+<td>
+Bryan
+</td>
+<td>
+2019-11-10
+</td>
+<td>
+separate pre-process model data and update index
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -680,11 +711,21 @@ Start workflowr project.
 </div>
 </div>
 <p>Authors: Mayer BT, Krantz E, Wald A, Corey L, Casper C, Gantt S, and Schiffer JT</p>
-<p>Analysis Roadmap:</p>
+<div id="analysis-roadmap" class="section level1">
+<h1>Analysis Roadmap:</h1>
 <ol style="list-style-type: decimal">
 <li><a href="general-statistics.html">General statistics</a>: Overview of the data, survival analysis, and descriptive analysis of exposures.</li>
-<li><a href="transmission-risk.html">Transmission modeling</a>: Results of weekly risk estimation for transmission using the survival likelihood optimization.</li>
+<li><a href="transmission-risk-sensitivity.html">Transmission modeling</a>: Code that fits transmission models using the survival likelihood optimization and sensitivity analysis.</li>
+<li><a href="transmission-risk.html">Transmission model analysis</a>: Results from the final transmission model: weekly risk estimation by exposure source and dose-response curves.</li>
 </ol>
+</div>
+<div id="data-and-other-code" class="section level1">
+<h1>Data and other code</h1>
+<ul>
+<li>Data and data processing code accessible through the “Data &amp; Figures” tab above.</li>
+<li>Functions used throughout the analysis are <a href="project-functions.html">described and displayed here</a>.</li>
+</ul>
+</div>
 
 
 <!-- Adjust MathJax settings so that all math formulae are shown using

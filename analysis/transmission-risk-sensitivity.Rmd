@@ -1,7 +1,7 @@
 ---
 title: "Model fitting and sensitivity analysis"
 author: "Bryan Mayer"
-date: "2019-11-19f"
+date: "`r Sys.Date()`"
 output: workflowr::wflow_html
 editor_options:
   chunk_output_type: console
@@ -9,13 +9,11 @@ editor_options:
 
 # Background
 
-This R markdown script performs all of the model fitting and sensitivity analysis. For pre-processing of the model data and a brief background on the model, see [transmission model data setup and background](transmission-risksetup-model-data.html).
-
-# Summary
-
-
+This R markdown script performs all of the model fitting and sensitivity analysis. For pre-processing of the model data and a brief background on the model, see [transmission model data setup and background](setup-model-data.html). Details on the sensitivity analysis are explained in the Appendix of the manuscript.
 
 # Setup
+
+This document was compiled after models have been previously fit (because they take several minutes to run). To refit the models, set any of the following flags (in the setup chunk) to TRUE: `fit_loo` (leave-one-out), `fit_sens` (interpolation sensitivity), or `fit_final`. Fitted parameters shouldn't change unless the seed is changed (in model-fitter chunk), as the seed determined the LHS-sampled initial values.
 
 ```{r,  warning = F, message = F, echo = F}
 knitr::opts_chunk$set(
@@ -47,7 +45,7 @@ conflict_prefer("filter", "dplyr")
 source("code/risk_fit_functions.R")
 source("code/processing_functions.R")
 source("code/optim_functions.R")
-load("output/model_data.RData")
+load("output/preprocess-model-data/model_data.RData")
 
 raw_dat = read_csv("data/PHICS_transmission_data.csv") %>%
     subset(times >= infantdob & 
@@ -544,13 +542,18 @@ tests = marginal_sensitivity %>%
 sens_pl = combined_sensitivity %>%
   bind_rows(marginal_sensitivity) %>%
   ungroup() %>%
-  mutate(idpar = factor(idpar, 
-                   levels = c("S", "M"),
-                   labels = c("Secondary children", "Mother")),
-         model = factor(model, levels = c("Individual", "Combined")),
-         cohort = as.numeric(cohort),
-         frac_infected = paste(total_infected, total, sep = "/")
-         ) %>%
+  mutate(
+    virus = factor(virus, 
+                   levels = c("HHV-6",  "CMV")),
+    idpar = factor(
+      idpar,
+      levels = c("S", "M"),
+      labels = c("Secondary children", "Mother")
+    ),
+    model = factor(model, levels = c("Individual", "Combined")),
+    cohort = as.numeric(cohort),
+    frac_infected = paste(total_infected, total, sep = "/")
+  ) %>% 
   arrange(idpar, virus, cohort) %>%
   ggplot(aes(x = factor(cohort, levels = unique(sort(cohort)),
                         labels =  c(head(unique(sort(cohort)), -1), "60\nAll\ndata")), 
@@ -661,7 +664,7 @@ final_model = fit_models_tidy(
                                             virus == "HHV-6"))
 )
   
-write_rds(final_model, "output/final_model.rds")
+write_rds(final_model, "output/final-model/final_model.rds")
 
 
 ```

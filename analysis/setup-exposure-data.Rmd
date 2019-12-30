@@ -1,7 +1,7 @@
 ---
 title: "Processing exposure data"
 author: "Bryan Mayer"
-date: "2019-07-04"
+date: "`r Sys.Date()`"
 output: workflowr::wflow_html
 ---
 
@@ -20,12 +20,13 @@ knitr::opts_chunk$set(
 ```{r load-packages-data, warning = F, message = F, echo = F}
 library(zoo)
 library(tidyverse)
+library(kableExtra)
 
 virusMeltedDataDemoAllInfant = read_csv("data/PHICS_transmission_data.csv")
 lower_limit = min(subset(virusMeltedDataDemoAllInfant, count > 0)$count)
+source("code/processing_functions.R")
 
-
-save_data = F
+save_data = T
 if(!save_data) print("Data was not updated or saved on this compile.")
 ```
 
@@ -35,10 +36,12 @@ if(!save_data) print("Data was not updated or saved on this compile.")
 - Exclude family AZ in HHV-6 because no infection and all 0 viral loads   
 
 ```{r subset-data, warning = F, message = F}
-exposure_data = subset(virusMeltedDataDemoAllInfant,
-              times >= infantdob & ((infantInfection == 0) | (infantInfection == 1 & times <= infantInfDate)) &
-                idpar != "P" & !Virus %in% c("ORL_HHV8", "ORL_HSV", "ORL_EBV") & 
-                !(FamilyID == "AZ" & Virus == "ORL_HHV6")) %>%
+exposure_data = virusMeltedDataDemoAllInfant %>%
+  subset(times >= infantdob & 
+           ((infantInfection == 0) | (infantInfection == 1 & times <= infantInfDate)) &
+           idpar != "P" & !Virus %in% c("ORL_HHV8", "ORL_HSV", "ORL_EBV") & 
+           !(FamilyID == "AZ" & Virus == "ORL_HHV6")
+         ) %>%
   mutate(
     virus = str_split_fixed(Virus, "_", n = 2)[,2],
     virus = if_else(virus == "HHV6", "HHV-6", virus)
@@ -58,8 +61,8 @@ age_data = subset(virusMeltedDataDemoAllInfant, idpar == "P") %>%
 
 ```{r exposure-times}
 
-infant_dates = subset(virusMeltedDataDemoAllInfant, idpar == "P" & 
-                        !Virus %in% c("ORL_HHV8", "ORL_HSV", "ORL_EBV")) %>%
+infant_dates = virusMeltedDataDemoAllInfant %>%
+  subset(idpar == "P" & !Virus %in% c("ORL_HHV8", "ORL_HSV", "ORL_EBV")) %>%
   group_by(FamilyID, Virus) %>%
   summarize(final_infant_date = if(infantInfection[1]) infantInfDate[1] else max(times),
             first_infant_date = infantdob[1])
@@ -89,6 +92,51 @@ exposure_times %>% group_by(FamilyID, idpar, virus) %>%
 # Create exposure variable by household member
 
 There are multiple secondary children (S) to aggregate.
+
+```{r mult-sib}
+
+multS_exposure = exposure_times %>% 
+  subset(idpar == "S") %>%
+  group_by(FamilyID, virus) %>%
+  mutate(
+    idpar2 = str_split_fixed(PatientID, "-", n = 2)[,2],
+    total_SC = n_distinct(idpar2)
+  ) %>%
+  subset(total_SC > 1) %>%
+  group_by(FamilyID, virus) %>%
+  mutate(
+    pvalue = kruskal.test(count ~ idpar2)$p.value
+  ) 
+
+multS_exposure %>%
+  group_by(FamilyID, virus, idpar2, pvalue) %>%
+  summarize(
+    mean_VL = mean(count),
+    total = n(),
+    mean_n = stat_paste(mean_VL, total, digits = 2, trailing_zeros = F)
+  ) %>%
+  select(FamilyID, virus, idpar2, mean_n, pvalue) %>%
+  ungroup() %>%
+  spread(idpar2, mean_n, fill = "---") %>%
+  mutate(flag = pvalue < 0.1) %>%
+  arrange(virus, pvalue, FamilyID) %>%
+  select(everything(), pvalue, flag) %>%
+  kable(digits = 3) %>%
+  kable_styling(full_width = F)
+  
+```
+
+
+```{r multi-sib-pl}
+
+multS_exposure %>%
+  subset(pvalue < 0.1) %>%
+  ggplot(aes(x = infant_days, y = count, colour = idpar2)) +
+  geom_line() + geom_point() +
+  facet_wrap(~virus+FamilyID) +
+  theme(legend.position = "top")
+
+```
 
 ```{r idpar-variable}
 
