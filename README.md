@@ -4,18 +4,16 @@ A [workflowr][] project.
 
 [workflowr]: https://github.com/jdblischak/workflowr
 
+Website hosted here: [bryanmayer.github.io/HHVtransmission](bryanmayer.github.io/HHVtransmission)
 
 ## Order of analysis files:
 
-1. exposure_data_setup.Rmd -> set up the data for analysis
+1. setup-exposure-data.Rmd -> set up the data for analysis
 
-2. basic_statistics.Rmd -> basic statistics of the data, for background use in methods at this point
+2. general-statistics.Rmd -> statistics on incidence and household exposure data
 
-3. survival_analysis.Rmd -> establishes outcome data, makes "clean final" data for the exposure analysis
+3. setup-model-data.Rmd ->  minimal additional data preparing for transmission model
 
-4. exposure_overview.Rmd -> basic statistics for cleaned exposure data, for use in Results
+4. transmission-risk-sensitivity.Rmd -> transmission model selection, diagnostics, and sensitivity
 
-5. regression_analysis.Rmd -> model of time/exposure and how it predicts infection
-
-6. prediction_analysis.Rmd -> use best fitting regression models to estimate dose-response curves. 
-
+5. transmission-risk.Rmd -> analysis of final transmission model: risk predictions and dose-response

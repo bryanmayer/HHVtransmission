@@ -7,7 +7,7 @@ navbar:
     href: about.html
   - text: Analysis
     href: index.html
-  - text: Data & Figures
+  - text: Data
     menu:
     - text: Exposure Data Processing
       href: setup-exposure-data.html
@@ -15,8 +15,16 @@ navbar:
       href: https://github.com/bryanmayer/HHVtransmission/tree/master/data
     - text: Model Data Setup and Background
       href: setup-model-data.html
+  - text: Tables
+    menu:
+    - text: All Results Tables
+      href: https://github.com/bryanmayer/HHVtransmission/tree/master/output/results-tables
+  - text: Figures
+    menu:
     - text: Exposure Analysis Figures
       href: https://github.com/bryanmayer/HHVtransmission/tree/master/docs/figure/general-statistics.Rmd
+    - text: Sensitivity Analysis Figures
+      href: https://github.com/bryanmayer/HHVtransmission/tree/master/docs/figure/transmission-risk-sensitivity.Rmd
     - text: Transmission Risk Figures
       href: https://github.com/bryanmayer/HHVtransmission/tree/master/docs/figure/transmission-risk.Rmd
   - text: License
