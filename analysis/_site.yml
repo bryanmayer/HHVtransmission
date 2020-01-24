@@ -17,18 +17,44 @@ navbar:
       href: setup-model-data.html
   - text: Tables
     menu:
+    - text: Table 1
+      href: https://github.com/bryanmayer/HHVtransmission/blob/master/output/results-tables/individual_risk_tab.csv
+    - text: Table 2
+      href: https://github.com/bryanmayer/HHVtransmission/blob/master/output/results-tables/combined_risk_tab.csv
+    - text: Table 3
+      href: https://github.com/bryanmayer/HHVtransmission/blob/master/output/results-tables/hhv6_id50_tab.csv
+    - text: Supp. Table 1
+      href: https://github.com/bryanmayer/HHVtransmission/blob/master/output/results-tables/supp_table1.csv
+    - text: Supp. Table 2
+      href: https://github.com/bryanmayer/HHVtransmission/blob/master/output/results-tables/supp_table2.csv
+    - text: Supp. Table 3
+      href: https://github.com/bryanmayer/HHVtransmission/blob/master/output/results-tables/supp_table3.csv
+    - text: Table B1
+      href: https://github.com/bryanmayer/HHVtransmission/blob/master/output/results-tables/supp_table4.csv
     - text: All Results Tables
       href: https://github.com/bryanmayer/HHVtransmission/tree/master/output/results-tables
   - text: Figures
     menu:
+    - text: Figure 1
+      href: https://github.com/bryanmayer/HHVtransmission/blob/master/docs/figure/general-statistics.Rmd/survival-plot-1.png
+    - text: Figure 2
+      href: https://github.com/bryanmayer/HHVtransmission/blob/master/docs/figure/general-statistics.Rmd/exposure-profile-1.png
+    - text: Figure 3
+      href: https://github.com/bryanmayer/HHVtransmission/blob/master/docs/figure/transmission-risk.Rmd/hhv6-dr-1.png
+    - text: Figure B1
+      href: https://github.com/bryanmayer/HHVtransmission/blob/master/docs/figure/transmission-risk-sensitivity.Rmd/sens-final-pl1-1.png
+    - text: Figure B2
+      href: https://github.com/bryanmayer/HHVtransmission/blob/master/docs/figure/transmission-risk-sensitivity.Rmd/sens-final-pl2-1.png
+    - text: Supp. Figure 1
+      href: https://github.com/bryanmayer/HHVtransmission/blob/master/docs/figure/general-statistics.Rmd/hh-composition-1.png
+    - text: Supp. Figure 2
+      href: https://github.com/bryanmayer/HHVtransmission/blob/master/docs/figure/transmission-risk.Rmd/cmv-dr-1.png
     - text: Exposure Analysis Figures
       href: https://github.com/bryanmayer/HHVtransmission/tree/master/docs/figure/general-statistics.Rmd
     - text: Sensitivity Analysis Figures
       href: https://github.com/bryanmayer/HHVtransmission/tree/master/docs/figure/transmission-risk-sensitivity.Rmd
     - text: Transmission Risk Figures
       href: https://github.com/bryanmayer/HHVtransmission/tree/master/docs/figure/transmission-risk.Rmd
-  - text: License
-    href: license.html
   right:
   - icon: fa-github
     text: Source code
