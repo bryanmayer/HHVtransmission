@@ -285,7 +285,7 @@ $(document).ready(function () {
 </li>
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-    Data &amp; Figures
+    Data
      
     <span class="caret"></span>
   </a>
@@ -299,16 +299,79 @@ $(document).ready(function () {
     <li>
       <a href="setup-model-data.html">Model Data Setup and Background</a>
     </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Tables
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://github.com/bryanmayer/HHVtransmission/blob/master/output/results-tables/individual_risk_tab.csv">Table 1</a>
+    </li>
+    <li>
+      <a href="https://github.com/bryanmayer/HHVtransmission/blob/master/output/results-tables/combined_risk_tab.csv">Table 2</a>
+    </li>
+    <li>
+      <a href="https://github.com/bryanmayer/HHVtransmission/blob/master/output/results-tables/hhv6_id50_tab.csv">Table 3</a>
+    </li>
+    <li>
+      <a href="https://github.com/bryanmayer/HHVtransmission/blob/master/output/results-tables/supp_table1.csv">Supp. Table 1</a>
+    </li>
+    <li>
+      <a href="https://github.com/bryanmayer/HHVtransmission/blob/master/output/results-tables/supp_table2.csv">Supp. Table 2</a>
+    </li>
+    <li>
+      <a href="https://github.com/bryanmayer/HHVtransmission/blob/master/output/results-tables/supp_table3.csv">Supp. Table 3</a>
+    </li>
+    <li>
+      <a href="https://github.com/bryanmayer/HHVtransmission/blob/master/output/results-tables/supp_table4.csv">Table B1</a>
+    </li>
+    <li>
+      <a href="https://github.com/bryanmayer/HHVtransmission/tree/master/output/results-tables">All Results Tables</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Figures
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://github.com/bryanmayer/HHVtransmission/blob/master/docs/figure/general-statistics.Rmd/survival-plot-1.png">Figure 1</a>
+    </li>
+    <li>
+      <a href="https://github.com/bryanmayer/HHVtransmission/blob/master/docs/figure/general-statistics.Rmd/exposure-profile-1.png">Figure 2</a>
+    </li>
+    <li>
+      <a href="https://github.com/bryanmayer/HHVtransmission/blob/master/docs/figure/transmission-risk.Rmd/hhv6-dr-1.png">Figure 3</a>
+    </li>
+    <li>
+      <a href="https://github.com/bryanmayer/HHVtransmission/blob/master/docs/figure/transmission-risk-sensitivity.Rmd/sens-final-pl1-1.png">Figure B1</a>
+    </li>
+    <li>
+      <a href="https://github.com/bryanmayer/HHVtransmission/blob/master/docs/figure/transmission-risk-sensitivity.Rmd/sens-final-pl2-1.png">Figure B2</a>
+    </li>
+    <li>
+      <a href="https://github.com/bryanmayer/HHVtransmission/blob/master/docs/figure/general-statistics.Rmd/hh-composition-1.png">Supp. Figure 1</a>
+    </li>
+    <li>
+      <a href="https://github.com/bryanmayer/HHVtransmission/blob/master/docs/figure/transmission-risk.Rmd/cmv-dr-1.png">Supp. Figure 2</a>
+    </li>
     <li>
       <a href="https://github.com/bryanmayer/HHVtransmission/tree/master/docs/figure/general-statistics.Rmd">Exposure Analysis Figures</a>
+    </li>
+    <li>
+      <a href="https://github.com/bryanmayer/HHVtransmission/tree/master/docs/figure/transmission-risk-sensitivity.Rmd">Sensitivity Analysis Figures</a>
     </li>
     <li>
       <a href="https://github.com/bryanmayer/HHVtransmission/tree/master/docs/figure/transmission-risk.Rmd">Transmission Risk Figures</a>
     </li>
   </ul>
-</li>
-<li>
-  <a href="license.html">License</a>
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
@@ -350,7 +413,7 @@ div.section {
 
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
-<span class="glyphicon glyphicon-list" aria-hidden="true"></span> workflowr <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+<span class="glyphicon glyphicon-list" aria-hidden="true"></span> workflowr <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span>
 </button>
 </p>
 <div id="workflowr-report" class="collapse">
@@ -359,7 +422,7 @@ div.section {
 <a data-toggle="tab" href="#summary">Summary</a>
 </li>
 <li>
-<a data-toggle="tab" href="#checks"> Checks <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> </a>
+<a data-toggle="tab" href="#checks"> Checks <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> </a>
 </li>
 <li>
 <a data-toggle="tab" href="#versions">Past versions</a>
@@ -368,10 +431,10 @@ div.section {
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2020-01-22
+<strong>Last updated:</strong> 2020-01-23
 </p>
 <p>
-<strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 2 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
+<strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 1 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 1
 </p>
 <p>
 <strong>Knit directory:</strong> <code>HHVtransmission/</code> <span class="glyphicon glyphicon-question-sign" aria-hidden="true" title="This is the local directory in which the code in this file was executed."> </span>
@@ -387,22 +450,22 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguncommittedchanges"> <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> <strong>R Markdown file:</strong> uncommitted changes </a>
 </p>
 </div>
-<div id="strongRMarkdownfilestronguptodate" class="panel-collapse collapse">
+<div id="strongRMarkdownfilestronguncommittedchanges" class="panel-collapse collapse">
 <div class="panel-body">
-<p>Great! Since the R Markdown file has been committed to the Git repository, you know the exact version of the code that produced these results.</p>
+<p>The R Markdown file has unstaged changes. To know which version of the R Markdown file created these results, you’ll want to first commit it to the Git repo. If you’re still working on the analysis, you can ignore this warning. When you’re finished, you can run <code>wflow_publish</code> to commit the R Markdown file and build the HTML.</p>
 </div>
 </div>
 </div>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcombryanmayerHHVtransmissiontreed58fdbcfb0a0f202f23f278e2547c3f0727cd8b1targetblankd58fdbca"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/bryanmayer/HHVtransmission/tree/d58fdbcfb0a0f202f23f278e2547c3f0727cd8b1" target="_blank">d58fdbc</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcombryanmayerHHVtransmissiontreedc1f7c207905bfa36b19d5c913b6a83110daa9cetargetblankdc1f7c2a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/bryanmayer/HHVtransmission/tree/dc1f7c207905bfa36b19d5c913b6a83110daa9ce" target="_blank">dc1f7c2</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcombryanmayerHHVtransmissiontreed58fdbcfb0a0f202f23f278e2547c3f0727cd8b1targetblankd58fdbca" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcombryanmayerHHVtransmissiontreedc1f7c207905bfa36b19d5c913b6a83110daa9cetargetblankdc1f7c2a" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility. The version displayed above was the version of the Git repository at the time these results were generated. <br><br> Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -414,12 +477,22 @@ Ignored files:
     Ignored:    .Rproj.user/
     Ignored:    analysis/.DS_Store
     Ignored:    analysis/.Rhistory
+    Ignored:    data/.DS_Store
     Ignored:    docs/.DS_Store
     Ignored:    docs/figure/.DS_Store
-    Ignored:    docs/figure/transmission-risk-sensitivity.Rmd/.DS_Store
-    Ignored:    docs/figure/transmission-risk.Rmd/.DS_Store
     Ignored:    output/.DS_Store
     Ignored:    output/preprocess-model-data/.DS_Store
+
+Untracked files:
+    Untracked:  data/tmp/
+    Untracked:  output/results-tables/README.md
+
+Unstaged changes:
+    Modified:   analysis/_site.yml
+    Modified:   analysis/about.Rmd
+    Modified:   analysis/index.Rmd
+    Modified:   analysis/setup-exposure-data.Rmd
+    Modified:   analysis/transmission-risk-sensitivity.Rmd
 
 </code></pre>
 <p>
@@ -463,7 +536,7 @@ Message
 Rmd
 </td>
 <td>
-<a href="https://github.com/bryanmayer/HHVtransmission/blob/d2aaf95ee7f543390a43c7770d72badc0935c137/analysis/index.Rmd" target="_blank">d2aaf95</a>
+<a href="https://github.com/bryanmayer/HHVtransmission/blob/af2a4c1175ef2812656825d7d4f62621b3ce4877/analysis/index.Rmd" target="_blank">af2a4c1</a>
 </td>
 <td>
 Bryan
@@ -480,7 +553,7 @@ all updates after co-author review; edits to tables/figs; ID75
 html
 </td>
 <td>
-<a href="https://rawcdn.githack.com/bryanmayer/HHVtransmission/d2aaf95ee7f543390a43c7770d72badc0935c137/docs/index.html" target="_blank">d2aaf95</a>
+<a href="https://rawcdn.githack.com/bryanmayer/HHVtransmission/af2a4c1175ef2812656825d7d4f62621b3ce4877/docs/index.html" target="_blank">af2a4c1</a>
 </td>
 <td>
 Bryan
@@ -497,7 +570,7 @@ all updates after co-author review; edits to tables/figs; ID75
 html
 </td>
 <td>
-<a href="https://rawcdn.githack.com/bryanmayer/HHVtransmission/d242e92e8742cc12b1efea72d3be5e64b7401487/docs/index.html" target="_blank">d242e92</a>
+<a href="https://rawcdn.githack.com/bryanmayer/HHVtransmission/54f6c39218222051e0f0bc8e34d524b3204f64db/docs/index.html" target="_blank">54f6c39</a>
 </td>
 <td>
 Bryan
@@ -514,7 +587,7 @@ separate pre-process model data and update index
 Rmd
 </td>
 <td>
-<a href="https://github.com/bryanmayer/HHVtransmission/blob/e6ddfc5fc0d903af18474599c070369c035339d6/analysis/index.Rmd" target="_blank">e6ddfc5</a>
+<a href="https://github.com/bryanmayer/HHVtransmission/blob/ce0f229a62f6889c0855aff2d2d84aaadbc498de/analysis/index.Rmd" target="_blank">ce0f229</a>
 </td>
 <td>
 Bryan Mayer
@@ -531,7 +604,7 @@ analysis through first-final draft
 html
 </td>
 <td>
-<a href="https://rawcdn.githack.com/bryanmayer/HHVtransmission/e6ddfc5fc0d903af18474599c070369c035339d6/docs/index.html" target="_blank">e6ddfc5</a>
+<a href="https://rawcdn.githack.com/bryanmayer/HHVtransmission/ce0f229a62f6889c0855aff2d2d84aaadbc498de/docs/index.html" target="_blank">ce0f229</a>
 </td>
 <td>
 Bryan Mayer
@@ -548,7 +621,7 @@ analysis through first-final draft
 html
 </td>
 <td>
-<a href="https://rawcdn.githack.com/bryanmayer/HHVtransmission/ccb85444ca5453cd660edd447ce54a237a53b302/docs/index.html" target="_blank">ccb8544</a>
+<a href="https://rawcdn.githack.com/bryanmayer/HHVtransmission/3bc1e7c1607d489c496942aa5bdd6839e670dcae/docs/index.html" target="_blank">3bc1e7c</a>
 </td>
 <td>
 Bryan Mayer
@@ -565,7 +638,7 @@ updated analysis through exposure overview
 Rmd
 </td>
 <td>
-<a href="https://github.com/bryanmayer/HHVtransmission/blob/94e6618fb9978a0c64f2adb420ea31a91045dfc3/analysis/index.Rmd" target="_blank">94e6618</a>
+<a href="https://github.com/bryanmayer/HHVtransmission/blob/39e3dc064e5a383856e55ebb23fc9284b10d1442/analysis/index.Rmd" target="_blank">39e3dc0</a>
 </td>
 <td>
 Bryan Mayer
@@ -582,7 +655,7 @@ update through transmission risk
 html
 </td>
 <td>
-<a href="https://rawcdn.githack.com/bryanmayer/HHVtransmission/94e6618fb9978a0c64f2adb420ea31a91045dfc3/docs/index.html" target="_blank">94e6618</a>
+<a href="https://rawcdn.githack.com/bryanmayer/HHVtransmission/39e3dc064e5a383856e55ebb23fc9284b10d1442/docs/index.html" target="_blank">39e3dc0</a>
 </td>
 <td>
 Bryan Mayer
@@ -599,7 +672,7 @@ update through transmission risk
 html
 </td>
 <td>
-<a href="https://rawcdn.githack.com/bryanmayer/HHVtransmission/998789072ea864cdc1c553eb797da834a748257d/docs/index.html" target="_blank">9987890</a>
+<a href="https://rawcdn.githack.com/bryanmayer/HHVtransmission/c96d292e97fa84c6d5a81e3489d0d7ccd5164bb7/docs/index.html" target="_blank">c96d292</a>
 </td>
 <td>
 Bryan Mayer

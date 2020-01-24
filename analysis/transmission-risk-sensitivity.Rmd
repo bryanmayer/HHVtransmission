@@ -48,18 +48,8 @@ source("code/optim_functions.R")
 load("output/preprocess-model-data/model_data.RData")
 
 raw_dat = read_csv("data/PHICS_transmission_data.csv") %>%
-    subset(times >= infantdob & 
-           ((infantInfection == 0) | (infantInfection == 1 & times <= infantInfDate)) &
-           idpar != "P" & !Virus %in% c("ORL_HHV8", "ORL_HSV", "ORL_EBV") & 
-           !(FamilyID == "AZ" & Virus == "ORL_HHV6")
-         ) %>%
-  mutate(
-    virus = str_split_fixed(Virus, "_", n = 2)[,2],
-    virus = if_else(virus == "HHV6", "HHV-6", virus)
-    ) %>% group_by(FamilyID) %>%
-  mutate(
-    infant_days = as.numeric(difftime(times, unique(infantdob), units = "days"))
-    )
+    subset(idpar != "P" & !virus %in% c("HHV-8", "HSV", "EBV") & 
+           !(FamilyID == "AZ" & virus == "HHV-6"))
 
 fit_loo = F
 fit_sens = F

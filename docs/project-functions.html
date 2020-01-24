@@ -12,7 +12,7 @@
 
 <meta name="author" content="Bryan Mayer" />
 
-<meta name="date" content="2020-01-22" />
+<meta name="date" content="2020-01-23" />
 
 <title>Functions used in the analysis</title>
 
@@ -359,7 +359,7 @@ div.tocify {
 </li>
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-    Data &amp; Figures
+    Data
      
     <span class="caret"></span>
   </a>
@@ -373,8 +373,32 @@ div.tocify {
     <li>
       <a href="setup-model-data.html">Model Data Setup and Background</a>
     </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Tables
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://github.com/bryanmayer/HHVtransmission/tree/master/output/results-tables">All Results Tables</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Figures
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
     <li>
       <a href="https://github.com/bryanmayer/HHVtransmission/tree/master/docs/figure/general-statistics.Rmd">Exposure Analysis Figures</a>
+    </li>
+    <li>
+      <a href="https://github.com/bryanmayer/HHVtransmission/tree/master/docs/figure/transmission-risk-sensitivity.Rmd">Sensitivity Analysis Figures</a>
     </li>
     <li>
       <a href="https://github.com/bryanmayer/HHVtransmission/tree/master/docs/figure/transmission-risk.Rmd">Transmission Risk Figures</a>
@@ -411,7 +435,7 @@ div.section {
 
 <h1 class="title toc-ignore">Functions used in the analysis</h1>
 <h4 class="author">Bryan Mayer</h4>
-<h4 class="date">2020-01-22</h4>
+<h4 class="date">2020-01-23</h4>
 
 </div>
 
@@ -436,7 +460,7 @@ div.section {
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2020-01-22
+<strong>Last updated:</strong> 2020-01-23
 </p>
 <p>
 <strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
@@ -527,10 +551,10 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcombryanmayerHHVtransmissiontreed58fdbcfb0a0f202f23f278e2547c3f0727cd8b1targetblankd58fdbca"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/bryanmayer/HHVtransmission/tree/d58fdbcfb0a0f202f23f278e2547c3f0727cd8b1" target="_blank">d58fdbc</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcombryanmayerHHVtransmissiontreedc1f7c207905bfa36b19d5c913b6a83110daa9cetargetblankdc1f7c2a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/bryanmayer/HHVtransmission/tree/dc1f7c207905bfa36b19d5c913b6a83110daa9ce" target="_blank">dc1f7c2</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcombryanmayerHHVtransmissiontreed58fdbcfb0a0f202f23f278e2547c3f0727cd8b1targetblankd58fdbca" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcombryanmayerHHVtransmissiontreedc1f7c207905bfa36b19d5c913b6a83110daa9cetargetblankdc1f7c2a" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility. The version displayed above was the version of the Git repository at the time these results were generated. <br><br> Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -542,12 +566,18 @@ Ignored files:
     Ignored:    .Rproj.user/
     Ignored:    analysis/.DS_Store
     Ignored:    analysis/.Rhistory
+    Ignored:    data/.DS_Store
     Ignored:    docs/.DS_Store
     Ignored:    docs/figure/.DS_Store
-    Ignored:    docs/figure/transmission-risk-sensitivity.Rmd/.DS_Store
-    Ignored:    docs/figure/transmission-risk.Rmd/.DS_Store
     Ignored:    output/.DS_Store
     Ignored:    output/preprocess-model-data/.DS_Store
+
+Untracked files:
+    Untracked:  data/tmp/
+
+Unstaged changes:
+    Modified:   analysis/setup-exposure-data.Rmd
+    Modified:   analysis/transmission-risk-sensitivity.Rmd
 
 </code></pre>
 <p>
@@ -591,7 +621,7 @@ Message
 Rmd
 </td>
 <td>
-<a href="https://github.com/bryanmayer/HHVtransmission/blob/d2aaf95ee7f543390a43c7770d72badc0935c137/analysis/project-functions.Rmd" target="_blank">d2aaf95</a>
+<a href="https://github.com/bryanmayer/HHVtransmission/blob/af2a4c1175ef2812656825d7d4f62621b3ce4877/analysis/project-functions.Rmd" target="_blank">af2a4c1</a>
 </td>
 <td>
 Bryan
@@ -608,7 +638,7 @@ all updates after co-author review; edits to tables/figs; ID75
 html
 </td>
 <td>
-<a href="https://rawcdn.githack.com/bryanmayer/HHVtransmission/d2aaf95ee7f543390a43c7770d72badc0935c137/docs/project-functions.html" target="_blank">d2aaf95</a>
+<a href="https://rawcdn.githack.com/bryanmayer/HHVtransmission/af2a4c1175ef2812656825d7d4f62621b3ce4877/docs/project-functions.html" target="_blank">af2a4c1</a>
 </td>
 <td>
 Bryan

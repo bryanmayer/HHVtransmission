@@ -1,11 +1,14 @@
 ---
-title: "About"
+title: "About - Citation"
 output:
   workflowr::wflow_html:
     toc: false
 ---
 
-[Estimating weekly transmission risk for CMV and HHV-6 in Ugandan infants.](index.html)
+[Estimating risk of human herpesvirus 6 and cytomegalovirus transmission to Ugandan infants from viral shedding in saliva by household contacts.](index.html)
+
+
+Publication information TBD.
 
 Title:
 Authors:

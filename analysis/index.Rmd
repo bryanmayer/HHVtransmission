@@ -17,4 +17,5 @@ Authors: Mayer BT, Krantz E, Wald A, Corey L, Casper C, Gantt S, and Schiffer JT
 # Data and other code
 
 - Data and data processing code accessible through the "Data & Figures" tab above.
-- Functions used throughout the analysis are [described and displayed here](project-functions.html). 
+- Functions used throughout the analysis are [described and displayed here](project-functions.html).
+

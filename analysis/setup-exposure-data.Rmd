@@ -36,56 +36,14 @@ if(!save_data) print("Data was not updated or saved on this compile.")
 - Exclude family AZ in HHV-6 because no infection and all 0 viral loads   
 
 ```{r subset-data, warning = F, message = F}
-exposure_data = virusMeltedDataDemoAllInfant %>%
-  subset(times >= infantdob & 
-           ((infantInfection == 0) | (infantInfection == 1 & times <= infantInfDate)) &
-           idpar != "P" & !Virus %in% c("ORL_HHV8", "ORL_HSV", "ORL_EBV") & 
-           !(FamilyID == "AZ" & Virus == "ORL_HHV6")
-         ) %>%
-  mutate(
-    virus = str_split_fixed(Virus, "_", n = 2)[,2],
-    virus = if_else(virus == "HHV6", "HHV-6", virus)
-    )
+exposure_times = virusMeltedDataDemoAllInfant %>%
+  subset(idpar != "P" & !virus %in% c("HHV-8", "HSV", "EBV") & 
+           !(FamilyID == "AZ" & virus == "HHV-6")
+         )
 
-#merge later
-age_data = subset(virusMeltedDataDemoAllInfant, idpar == "P") %>% 
-  group_by(FamilyID) %>%
-  summarize(enrollment_age = as.numeric(difftime(min(times), unique(infantdob)))) 
-
-```
-
-# Create time variables
-
- - Set up the time variable (days), relative to infantdob, eventually turn into weeks
- - Plot displays relationship between infant infection time (day 0) and spread of visit days
-
-```{r exposure-times}
-
-infant_dates = virusMeltedDataDemoAllInfant %>%
-  subset(idpar == "P" & !Virus %in% c("ORL_HHV8", "ORL_HSV", "ORL_EBV")) %>%
-  group_by(FamilyID, Virus) %>%
-  summarize(final_infant_date = if(infantInfection[1]) infantInfDate[1] else max(times),
-            first_infant_date = infantdob[1])
-
-exposure_times = left_join(exposure_data, infant_dates, by = c("FamilyID", "Virus")) %>%
-  filter(times >= first_infant_date & times <= final_infant_date)
-
-# days from infant dob
-exposure_times$infant_days =
-  with(exposure_times, as.numeric(difftime(times, first_infant_date, units = "days")))
-
-# this is time in reverse (higher = closer to enrollment)
-exposure_times$days_from_final_infant =
-  with(exposure_times, as.numeric(difftime(final_infant_date, times, units = "days")))
-
-# do we see relationship between end of study and missed visits?
-exposure_times %>% group_by(FamilyID, idpar, virus) %>% 
-  arrange(infant_days) %>%
-  mutate(time_diff = c(NA, diff(infant_days))) %>%
-  ggplot(aes(x = days_from_final_infant, y = time_diff)) + 
-  facet_wrap(~idpar) +
-  geom_point() +
-  geom_hline(yintercept = 7, colour = "red")
+#merge later, relic from old code
+age_data = select(exposure_times, FamilyID, enrollment_age) %>%
+  distinct()
 
 ```
 
@@ -143,13 +101,12 @@ multS_exposure %>%
 # combines siblings into one exposure
 
 primary_exposures_idpar = exposure_times %>% 
-  group_by(FamilyID, idpar, virus, infant_days, momhiv, days_from_final_infant) %>%
+  group_by(FamilyID, idpar, virus, infant_days, momhiv, days_from_final_infant, final_infant_day) %>%
   summarize(
     total_contributed_idpar = n(),
     who_contributed_idpar = paste(str_split_fixed(PatientID, "-", n = 2)[,2], collapse = ", "),
     exposure = log10(sum(10^count, na.rm = T)),
-    infected = infantInfection[1],
-    final_infant_day = as.numeric(difftime(final_infant_date[1], first_infant_date[1], units = "days"))
+    infected = infantInfection[1]
     )  %>% 
   group_by(FamilyID, virus, idpar) %>%
   mutate(
