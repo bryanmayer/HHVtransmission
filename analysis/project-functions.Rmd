@@ -46,7 +46,7 @@ Builds the project website by compiling all of the Rmarkdown files using the wor
 ```
 
 
-## Publish project (`build_all.R`)
+## Publish project (`publish_all.R`)
 
 Publishes the project website by compiling all of the Rmarkdown files using the workflowr API.
 
