@@ -44,3 +44,11 @@ Builds the project website by compiling all of the Rmarkdown files using the wor
 
 ```{r, code=readLines("../code/build_all.R"), eval = F}
 ```
+
+
+## Publish project (`build_all.R`)
+
+Publishes the project website by compiling all of the Rmarkdown files using the workflowr API.
+
+```{r, code=readLines("../code/publish_all.R"), eval = F}
+```

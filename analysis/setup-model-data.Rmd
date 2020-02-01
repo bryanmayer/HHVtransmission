@@ -23,7 +23,7 @@ knitr::opts_chunk$set(
 
 library(tidyverse)
 library(conflicted)
-
+save_model_data = F
 ```
 
 
@@ -46,7 +46,9 @@ exposure_data_long %>%
 model_data = exposure_data %>% mutate(cohort = "All") %>% subset(FamilyID != "AD")
 model_data_long = exposure_data_long %>% mutate(cohort = "All")  %>% subset(FamilyID != "AD")
 
-save(model_data, model_data_long, file = "output/preprocess-model-data/model_data.RData")
+if(save_model_data){
+  save(model_data, model_data_long, file = "output/preprocess-model-data/model_data.RData")
+}
 
 ```
 

@@ -26,7 +26,7 @@ virusMeltedDataDemoAllInfant = read_csv("data/PHICS_transmission_data.csv")
 lower_limit = min(subset(virusMeltedDataDemoAllInfant, count > 0)$count)
 source("code/processing_functions.R")
 
-save_data = T
+save_data = F
 if(!save_data) print("Data was not updated or saved on this compile.")
 ```
 
