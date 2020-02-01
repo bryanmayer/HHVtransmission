@@ -4,7 +4,7 @@ A [workflowr][] project.
 
 [workflowr]: https://github.com/jdblischak/workflowr
 
-Website hosted here: [bryanmayer.github.io/HHVtransmission](bryanmayer.github.io/HHVtransmission)
+Website hosted here: [bryanmayer.github.io/HHVtransmission](https://bryanmayer.github.io/HHVtransmission)
 
 ## Order of analysis files:
 
