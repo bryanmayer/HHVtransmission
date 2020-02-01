@@ -5,7 +5,7 @@ output:
     toc: false
 ---
 
-[Estimating risk of human herpesvirus 6 and cytomegalovirus transmission to Ugandan infants from viral shedding in saliva by household contacts.](index.html)
+[Estimating the risk of human herpesvirus 6 and cytomegalovirus transmission to Ugandan infants from viral shedding in saliva by household contacts.](index.html)
 
 
 Publication information TBD.
