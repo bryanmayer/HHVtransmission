@@ -590,10 +590,10 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcombryanmayerHHVtransmissiontree93301d60449d3347c3795f40f5713f8ed6c4fb9ctargetblank93301d6a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/bryanmayer/HHVtransmission/tree/93301d60449d3347c3795f40f5713f8ed6c4fb9c" target="_blank">93301d6</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcombryanmayerHHVtransmissiontreec45802af3fec5e5c3001b77d286a2d09063d66catargetblankc45802aa"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/bryanmayer/HHVtransmission/tree/c45802af3fec5e5c3001b77d286a2d09063d66ca" target="_blank">c45802a</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcombryanmayerHHVtransmissiontree93301d60449d3347c3795f40f5713f8ed6c4fb9ctargetblank93301d6a" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcombryanmayerHHVtransmissiontreec45802af3fec5e5c3001b77d286a2d09063d66catargetblankc45802aa" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility. The version displayed above was the version of the Git repository at the time these results were generated. <br><br> Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -615,6 +615,7 @@ Untracked files:
     Untracked:  data/tmp/
 
 Unstaged changes:
+    Modified:   code/build_all.R
     Modified:   code/publish_all.R
 
 </code></pre>
@@ -654,6 +655,23 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/bryanmayer/HHVtransmission/c50009c35e2c958c92f0a8b884661e7d519ed384/docs/project-functions.html" target="_blank">c50009c</a>
+</td>
+<td>
+Bryan
+</td>
+<td>
+2020-02-01
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -972,19 +990,36 @@ tidy_fits_combined = function(lik_res){
 <h2>Build project (<code>build_all.R</code>)</h2>
 <p>Builds the project website by compiling all of the Rmarkdown files using the workflowr API.</p>
 <pre class="r"><code># builds full pipeline
-wflow_build(c(&quot;analysis/about.Rmd&quot;, &quot;analysis/index.Rmd&quot;,
-              &quot;analysis/project-functions.Rmd&quot;, &quot;analysis/setup-exposure-data.Rmd&quot;,
-              &quot;analysis/general-statistics.Rmd&quot;,  &quot;analysis/setup-model-data.Rmd&quot;,
-              &quot;analysis/transmission-risk-sensitivity.Rmd&quot;, &quot;analysis/transmission-risk.Rmd&quot;))</code></pre>
+wflow_build(
+  c(
+    &quot;analysis/about.Rmd&quot;,
+    &quot;analysis/index.Rmd&quot;,
+    &quot;analysis/project-functions.Rmd&quot;,
+    &quot;analysis/setup-exposure-data.Rmd&quot;,
+    &quot;analysis/general-statistics.Rmd&quot;,
+    &quot;analysis/setup-model-data.Rmd&quot;,
+    &quot;analysis/transmission-risk-sensitivity.Rmd&quot;,
+    &quot;analysis/transmission-risk.Rmd&quot;
+  )
+)</code></pre>
 </div>
-<div id="publish-project-build_all.r" class="section level2">
-<h2>Publish project (<code>build_all.R</code>)</h2>
+<div id="publish-project-publish_all.r" class="section level2">
+<h2>Publish project (<code>publish_all.R</code>)</h2>
 <p>Publishes the project website by compiling all of the Rmarkdown files using the workflowr API.</p>
 <pre class="r"><code># publishes full pipeline
-wflow_publish(c(&quot;analysis/_site.yml&quot;, &quot;analysis/about.Rmd&quot;, &quot;analysis/index.Rmd&quot;,
-              &quot;analysis/project-functions.Rmd&quot;, &quot;analysis/setup-exposure-data.Rmd&quot;,
-              &quot;analysis/general-statistics.Rmd&quot;,  &quot;analysis/setup-model-data.Rmd&quot;,
-              &quot;analysis/transmission-risk-sensitivity.Rmd&quot;, &quot;analysis/transmission-risk.Rmd&quot;))</code></pre>
+wflow_publish(
+  c(
+    &quot;analysis/_site.yml&quot;,
+    &quot;analysis/about.Rmd&quot;,
+    &quot;analysis/index.Rmd&quot;,
+    &quot;analysis/project-functions.Rmd&quot;,
+    &quot;analysis/setup-exposure-data.Rmd&quot;,
+    &quot;analysis/general-statistics.Rmd&quot;,
+    &quot;analysis/setup-model-data.Rmd&quot;,
+    &quot;analysis/transmission-risk-sensitivity.Rmd&quot;,
+    &quot;analysis/transmission-risk.Rmd&quot;
+  )
+)</code></pre>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
