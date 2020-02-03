@@ -12,7 +12,7 @@
 
 
 
-<title>Estimating Household Risk of Human Herpesvirus Acquisition Among Ugandan Infants Through Exposure to Viruses in Saliva</title>
+<title>Estimating the Risk of Human Herpesvirus 6 and Cytomegalovirus Transmission to Ugandan Infants from Viral Shedding in Saliva by Household Contacts</title>
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -327,7 +327,7 @@ $(document).ready(function () {
       <a href="https://github.com/bryanmayer/HHVtransmission/blob/master/output/results-tables/supp_table3.csv">Supp. Table 3</a>
     </li>
     <li>
-      <a href="https://github.com/bryanmayer/HHVtransmission/blob/master/output/results-tables/supp_table4.csv">Table B1</a>
+      <a href="https://github.com/bryanmayer/HHVtransmission/blob/master/output/results-tables/supp_table4.csv">Table A1</a>
     </li>
     <li>
       <a href="https://github.com/bryanmayer/HHVtransmission/tree/master/output/results-tables">All Results Tables</a>
@@ -351,10 +351,10 @@ $(document).ready(function () {
       <a href="https://github.com/bryanmayer/HHVtransmission/blob/master/docs/figure/transmission-risk.Rmd/hhv6-dr-1.png">Figure 3</a>
     </li>
     <li>
-      <a href="https://github.com/bryanmayer/HHVtransmission/blob/master/docs/figure/transmission-risk-sensitivity.Rmd/sens-final-pl1-1.png">Figure B1</a>
+      <a href="https://github.com/bryanmayer/HHVtransmission/blob/master/docs/figure/transmission-risk-sensitivity.Rmd/sens-final-pl1-1.png">Figure A1</a>
     </li>
     <li>
-      <a href="https://github.com/bryanmayer/HHVtransmission/blob/master/docs/figure/transmission-risk-sensitivity.Rmd/sens-final-pl2-1.png">Figure B2</a>
+      <a href="https://github.com/bryanmayer/HHVtransmission/blob/master/docs/figure/transmission-risk-sensitivity.Rmd/sens-final-pl2-1.png">Figure A2</a>
     </li>
     <li>
       <a href="https://github.com/bryanmayer/HHVtransmission/blob/master/docs/figure/general-statistics.Rmd/hh-composition-1.png">Supp. Figure 1</a>
@@ -406,14 +406,14 @@ div.section {
 
 
 
-<h1 class="title toc-ignore">Estimating Household Risk of Human Herpesvirus Acquisition Among Ugandan Infants Through Exposure to Viruses in Saliva</h1>
+<h1 class="title toc-ignore">Estimating the Risk of Human Herpesvirus 6 and Cytomegalovirus Transmission to Ugandan Infants from Viral Shedding in Saliva by Household Contacts</h1>
 
 </div>
 
 
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
-<span class="glyphicon glyphicon-list" aria-hidden="true"></span> workflowr <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+<span class="glyphicon glyphicon-list" aria-hidden="true"></span> workflowr <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span>
 </button>
 </p>
 <div id="workflowr-report" class="collapse">
@@ -422,7 +422,7 @@ div.section {
 <a data-toggle="tab" href="#summary">Summary</a>
 </li>
 <li>
-<a data-toggle="tab" href="#checks"> Checks <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> </a>
+<a data-toggle="tab" href="#checks"> Checks <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> </a>
 </li>
 <li>
 <a data-toggle="tab" href="#versions">Past versions</a>
@@ -431,10 +431,10 @@ div.section {
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2020-02-01
+<strong>Last updated:</strong> 2020-02-03
 </p>
 <p>
-<strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 2 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
+<strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 1 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 1
 </p>
 <p>
 <strong>Knit directory:</strong> <code>HHVtransmission/</code> <span class="glyphicon glyphicon-question-sign" aria-hidden="true" title="This is the local directory in which the code in this file was executed."> </span>
@@ -450,22 +450,22 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguncommittedchanges"> <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> <strong>R Markdown file:</strong> uncommitted changes </a>
 </p>
 </div>
-<div id="strongRMarkdownfilestronguptodate" class="panel-collapse collapse">
+<div id="strongRMarkdownfilestronguncommittedchanges" class="panel-collapse collapse">
 <div class="panel-body">
-<p>Great! Since the R Markdown file has been committed to the Git repository, you know the exact version of the code that produced these results.</p>
+<p>The R Markdown file has unstaged changes. To know which version of the R Markdown file created these results, you’ll want to first commit it to the Git repo. If you’re still working on the analysis, you can ignore this warning. When you’re finished, you can run <code>wflow_publish</code> to commit the R Markdown file and build the HTML.</p>
 </div>
 </div>
 </div>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcombryanmayerHHVtransmissiontree93301d60449d3347c3795f40f5713f8ed6c4fb9ctargetblank93301d6a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/bryanmayer/HHVtransmission/tree/93301d60449d3347c3795f40f5713f8ed6c4fb9c" target="_blank">93301d6</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcombryanmayerHHVtransmissiontree67254bc019ce3d12e53b5e0de05952867c50e203targetblank67254bca"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/bryanmayer/HHVtransmission/tree/67254bc019ce3d12e53b5e0de05952867c50e203" target="_blank">67254bc</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcombryanmayerHHVtransmissiontree93301d60449d3347c3795f40f5713f8ed6c4fb9ctargetblank93301d6a" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcombryanmayerHHVtransmissiontree67254bc019ce3d12e53b5e0de05952867c50e203targetblank67254bca" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility. The version displayed above was the version of the Git repository at the time these results were generated. <br><br> Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -487,7 +487,9 @@ Untracked files:
     Untracked:  data/tmp/
 
 Unstaged changes:
-    Modified:   code/publish_all.R
+    Modified:   analysis/_site.yml
+    Modified:   analysis/about.Rmd
+    Modified:   analysis/index.Rmd
 
 </code></pre>
 <p>
@@ -526,6 +528,23 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/bryanmayer/HHVtransmission/c50009c35e2c958c92f0a8b884661e7d519ed384/docs/index.html" target="_blank">c50009c</a>
+</td>
+<td>
+Bryan
+</td>
+<td>
+2020-02-01
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -822,7 +841,9 @@ Start workflowr project.
 </div>
 </div>
 </div>
-<p>Authors: Mayer BT, Krantz E, Wald A, Corey L, Casper C, Gantt S, and Schiffer JT</p>
+<p><strong>Article Authors:</strong> Mayer BT, Krantz E, Wald A, Corey L, Casper C, Gantt S, and Schiffer JT</p>
+<p>This article was published in <a href="https://www.mdpi.com/1999-4915/12/2/171"><em>Viruses</em></a> in 2020 and the <a href="https://www.mdpi.com/1999-4915/12/2/171/pdf">pdf is available there</a>.</p>
+<p><strong>Citation:</strong> Mayer, B.T.; Krantz, E.M.; Wald, A.; Corey, L.; Casper, C.; Gantt, S.; Schiffer, J.T. Estimating the Risk of Human Herpesvirus 6 and Cytomegalovirus Transmission to Ugandan Infants from Viral Shedding in Saliva by Household Contacts. <em>Viruses</em> 2020, 12, 171.</p>
 <div id="analysis-roadmap" class="section level1">
 <h1>Analysis Roadmap:</h1>
 <ol style="list-style-type: decimal">

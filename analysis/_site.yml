@@ -29,7 +29,7 @@ navbar:
       href: https://github.com/bryanmayer/HHVtransmission/blob/master/output/results-tables/supp_table2.csv
     - text: Supp. Table 3
       href: https://github.com/bryanmayer/HHVtransmission/blob/master/output/results-tables/supp_table3.csv
-    - text: Table B1
+    - text: Table A1
       href: https://github.com/bryanmayer/HHVtransmission/blob/master/output/results-tables/supp_table4.csv
     - text: All Results Tables
       href: https://github.com/bryanmayer/HHVtransmission/tree/master/output/results-tables
@@ -41,9 +41,9 @@ navbar:
       href: https://github.com/bryanmayer/HHVtransmission/blob/master/docs/figure/general-statistics.Rmd/exposure-profile-1.png
     - text: Figure 3
       href: https://github.com/bryanmayer/HHVtransmission/blob/master/docs/figure/transmission-risk.Rmd/hhv6-dr-1.png
-    - text: Figure B1
+    - text: Figure A1
       href: https://github.com/bryanmayer/HHVtransmission/blob/master/docs/figure/transmission-risk-sensitivity.Rmd/sens-final-pl1-1.png
-    - text: Figure B2
+    - text: Figure A2
       href: https://github.com/bryanmayer/HHVtransmission/blob/master/docs/figure/transmission-risk-sensitivity.Rmd/sens-final-pl2-1.png
     - text: Supp. Figure 1
       href: https://github.com/bryanmayer/HHVtransmission/blob/master/docs/figure/general-statistics.Rmd/hh-composition-1.png

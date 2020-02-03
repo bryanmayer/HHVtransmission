@@ -1,12 +1,16 @@
 ---
-title: "Estimating Household Risk of Human Herpesvirus Acquisition Among Ugandan Infants Through Exposure to Viruses in Saliva"
+title: "Estimating the Risk of Human Herpesvirus 6 and Cytomegalovirus Transmission to Ugandan Infants from Viral Shedding in Saliva by Household Contacts"
 site: workflowr::wflow_site
 output:
   workflowr::wflow_html:
     toc: false
 ---
 
-Authors: Mayer BT, Krantz E, Wald A, Corey L, Casper C, Gantt S, and Schiffer JT
+**Article Authors:** Mayer BT, Krantz E, Wald A, Corey L, Casper C, Gantt S, and Schiffer JT
+
+This article was published in [*Viruses*](https://www.mdpi.com/1999-4915/12/2/171) in 2020 and the [pdf is available there](https://www.mdpi.com/1999-4915/12/2/171/pdf). 
+
+**Citation:** Mayer, B.T.; Krantz, E.M.; Wald, A.; Corey, L.; Casper, C.; Gantt, S.; Schiffer, J.T. Estimating the Risk of Human Herpesvirus 6 and Cytomegalovirus Transmission to Ugandan Infants from Viral Shedding in Saliva by Household Contacts. *Viruses* 2020, 12, 171.
 
 # Analysis Roadmap:
 
